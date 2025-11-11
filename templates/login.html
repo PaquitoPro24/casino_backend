@@ -52,18 +52,19 @@
         let destino = "/home";
 
         switch (rol) {
-          case "admin":
-          case "administrador":
+          case "administrador": // <-- DEBE COINCIDIR CON TU BD
             destino = "/admin";
             break;
 
-          case "soporte":
-          case "support":
-            destino = "/support";
+          case "jugador": // <-- DEBE COINCIDIR CON TU BD
+            destino = "/home";
+            break;
+            
+          case "auditor": // <-- DEBE COINCIDIR CON TU BD
+            // (No sé a dónde quieras mandarlo)
+            destino = "/admin/info-general"; 
             break;
 
-          case "usuario":
-          case "user":
           default:
             destino = "/home";
             break;
@@ -79,4 +80,5 @@
     });
   </script>
 </body>
+
 </html>
