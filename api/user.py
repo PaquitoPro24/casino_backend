@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Form, Depends
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-import db_connect
+import db_connect  # Tu archivo db_connect.py
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from pydantic import EmailStr # Para validar email
 
 router = APIRouter()
 
 @router.get("/api/user/{id_usuario}")
 async def api_get_user_info(id_usuario: int):
     """
-    Ruta para OBTENER la info del usuario y rellenar el formulario
+    Ruta para obtener la info básica del usuario (nombre y saldo)
+    Llamada por: account-cartera-historial.html
     """
     print(f"🔹 API: Pidiendo info para usuario: {id_usuario}")
     conn = None
@@ -21,7 +21,7 @@ async def api_get_user_info(id_usuario: int):
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Obtenemos todos los datos que el formulario necesita
+        # Usamos JOIN para obtener datos de 'Usuario' y 'Saldo'
         cursor.execute(
             """
             SELECT
@@ -45,7 +45,16 @@ async def api_get_user_info(id_usuario: int):
         if not usuario:
             return JSONResponse({"error": "Usuario no encontrado o inactivo"}, status_code=404)
         
-        return JSONResponse(usuario)
+        # Devolvemos el JSON que el HTML espera
+        return JSONResponse({
+            "nombre": usuario['nombre'],
+            "apellido": usuario['apellido'],
+            "email": usuario['email'],
+            # --- ¡ESTA ES LA CORRECCIÓN! ---
+            # Convertimos el 'saldo_actual' (que es Decimal) a float
+            "saldo": float(usuario['saldo_actual']), 
+            "rol": usuario['rol']
+        })
 
     except Exception as e:
         if conn: conn.rollback()
@@ -53,6 +62,8 @@ async def api_get_user_info(id_usuario: int):
         return JSONResponse({"error": f"Error interno del servidor: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
+
+# ... (el resto de tu archivo user.py, como la ruta PUT) ...
 
 # ==========================================================
 #  NUEVA RUTA PARA ACTUALIZAR EL PERFIL (GUARDAR CAMBIOS)
@@ -62,8 +73,7 @@ async def api_update_user_info(
     id_usuario: int,
     nombre: str = Form(),
     apellido: str = Form(),
-    email: EmailStr = Form() # FastAPI valida el email automáticamente
-    # Nota: No permitimos cambiar la contraseña aquí por seguridad
+    email: str = Form() # Pydantic EmailStr da problemas a veces, usamos str simple
 ):
     """
     Ruta para GUARDAR los cambios del formulario de 'account-configuracion.html'
