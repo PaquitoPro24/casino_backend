@@ -4,23 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro - Royal Crumbs</title>
-  <link rel="stylesheet" href="/static/css/auth.css">
+  <!-- Corregido para usar url_for -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
 </head>
 <body>
   <div class="container">
-    <img src="/static/img/logo.png" alt="Royal Crumbs Logo" class="logo">
+    <!-- Corregido para usar url_for -->
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
     <h2>Crea tu cuenta</h2>
 
-    <form>
-      <input type="email" placeholder="Correo Electrónico" required>
-      <input type="text" placeholder="CURP" required>
-      <input type="text" placeholder="Nombre(s)" required>
-      <input type="text" placeholder="Apellido(s)" required>
-      <input type="text" placeholder="Dirección" required>
-      <input type="password" placeholder="Contraseña" required>
-      <input type="password" placeholder="Confirmar Contraseña" required>
-      <button type="submit">Registrarse</button>
+    <!-- Añadido 'id' al form y 'name' a los inputs -->
+    <form id="registerForm">
+      <input type="email" name="correo" placeholder="Correo Electrónico" class="auth-input" required>
+      <input type="text" name="curp" placeholder="CURP" class="auth-input" required>
+      <input type="text" name="nombre" placeholder="Nombre(s)" class="auth-input" required>
+      <input type="text" name="apellido" placeholder="Apellido(s)" class="auth-input" required>
+      <!-- El campo 'direccion' no está en tu tabla 'usuarios', así que lo he quitado. -->
+      
+      <input type="password" name="contrasena" placeholder="Contraseña" class="auth-input" required>
+      <input type="password" name="confirmar_contrasena" placeholder="Confirmar Contraseña" class="auth-input" required>
+      
+      <button type="submit" class="auth-button">Registrarse</button>
     </form>
+    
+    <a href="/login" class="register-link">¿Ya tienes una cuenta? Inicia Sesión</a>
   </div>
+
+  <!-- AÑADIDO: Script para enviar el formulario -->
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      
+      // Convertir FormData a un objeto plano para validación
+      const data = Object.fromEntries(formData.entries());
+
+      // 1. Validar contraseñas
+      if (data.contrasena !== data.confirmar_contrasena) {
+        alert("Las contraseñas no coinciden.");
+        return;
+      }
+      
+      // (Aquí puedes añadir más validaciones, como la longitud de la CURP, etc.)
+
+      try {
+        // 2. Enviar a la API de backend
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          body: formData // Enviamos el FormData directamente
+        });
+
+        const result = await res.json();
+        console.log("🔹 Datos recibidos:", result);
+
+        if (result.error) {
+          // 3. Mostrar error del servidor (ej: "Email ya existe")
+          alert(result.error);
+        } else if (result.success) {
+          // 4. Éxito
+          alert("¡Registro exitoso! Por favor, inicia sesión.");
+          window.location.href = "/login";
+        }
+
+      } catch (error) {
+        console.error("Error al registrarse:", error);
+        alert("Error de conexión con el servidor.");
+      }
+    });
+  </script>
 </body>
 </html>
