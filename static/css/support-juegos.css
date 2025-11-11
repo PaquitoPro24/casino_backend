@@ -1,0 +1,109 @@
+/* ============================================================
+   📱 PANEL DE PREGUNTAS FRECUENTES - Royal Crumbs
+   ============================================================ */
+
+html, body {
+  background-color: #202020;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Timeless', 'Arial', sans-serif;
+  color: #fff;
+}
+
+/* ======== Contenedor ======== */
+.rc-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 16px 50px;
+  color: #fff;
+  background-color: #202020;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======== Encabezado ======== */
+.rc-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  background-color: #202020;
+  padding: 18px 0;
+}
+
+.rc-back {
+  color: #FFFFFF;
+  font-size: 34px;
+  text-decoration: none;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.rc-screen-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ======== Subtítulo ======== */
+.rc-subtitle {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  width: 100vw; /* Ocupa todo el ancho de la ventana */
+  margin-left: -50vw; /* Compensa el centrado del contenedor */
+  background-color: #181818; /* Fondo de la barra */
+  color: #FFFFFF;
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 12px 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  margin-top: 0;
+  margin-bottom: 0;
+  z-index: 2;
+}
+
+/* ======== Preguntas ======== */
+.faq-item {
+  margin-top: 18px;
+}
+
+.faq-question {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.faq-answer {
+  background-color: #2E2E2E;
+  color: #BEBEBE;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.faq-answer:hover {
+  background-color: #3A3A3A;
+  color: #FFFFFF;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 768px) {
+  .rc-subtitle {
+    font-size: 16px;
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .rc-subtitle {
+    font-size: 15px;
+    padding: 8px 0;
+  }
+}

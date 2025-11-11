@@ -1,0 +1,78 @@
+/* ============================================================
+   📜 TÉRMINOS Y CONDICIONES - Royal Crumbs
+   ============================================================ */
+
+html, body {
+  background-color: #202020;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Timeless', 'Arial', sans-serif;
+  color: #fff;
+}
+
+/* ======== Contenedor General ======== */
+.rc-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======== Encabezado ======== */
+.rc-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 18px 0;
+  background-color: #202020;
+}
+
+.rc-back {
+  color: #fff;
+  font-size: 30px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.rc-screen-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ======== Subtítulo ======== */
+.rc-subtitle {
+  background-color: #181818;
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  padding: 12px 0;
+  margin-top: 10px;
+}
+
+/* ======== Contenido ======== */
+.rc-content-box {
+  background-color: #2E2E2E;
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 20px;
+  color: #BEBEBE;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.rc-content-box p {
+  margin: 0 0 12px;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 480px) {
+  .rc-screen-title { font-size: 20px; }
+  .rc-subtitle { font-size: 16px; }
+  .rc-content-box { font-size: 13px; padding: 14px; }
+}
