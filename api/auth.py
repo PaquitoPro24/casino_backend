@@ -1,33 +1,65 @@
 from fastapi import APIRouter, Form
-from fastapi.responses import JSONResponse
-import db_connect  # Tu archivo db_connect.py
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from passlib.context import CryptContext
-from datetime import datetime
-
-# ==========================================================
-#  CAMBIO IMPORTANTE:
-#  Cambiamos de 'bcrypt' (que está fallando) a 'argon2'
-# ==========================================================
+# ... (código existente) ...
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+# ... (código existente) ...
+@router.post("/api/auth/register")
+async def api_register(
+# ... (código existente) ...
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
 
-
-router = APIRouter()
-
-@router.post("/api/auth/login")
-async def api_login(correo: str = Form(), contrasena: str = Form()):
+# ==========================================================
+#  NUEVA RUTA: RECUPERAR CONTRASEÑA (SIMULACIÓN)
+# ==========================================================
+@router.post("/api/auth/forgot-password")
+async def api_forgot_password(correo: str = Form()):
     """
-    Ruta de Login, actualizada a tu esquema 'Usuario'
+    Ruta para manejar la solicitud de "Olvidé mi contraseña".
+    Llamada por: forgot_password.html
     """
-    print(f"🔹 API: Intento de login para: {correo}")
+    print(f"🔹 API: Solicitud de recuperación de contraseña para: {correo}")
+    
     conn = None
+    cursor = None
+    
     try:
         conn = db_connect.get_connection()
         if conn is None:
-            return JSONResponse({"error": "Error de conexión con la base de datos"}, status_code=500)
+            # No le digas al usuario que la BD falló, solo da el mensaje genérico
+            return JSONResponse({"message": "Si este correo está registrado, recibirás un enlace de recuperación."})
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # 1. Buscamos al usuario
+        cursor.execute("SELECT id_usuario FROM Usuario WHERE email = %s AND activo = true", (correo,))
+        usuario = cursor.fetchone()
+        
+        # 2. SIMULACIÓN
+        if usuario:
+            # --- INICIO DE SIMULACIÓN ---
+            # En un proyecto real, aquí generarías un token, lo guardarías en la BD
+            # y lo enviarías por email.
+            # Por ahora, solo lo imprimimos en la consola del servidor.
+            token_simulado = "TOKEN_SEGURO_GENERADO_AQUI_12345"
+            print(f"✅ API: SIMULACIÓN - Enviando email de reseteo a {correo} con token: {token_simulado}")
+            # --- FIN DE SIMULACIÓN ---
+        else:
+            print(f"❌ API: Solicitud de reseteo para email no existente o inactivo: {correo}")
+
+        # 3. RESPUESTA GENÉRICA
+        # Por seguridad, NUNCA le digas al usuario si el correo existía o no.
+        # Siempre devuelve el mismo mensaje de éxito.
+        return JSONResponse({"success": True, "message": "Si este correo está registrado en nuestro sistema, recibirás un enlace para recuperar tu contraseña."})
+
+    except Exception as e:
+        print(f"🚨 API ERROR (Forgot Password): {e}")
+        # Incluso si hay un error, devolvemos el mensaje genérico
+        return JSONResponse({"message": "Si este correo está registrado, recibirás un enlace de recuperación."})
+    
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
         
         # 1. Usamos los nombres correctos: 'Usuario', 'email', 'password_hash'
         cursor.execute(
