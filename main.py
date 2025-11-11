@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI(title="Royal Crumbs")
 
 # Ajusta estas rutas si tu estructura cambia
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Helper para ahorrar líneas
@@ -267,3 +267,4 @@ async def admin_lista_blanca(request: Request):
 @app.get("/admin/promociones", response_class=HTMLResponse)
 async def admin_promociones(request: Request):
     return render("admin-promociones.html", request)
+
