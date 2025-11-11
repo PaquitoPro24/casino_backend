@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Royal Crumbs</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+</head>
+<body>
+    <main class="main">
+        <section class="login-card">
+            <img src="{{ url_for('static', path='/img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
+            <h1 class="auth-title">Bienvenido de nuevo</h1>
+
+            <form>
+                <input type="text" placeholder="Usuario o Correo Electrónico" class="auth-input">
+                <input type="password" placeholder="Contraseña" class="auth-input">
+
+                <a href="/forgot_password" class="forgot-link">¿Olvidaste tu Contraseña?</a>
+
+                <button type="submit" class="auth-button">Iniciar Sesión</button>
+            </form>
+
+            <a href="/register" class="register-link">¿No tienes una cuenta? Regístrate</a>
+        </section>
+    </main>
+</body>
+</html>
