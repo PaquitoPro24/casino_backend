@@ -1,107 +1,24 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-import db_connect
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
-router = APIRouter()
-
-# ==========================================================
-#  OBTENER ESTADÍSTICAS (Para 'admin-info-general.html')
-# ==========================================================
-@router.get("/api/admin/stats")
-async def api_get_admin_stats():
-    """
-    Obtiene las estadísticas principales para el dashboard del admin.
-    """
-    print(f"🔹 API: Pidiendo estadísticas de administrador")
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # 1. Contar usuarios totales
-        cursor.execute("SELECT COUNT(id_usuario) AS total_usuarios FROM Usuario")
-        total_usuarios = cursor.fetchone()['total_usuarios']
-        
-        # 2. Contar usuarios activos
-        cursor.execute("SELECT COUNT(id_usuario) AS usuarios_activos FROM Usuario WHERE activo = true")
-        usuarios_activos = cursor.fetchone()['usuarios_activos']
-        
-        # 3. Sumar todos los depósitos
-        cursor.execute("""
-            SELECT SUM(monto) AS total_depositos 
-            FROM Transaccion 
-            WHERE tipo_transaccion = 'Depósito' AND estado = 'Completada'
-        """)
-        total_depositos = cursor.fetchone()['total_depositos'] or 0.0
-        
-        # 4. Sumar todos los retiros
-        cursor.execute("""
-            SELECT SUM(monto) AS total_retiros 
-            FROM Transaccion 
-            WHERE tipo_transaccion = 'Retiro' AND estado = 'Completada'
-        """)
-        total_retiros = cursor.fetchone()['total_retiros'] or 0.0
-
-        cursor.close()
-        
-        return JSONResponse({
-            "total_usuarios": total_usuarios,
-            "usuarios_activos": usuarios_activos,
-            "total_depositos": float(total_depositos),
-            "total_retiros": float(total_retiros)
-        })
-
-    except Exception as e:
-        print(f"🚨 API ERROR (Admin Stats): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
-
-# ==========================================================
-#  OBTENER LISTA DE USUARIOS (Para 'admin-usuarios.html')
-# ==========================================================
-@router.get("/api/admin/usuarios")
-async def api_get_all_users():
-    """
-    Obtiene la lista de todos los usuarios con rol 'Jugador'.
-    """
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        cursor.execute(
-            """
-            SELECT id_usuario, nombre, apellido, email, activo
-            FROM Usuario
-            WHERE rol = 'Jugador'
-            ORDER BY fecha_registro DESC
-            """
-        )
-        usuarios = cursor.fetchall()
-        cursor.close()
-        return JSONResponse({"usuarios": usuarios})
-
-    except Exception as e:
-        print(f"🚨 API ERROR (Listar Usuarios): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
-        
+# ... existing code ...
 # ==========================================================
 #  OBTENER LISTA DE ADMINS (Para 'admin-administradores.html')
 # ==========================================================
 @router.get("/api/admin/administradores")
-async def api_get_all_admins():
+# ... existing code ...
+    finally:
+        if conn: conn.close()
+
+# ==========================================================
+#  GESTIÓN DE PERFIL DE USUARIO (Para 'admin-usuario-perfil.html')
+# ==========================================================
+
+@router.get("/api/admin/user-profile/{id_usuario}")
+async def api_get_user_profile(id_usuario: int):
     """
-    Obtiene la lista de todos los usuarios con rol 'Administrador' o 'Auditor'.
+    Obtiene los datos completos de un usuario para rellenar el formulario de admin.
     """
+    print(f"🔹 API Admin: Pidiendo perfil de usuario: {id_usuario}")
     conn = None
     try:
         conn = db_connect.get_connection()
@@ -109,20 +26,89 @@ async def api_get_all_admins():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
+        # Unimos Usuario y Saldo para tener toda la info
         cursor.execute(
             """
-            SELECT id_usuario, nombre, apellido, email, rol, activo
-            FROM Usuario
-            WHERE rol IN ('Administrador', 'Auditor')
-            ORDER BY rol
-            """
+            SELECT 
+                u.id_usuario, u.nombre, u.apellido, u.curp, u.email, u.rol, u.activo,
+                s.saldo_actual
+            FROM Usuario u
+            LEFT JOIN Saldo s ON u.id_usuario = s.id_usuario
+            WHERE u.id_usuario = %s
+            """,
+            (id_usuario,)
         )
-        admins = cursor.fetchall()
+        usuario = cursor.fetchone()
         cursor.close()
-        return JSONResponse({"admins": admins})
+        
+        if not usuario:
+            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
+        
+        # Convertimos Decimal a float para que JSONResponse no falle
+        usuario['saldo_actual'] = float(usuario['saldo_actual'] or 0.0)
+        
+        return JSONResponse(usuario)
 
     except Exception as e:
-        print(f"🚨 API ERROR (Listar Admins): {e}")
+        print(f"🚨 API ERROR (Admin Get Profile): {e}")
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
+        if conn: conn.close()
+
+
+@router.put("/api/admin/user-profile/{id_usuario}")
+async def api_update_user_profile(
+    id_usuario: int,
+    nombre: str = Form(),
+    apellido: str = Form(),
+    email: str = Form(),
+    curp: str = Form(),
+    rol: str = Form(),
+    activo: str = Form() # Vendrá como "true" o "false" (string)
+):
+    """
+    Actualiza los datos de un usuario desde el panel de admin.
+    """
+    print(f"🔹 API Admin: Actualizando perfil de usuario: {id_usuario}")
+    conn = None
+    cursor = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # Convertimos el 'activo' de string a boolean
+        activo_bool = (activo.lower() == 'true')
+        
+        # Actualizamos la tabla Usuario
+        cursor.execute(
+            """
+            UPDATE Usuario
+            SET 
+                nombre = %s,
+                apellido = %s,
+                email = %s,
+                curp = %s,
+                rol = %s,
+                activo = %s
+            WHERE id_usuario = %s
+            """,
+            (nombre, apellido, email, curp, rol, activo_bool, id_usuario)
+        )
+        
+        conn.commit()
+        
+        print(f"✅ API Admin: Perfil actualizado para {id_usuario}")
+        return JSONResponse({"success": True, "message": "Perfil actualizado con éxito."})
+
+    except psycopg2.errors.UniqueViolation:
+        if conn: conn.rollback()
+        return JSONResponse({"error": "El email o la CURP ya están en uso por otra cuenta."}, status_code=409)
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Admin Update Profile): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if cursor: cursor.close()
         if conn: conn.close()
