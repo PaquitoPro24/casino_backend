@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Ticket</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
+</head>
+<body>
+  <div class="rc-container">
+    <header class="rc-header">
+      <a href="/support" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Tickets de Asistencia</h1>
+      <div></div>
+    </header>
+
+    <section class="rc-content">
+      <form class="ticket-form">
+        <select required>
+          <option value="">Selecciona un tema</option>
+          <option value="juego">Problema con el juego</option>
+          <option value="pago">Problema con el pago</option>
+          <option value="cuenta">Acceso a la cuenta</option>
+        </select>
+
+        <input type="text" placeholder="Nombre" required>
+        <textarea placeholder="Mensaje" required></textarea>
+
+        <button type="submit" class="rc-button">Enviar Ticket</button>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

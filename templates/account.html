@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <header class="rc-header">
+      <a href="/home" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Mi Cuenta</h1>
+      <div></div>
+    </header>
+
+    <!-- LISTA DE OPCIONES -->
+    <section class="rc-list-card">
+      <a href="/account/configuracion" class="rc-list-item">
+        Configuración
+        <span class="rc-chevron"></span>
+      </a>
+      <a href="/account/bonos" class="rc-list-item">
+        Bonos y Promociones
+        <span class="rc-chevron"></span>
+      </a>
+      <a href="/account/cartera" class="rc-list-item">
+        Cartera
+        <span class="rc-chevron"></span>
+      </a>
+      <a href="/account/cartera/historial" class="rc-list-item">
+        Historial de Juegos
+        <span class="rc-chevron"></span>
+      </a>
+      <a href="/account/metodos" class="rc-list-item">
+        Métodos de Pago
+        <span class="rc-chevron"></span>
+      </a>
+    </section>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/account/cartera" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>

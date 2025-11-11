@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retiros - Transferencia Bancaria | Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-retiros-transferencia.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account/cartera/retiros" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Retiros</h1>
+    </div>
+
+    <!-- SECCIÓN RETIRO TRANSFERENCIA -->
+    <section class="withdraw-transfer-section">
+      <h2 class="rc-subtitle">Transferencia Bancaria</h2>
+
+      <form action="#" method="POST" class="withdraw-form">
+        <input type="text" placeholder="Cuenta CLABE" class="input-field" required>
+        <input type="number" placeholder="Monto del Retiro" class="input-field" required>
+
+        <button type="submit" class="btn-dorado">Retirar</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/wallet" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>
