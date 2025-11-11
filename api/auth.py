@@ -4,10 +4,14 @@ import db_connect  # Tu archivo db_connect.py
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from passlib.context import CryptContext
-from datetime import datetime # Para la fecha de registro
+from datetime import datetime
 
-# Configura el contexto de hasheo
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# ==========================================================
+#  CAMBIO IMPORTANTE:
+#  Cambiamos de 'bcrypt' (que está fallando) a 'argon2'
+# ==========================================================
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
 
 router = APIRouter()
 
@@ -44,6 +48,7 @@ async def api_login(correo: str = Form(), contrasena: str = Form()):
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
         # 3. Verificamos la contraseña (usando 'password_hash')
+        # passlib detectará automáticamente que el hash es Argon2
         if not pwd_context.verify(contrasena, usuario["password_hash"]):
             print("❌ API: Contraseña incorrecta")
             cursor.close(); conn.close()
@@ -67,12 +72,12 @@ async def api_login(correo: str = Form(), contrasena: str = Form()):
 
 
 # ==========================================================
-#  NUEVA RUTA PARA REGISTRO (Corregida para tu Esquema)
+#  RUTA PARA REGISTRO (Ahora usará Argon2)
 # ==========================================================
 @router.post("/api/auth/register")
 async def api_register(
     correo: str = Form(),
-    curp: str = Form(), # <-- ¡Añadido de nuevo!
+    curp: str = Form(), 
     nombre: str = Form(),
     apellido: str = Form(),
     contrasena: str = Form()
@@ -85,7 +90,7 @@ async def api_register(
     cursor = None
     
     try:
-        # 1. Hashear la contraseña
+        # 1. Hashear la contraseña (ahora con Argon2)
         hashed_password = pwd_context.hash(contrasena)
         
         # 2. Conectarse a la BD
@@ -96,8 +101,6 @@ async def api_register(
         cursor = conn.cursor()
         
         # 3. PASO 1: Insertar en la tabla 'Usuario'
-        # Usamos los nombres de tu tabla: 'Usuario', 'nombre', 'apellido', etc.
-        # Usamos el rol 'Jugador' (de tu CHECK) y 'activo = true'
         cursor.execute(
             """
             INSERT INTO Usuario (nombre, apellido, curp, email, password_hash, rol, fecha_registro, activo)
@@ -126,14 +129,12 @@ async def api_register(
         return JSONResponse({"success": True, "message": "Usuario registrado exitosamente"})
 
     except psycopg2.errors.UniqueViolation as e:
-        # Error específico si el email o curp ya existen (si los tienes como UNIQUE en tu BD)
-        if conn: conn.rollback() # Revertir la transacción
+        if conn: conn.rollback()
         print(f"❌ API: Conflicto de datos (email o curp ya existen): {e}")
-        # Tu schema solo marca 'email' como UNIQUE, así que es el error más probable
-        return JSONResponse({"error": "El correo electrónico ya está registrado."}, status_code=409)
+        return JSONResponse({"error": "El correo electrónico o la CURP ya están registrados."}, status_code=409)
         
     except Exception as e:
-        if conn: conn.rollback() # Revertir en caso de cualquier otro error
+        if conn: conn.rollback()
         print(f"🚨 API ERROR (Register): {e}")
         return JSONResponse({"error": f"Error interno del servidor: {e}"}, status_code=500)
     
