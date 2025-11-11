@@ -2,8 +2,6 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-psycopg2
 gunicorn
 psycopg2-binary
-passlib
-bcrypt
+passlib[bcrypt] 
