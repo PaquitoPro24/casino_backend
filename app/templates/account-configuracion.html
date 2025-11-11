@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Cuenta - Configuración</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-configuracion.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Mi cuenta</h1>
+    </div>
+
+    <!-- SUBTÍTULO -->
+    <div class="rc-subtitle">Configuracion</div>
+
+    <!-- SECCIÓN IMAGEN -->
+    <div class="profile-upload">
+  <label for="file-input" class="upload-box">
+    <img id="preview" src="{{ url_for('static', path='img/imagen-cuenta.png') }}" alt="Subir imagen">
+  </label>
+  <input id="file-input" type="file" accept="image/*" onchange="previewImage(event)">
+</div>
+
+    <!-- FORMULARIO -->
+    <form class="rc-form">
+      <input type="text" placeholder="Usuario">
+      <input type="text" placeholder="Nombre(s)">
+      <input type="text" placeholder="Apellido(s)">
+      <input type="email" placeholder="Correo">
+      <input type="password" placeholder="Contraseña">
+      <input type="text" placeholder="Comentario(opcional)">
+
+      <button type="submit" class="btn-save">Guardar Cambios</button>
+      <button type="button" class="btn-delete">Eliminar Cuenta</button>
+    </form>
+  </div>
+
+  <!-- BARRA INFERIOR -->
+  <nav class="rc-nav">
+  <a href="/home" class="rc-nav-item">
+    <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+    <span>Inicio</span>
+  </a>
+  <a href="/games" class="rc-nav-item">
+    <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+    <span>Juegos</span>
+  </a>
+  <a href="/support" class="rc-nav-item">
+    <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+    <span>Soporte</span>
+  </a>
+  <a href="/wallet" class="rc-nav-item">
+    <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+    <span>Cartera</span>
+  </a>
+</nav>
+
+  <!-- PREVISUALIZAR IMAGEN -->
+  <script>
+    function previewImage(event) {
+      const input = event.target;
+      const reader = new FileReader();
+      reader.onload = function(){
+        const preview = document.getElementById('preview');
+        preview.src = reader.result;
+      };
+      if (input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+
+    <!-- Tus botones -->
+    <button class="btn-guardar">Guardar Cambios</button>
+    <button class="btn-eliminar">Eliminar Cuenta</button>
+  </div>
+
+  <!-- Script para previsualizar imagen -->
+  <script>
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        const preview = document.getElementById('preview');
+        preview.src = reader.result;
+      };
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+  </script>
+
+</body>
+</html>
