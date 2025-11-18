@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # 1. IMPORTAMOS LOS NUEVOS ARCHIVOS DE RUTAS
-from api import auth, user
+from api import auth, user, admin, bonos, wallet
 
 # =========================
 #  APP & STATIC / TEMPLATES
@@ -17,6 +17,9 @@ templates = Jinja2Templates(directory="templates")
 # 2. INCLUIMOS LAS RUTAS DE API EN LA APP PRINCIPAL
 app.include_router(auth.router)
 app.include_router(user.router)
+app.include_router(admin.router)
+app.include_router(bonos.router)
+app.include_router(wallet.router)
 
 
 # Helper para ahorrar líneas
@@ -267,8 +270,3 @@ async def admin_lista_blanca(request: Request):
 @app.get("/admin/promociones", response_class=HTMLResponse)
 async def admin_promociones(request: Request):
     return render("admin-promociones.html", request)
-
-
-
-
-

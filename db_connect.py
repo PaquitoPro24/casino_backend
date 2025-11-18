@@ -37,4 +37,7 @@ def get_connection():
 if __name__ == "__main__":
     connection = get_connection()
     if connection:
-
+        print("✅ Conexión de prueba exitosa.")
+        connection.close()
+    else:
+        print("❌ Falló la conexión de prueba.")

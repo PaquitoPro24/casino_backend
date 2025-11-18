@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-import db_connect
+from app.db import db_connect # <-- CORRECCIÓN: Importación relativa
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import decimal # Importamos decimal para manejar dinero
