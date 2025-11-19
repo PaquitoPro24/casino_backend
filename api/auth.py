@@ -46,7 +46,9 @@ async def api_login(user_data: UserLogin):
             print("🚨 API ERROR (Login): No se pudo obtener conexión a la base de datos.")
             return JSONResponse({"error": "Error interno del servidor"}, status_code=500)
         
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        # --- CORRECCIÓN ---
+        # Se elimina el argumento `cursor_factory`. Esta configuración se maneja a nivel de conexión (en db_connect.py).
+        cursor = conn.cursor()
         
         # 1. Usamos los nombres correctos: 'Usuario', 'email', 'password_hash'
         cursor.execute(
