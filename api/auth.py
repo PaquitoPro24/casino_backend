@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-import db_connect  # Tu archivo db_connect.py
+from app.db import db_connect  # <-- ¡CORRECCIÓN CLAVE!
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from passlib.context import CryptContext
