@@ -28,7 +28,9 @@ def render(tpl: str, request: Request) -> HTMLResponse:
 # --- CORRECCIÓN CRÍTICA DE IMPORTACIÓN ---
 # Se importa directamente desde la carpeta 'api' para evitar ambigüedades
 # con posibles archivos duplicados en la carpeta 'app'.
-from api import auth_router #, user_router, transacciones_router, etc.
+# CORRECCIÓN FINAL: Se importa el objeto 'router' desde el archivo 'api.auth'
+# y se le da el alias 'auth_router' para que el resto del código funcione.
+from api.auth import router as auth_router
 
 # =========================
 #  RUTAS DE LÓGICA / API
