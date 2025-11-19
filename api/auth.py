@@ -61,20 +61,20 @@ async def api_login(user_data: UserLogin):
         usuario = cursor.fetchone()
         
         # 2. Verificar si el usuario existe y la contraseña es correcta
-        if not usuario or not pwd_context.verify(user_data.contrasena, usuario["password_hash"]):
+        if not usuario or not pwd_context.verify(user_data.contrasena, usuario[2]): # Índice 2 para password_hash
             print("❌ API: Credenciales incorrectas (email no encontrado o contraseña no coincide)")
             return JSONResponse({"error": "Correo o contraseña incorrectos"}, status_code=401)
         
         # 3. Verificar si la cuenta está activa (solo si el usuario y la contraseña son válidos)
-        if not usuario["activo"]:
+        if not usuario[3]: # Índice 3 para activo
             print("❌ API: Cuenta inactiva")
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
         # 4. ¡Éxito!
-        print(f"✅ API: Login exitoso para {usuario['id_usuario']}")
+        print(f"✅ API: Login exitoso para {usuario[0]}") # Índice 0 para id_usuario
         return JSONResponse({
-            "id_usuario": usuario['id_usuario'],
-            "rol": usuario['rol'] # Tu BD usa 'Jugador', 'Administrador'
+            "id_usuario": usuario[0], # Índice 0 para id_usuario
+            "rol": usuario[1]         # Índice 1 para rol
         })
 
     except Exception as e:
