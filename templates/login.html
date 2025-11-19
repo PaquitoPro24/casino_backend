@@ -3,82 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Royal Crumbs</title>
+  <title>Iniciar Sesión - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
 </head>
 <body>
-  <main class="main">
-    <section class="login-card">
-      <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-      <h1 class="auth-title">Bienvenido de nuevo</h1>
+  <div class="container">
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
+    
+    <form id="login-form">
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+      </div>
+      
+      <button type="submit" class="btn-primary">Iniciar Sesión</button>
+      
+      <div class="links">
+        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+        <a href="/register">¿No tienes cuenta? Regístrate</a>
+      </div>
+    </form>
+    
+    <div id="error-message" class="error-message" style="display: none;"></div>
 
-      <form id="loginForm">
-        <input type="email" name="correo" placeholder="Correo Electrónico" class="auth-input" required>
-        <input type="password" name="contrasena" placeholder="Contraseña" class="auth-input" required>
-
-        <a href="/forgot-password" class="forgot-link">¿Olvidaste tu Contraseña?</a>
-
-        <button type="submit" class="auth-button">Iniciar Sesión</button>
-      </form>
-
-      <a href="/register" class="register-link">¿No tienes una cuenta? Regístrate</a>
-    </section>
-  </main>
+  </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("login-form");
+      const errorMessageDiv = document.getElementById("error-message");
 
-      const formData = new FormData(e.target);
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          body: formData
-        });
-        const data = await res.json();
-        console.log("🔹 Datos recibidos:", data);
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
 
-        if (data.error) {
-          alert(data.error);
-          return;
+        const formData = new FormData(loginForm);
+        errorMessageDiv.style.display = "none"; // Ocultar errores previos
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            // Si la respuesta no es 2xx, muestra el error de la API
+            throw new Error(result.detail || "Error desconocido al iniciar sesión.");
+          }
+
+          // ✨ ¡AQUÍ ESTÁ LA MAGIA! ✨
+          // Si el login es exitoso, la API devuelve el id_usuario y el rol.
+          // Los guardamos en el almacenamiento local del navegador.
+          localStorage.setItem("user_id", result.id_usuario);
+          localStorage.setItem("user_role", result.rol);
+
+          // Redirigir según el rol del usuario
+          if (result.rol === 'Administrador' || result.rol === 'Auditor') {
+            window.location.href = "/admin"; // Redirige al panel de admin
+          } else {
+            window.location.href = "/home"; // Redirige al home para jugadores
+          }
+
+        } catch (error) {
+          console.error("Error de login:", error);
+          errorMessageDiv.textContent = error.message;
+          errorMessageDiv.style.display = "block";
         }
-
-        // Guardar sesión local
-        localStorage.setItem("usuario_id", data.id_usuario);
-        localStorage.setItem("rol", data.rol);
-
-        // Normalizamos el texto del rol
-        const rol = (data.rol || "").toLowerCase().trim();
-        let destino = "/home";
-
-        switch (rol) {
-          case "administrador": // <-- DEBE COINCIDIR CON TU BD
-            destino = "/admin";
-            break;
-
-          case "jugador": // <-- DEBE COINCIDIR CON TU BD
-            destino = "/home";
-            break;
-            
-          case "auditor": // <-- DEBE COINCIDIR CON TU BD
-            // (No sé a dónde quieras mandarlo)
-            destino = "/admin/info-general"; 
-            break;
-
-          default:
-            destino = "/home";
-            break;
-        }
-
-        console.log("➡️ Redirigiendo a:", destino);
-        window.location.href = destino;
-
-      } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        alert("Error de conexión con el servidor.");
-      }
+      });
     });
   </script>
 </body>
-
 </html>
