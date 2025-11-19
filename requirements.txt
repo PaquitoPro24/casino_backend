@@ -3,6 +3,6 @@ uvicorn
 jinja2
 python-multipart
 gunicorn
-psycopg2-binary
+psycopg2-binary # Para PostgreSQL
 passlib[argon2]
-
+pydantic[email] # Para validación de emails con EmailStr

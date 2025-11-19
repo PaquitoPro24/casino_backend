@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Depends
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, EmailStr
 from app.db import db_connect  # <-- ¡CORRECCIÓN CLAVE!
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -12,12 +13,17 @@ pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 router = APIRouter()
 
-@router.post("/api/auth/login")
-async def api_login(correo: str = Form(), contrasena: str = Form()):
+# Modelo Pydantic para validar los datos de entrada del login
+class UserLogin(BaseModel):
+    correo: EmailStr
+    contrasena: str
+
+@router.post("/login")
+async def api_login(user_data: UserLogin):
     """
-    Ruta de Login, actualizada a tu esquema 'Usuario'
+    Ruta de Login que valida los datos con Pydantic.
     """
-    print(f"🔹 API: Intento de login para: {correo}")
+    print(f"🔹 API: Intento de login para: {user_data.correo}")
     conn = None
     try:
         conn = db_connect.get_connection()
@@ -28,30 +34,23 @@ async def api_login(correo: str = Form(), contrasena: str = Form()):
         
         # 1. Usamos los nombres correctos: 'Usuario', 'email', 'password_hash'
         cursor.execute(
-            "SELECT id_usuario, rol, password_hash, activo FROM Usuario WHERE email = %s", 
-            (correo,)
+            "SELECT id_usuario, rol, password_hash, activo FROM Usuario WHERE email = %s",
+            (user_data.correo,)
         )
         usuario = cursor.fetchone()
         
-        # 2. Verificar si el usuario existe y está activo
-        if not usuario:
-            print("❌ API: Email no encontrado")
-            cursor.close(); conn.close()
+        # 2. Verificar si el usuario existe y la contraseña es correcta
+        if not usuario or not pwd_context.verify(user_data.contrasena, usuario["password_hash"]):
+            print("❌ API: Credenciales incorrectas (email no encontrado o contraseña no coincide)")
             return JSONResponse({"error": "Correo o contraseña incorrectos"}, status_code=401)
         
+        # 3. Verificar si la cuenta está activa (solo si el usuario y la contraseña son válidos)
         if not usuario["activo"]:
             print("❌ API: Cuenta inactiva")
-            cursor.close(); conn.close()
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
-        # 3. Verificamos la contraseña (usando 'password_hash')
-        if not pwd_context.verify(contrasena, usuario["password_hash"]):
-            print("❌ API: Contraseña incorrecta")
-            cursor.close(); conn.close()
-            return JSONResponse({"error": "Correo o contraseña incorrectos"}, status_code=401)
-        
-        # 4. ¡Éxito!
-        cursor.close(); conn.close()
+        # 4. ¡Éxito! El cursor se cerrará en el bloque finally
+        cursor.close()
         
         print(f"✅ API: Login exitoso para {usuario['id_usuario']}")
         return JSONResponse({
@@ -64,7 +63,8 @@ async def api_login(correo: str = Form(), contrasena: str = Form()):
         print(f"🚨 API ERROR (Login): {e}")
         return JSONResponse({"error": f"Error interno del servidor: {e}"}, status_code=500)
     finally:
-        if conn: conn.close()
+        if conn:
+            conn.close()
 
 
 # ==========================================================
@@ -159,7 +159,7 @@ async def api_forgot_password(correo: str = Form()):
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # 1. Buscamos al usuario
+        # 1. Buscamos al usuario por correo
         cursor.execute("SELECT id_usuario FROM Usuario WHERE email = %s AND activo = true", (correo,))
         usuario = cursor.fetchone()
         
