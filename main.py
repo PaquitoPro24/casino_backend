@@ -8,9 +8,12 @@ from fastapi.templating import Jinja2Templates
 # =========================
 app = FastAPI(title="Royal Crumbs")
 
-# Rutas correctas relativas a la raíz del proyecto
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+# --- CORRECCIÓN ---
+# Se ajustan las rutas para que coincidan con la estructura real del proyecto.
+# Los archivos estáticos están en la carpeta 'static' a nivel raíz.
+# Las plantillas están en la carpeta 'templates' a nivel raíz.
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
