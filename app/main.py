@@ -9,8 +9,8 @@ from fastapi.templating import Jinja2Templates
 app = FastAPI(title="Royal Crumbs")
 
 # Ajusta estas rutas si tu estructura cambia
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
