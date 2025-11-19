@@ -69,7 +69,3 @@ def login(user_credentials: UserLogin):
     finally:
         if conn:
             conn.close()
-
-    except Exception as e:
-        print("⚠️ Error en login:", e)
-        return JSONResponse({"error": "Error interno del servidor"}, status_code=500)
