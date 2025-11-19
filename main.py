@@ -3,34 +3,47 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-# 1. IMPORTAMOS LOS NUEVOS ARCHIVOS DE RUTAS
-from api import auth, user, admin, bonos, wallet
-
 # =========================
 #  APP & STATIC / TEMPLATES
 # =========================
 app = FastAPI(title="Royal Crumbs")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-# 2. INCLUIMOS LAS RUTAS DE API EN LA APP PRINCIPAL
-app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(admin.router)
-app.include_router(bonos.router)
-app.include_router(wallet.router)
-
+# Rutas correctas relativas a la raíz del proyecto
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
 
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
     return templates.TemplateResponse(tpl, {"request": request})
 
 # =========================
+#  RUTAS DE LÓGICA / API
+# =========================
+from app.routers import (
+    auth_router,
+    user_router,
+    transacciones_router,
+    juegos_router,
+    soporte_router,
+    bonos_router
+)
+
+# =========================
+#  RUTAS DE LÓGICA / API
+# =========================
+app.include_router(auth_router.router, prefix="/api/auth", tags=["Auth"])
+app.include_router(user_router.router, prefix="/api/user", tags=["Usuarios"])
+app.include_router(transacciones_router.router, prefix="/api/transacciones", tags=["Transacciones"])
+app.include_router(juegos_router.router, prefix="/api/juegos", tags=["Juegos"])
+app.include_router(soporte_router.router, prefix="/api/soporte", tags=["Soporte"])
+app.include_router(bonos_router.router, prefix="/api/bonos", tags=["Bonos"])
+
+
+# =========================
 #  PÚBLICO / AUTH
 # =========================
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request):              # pantalla de carga
+async def root(request: Request):                  # pantalla de carga
     return render("loading.html", request)
 
 @app.get("/login", response_class=HTMLResponse)
@@ -41,8 +54,15 @@ async def login_page(request: Request):
 async def register_page(request: Request):
     return render("register.html", request)
 
-# ... (Pega aquí el RESTO de tus rutas HTML que ya tenías) ...
-# ... (@app.get("/forgot-password"), @app.get("/home"), etc...)
+@app.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    return render("forgot_password.html", request)
+
+# Aliases hacia /home
+@app.get("/inicio")
+@app.get("/index")
+async def redirect_home():
+    return RedirectResponse(url="/home", status_code=302)
 
 # =========================
 #  HOME / JUEGOS
