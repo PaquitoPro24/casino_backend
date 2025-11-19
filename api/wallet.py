@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-import db_connect
+from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
@@ -17,18 +17,80 @@ router = APIRouter()
 async def api_deposit_card(
     id_usuario: int = Form(), 
     monto: str = Form(),
-[Immersive content redacted for brevity.]
+    numero_tarjeta: str = Form(),
+    nombre_titular: str = Form(),
+    fecha_exp: str = Form(),
+    cvv: str = Form()
+):
+    print(f"🔹 API: Procesando depósito de ${monto} con tarjeta para usuario: {id_usuario}")
+    conn = None
+    try:
+        monto_decimal = decimal.Decimal(monto)
+        if monto_decimal <= 0:
+            return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
+
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        # 1. Registrar la transacción como 'Completado'
+        cursor.execute(
+            "INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago) VALUES (%s, 'Depósito', %s, 'Completado', 'Tarjeta')",
+            (id_usuario, monto_decimal)
+        )
+        # 2. Actualizar el saldo del usuario
+        cursor.execute(
+            "UPDATE Saldo SET saldo_actual = saldo_actual + %s WHERE id_usuario = %s",
+            (monto_decimal, id_usuario)
+        )
+        conn.commit()
+        cursor.close()
+        return JSONResponse({"success": True, "message": "Depósito realizado con éxito."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Deposit Card): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
-        if cursor: cursor.close()
         if conn: conn.close()
 
 
 @router.post("/api/wallet/save-method-bank")
 async def api_save_bank_method(
     id_usuario: int = Form(),
-[Immersive content redacted for brevity.]
+    clabe: str = Form(),
+    nombre_banco: str = Form()
+):
+    print(f"🔹 API: Guardando CLABE para usuario: {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT id_metodo FROM Metodo_Pago WHERE nombre = 'Transferencia'")
+        metodo = cursor.fetchone()
+        if not metodo:
+            return JSONResponse({"error": "Configuración del servidor incompleta (M-406)"}, status_code=500)
+        id_metodo_pago = metodo['id_metodo']
+
+        # Guardamos la CLABE como token
+        cursor.execute(
+            """
+            INSERT INTO Usuario_Metodo_Pago (id_usuario, id_metodo, token_externo) VALUES (%s, %s, %s)
+            ON CONFLICT (id_usuario, id_metodo) DO UPDATE SET token_externo = EXCLUDED.token_externo
+            """,
+            (id_usuario, id_metodo_pago, clabe)
+        )
+        conn.commit()
+        cursor.close()
+        return JSONResponse({"success": True, "message": "Método de pago (CLABE) guardado con éxito."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Save CLABE): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
-        if cursor: cursor.close()
         if conn: conn.close()
 
 # ==========================================================
@@ -37,18 +99,21 @@ async def api_save_bank_method(
 @router.post("/api/wallet/withdraw-bank")
 async def api_withdraw_bank(
     id_usuario: int = Form(),
-[Immersive content redacted for brevity.]
-    finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+    monto: str = Form()
+):
+    print(f"🔹 API: Solicitando retiro de ${monto} a CLABE para usuario: {id_usuario}")
+    # Esta lógica es similar a un depósito pero a la inversa y queda 'Pendiente'
+    # Aquí iría la lógica para verificar saldo, crear transacción de retiro, etc.
+    return JSONResponse({"success": True, "message": "Solicitud de retiro recibida. Se procesará en breve."})
 
 @router.post("/api/wallet/withdraw-card")
 async def api_withdraw_card(
     id_usuario: int = Form(),
-[Immersive content redacted for brevity.]
-    finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+    monto: str = Form()
+):
+    print(f"🔹 API: Solicitando retiro de ${monto} a Tarjeta para usuario: {id_usuario}")
+    # Similar al retiro a banco.
+    return JSONResponse({"success": True, "message": "Solicitud de retiro recibida. Se procesará en breve."})
 
 # ==========================================================
 #  NUEVO: GUARDAR MÉTODO DE PAGO (TARJETA)
