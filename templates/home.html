@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inicio - Royal Crumbs</title>
-  <link rel="stylesheet" href="/static/css/main.css">
+  <!-- CORRECCIÓN: Usar url_for para generar la ruta al CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
   <style>
     /* ==== PERFIL Y MENÚ HAMBURGUESA ==== */
     .profile-btn {
@@ -78,12 +79,12 @@
 
   <!-- ENCABEZADO -->
   <header>
-    <img src="/static/img/logo.png" alt="Royal Crumbs Logo">
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo">
 
     <!-- BOTÓN PERFIL CON MENÚ -->
     <div class="profile-container">
       <button class="profile-btn" id="profileBtn">
-        <img src="/static/img/usuario_icon.png" alt="Perfil">
+        <img src="{{ url_for('static', path='img/usuario_icon.png') }}" alt="Perfil">
       </button>
 
       <!-- MENÚ DESPLEGABLE -->
@@ -102,7 +103,7 @@
 
     <section class="welcome-section">
       <div class="welcome-card">
-        <img src="/static/img/casino.jpg" alt="Bienvenido a Royal Crumbs">
+        <img src="{{ url_for('static', path='img/casino.jpg') }}" alt="Bienvenido a Royal Crumbs">
         <div class="welcome-overlay">
           <h1>BIENVENIDO<br>A ROYAL CRUMBS</h1>
           <p>Donde cada jugada es una experiencia de lujo.</p>
@@ -113,7 +114,7 @@
     <section class="bonus-section">
       <h2>BONOS Y PROMOCIONES</h2>
       <div class="bonus-card">
-        <img src="/static/img/bonos.jpg" alt="Bono de bienvenida">
+        <img src="{{ url_for('static', path='img/bonos.jpg') }}" alt="Bono de bienvenida">
         <div class="bonus-info">
           <h3>Bono de Bienvenida</h3>
           <p>¡Duplicamos tu primer depósito hasta $2000 MXN!<br>
@@ -128,19 +129,19 @@
   <!-- MENÚ INFERIOR -->
   <nav>
     <a href="/home" class="active">
-      <img src="/static/img/home_icon.png" alt="Inicio">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
       Inicio
     </a>
     <a href="/games">
-      <img src="/static/img/games_icon.png" alt="Juegos">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
       Juegos
     </a>
     <a href="/support">
-      <img src="/static/img/support_icon.png" alt="Soporte">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       Soporte
     </a>
     <a href="/account/cartera">
-      <img src="/static/img/wallet_icon.png" alt="Cartera">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       Cartera
     </a>
   </nav>
