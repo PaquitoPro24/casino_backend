@@ -33,15 +33,23 @@ async def api_deposit_card(
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
-        # 1. Registrar la transacción como 'Completado'
+        # 1. Registrar la transacción como 'Completada'
         cursor.execute(
-            "INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago) VALUES (%s, 'Depósito', %s, 'Completado', 'Tarjeta')",
-            (id_usuario, monto_decimal)
+            """
+            INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
+            VALUES (%s, 'Depósito', %s, 'Completada', 'Tarjeta', %s)
+            """,
+            (id_usuario, monto_decimal, datetime.now())
         )
         # 2. Actualizar el saldo del usuario
         cursor.execute(
-            "UPDATE Saldo SET saldo_actual = saldo_actual + %s WHERE id_usuario = %s",
-            (monto_decimal, id_usuario)
+            """
+            UPDATE Saldo 
+            SET saldo_actual = saldo_actual + %s,
+                ultima_actualizacion = %s
+            WHERE id_usuario = %s
+            """,
+            (monto_decimal, datetime.now(), id_usuario)
         )
         conn.commit()
         cursor.close()
@@ -111,9 +119,65 @@ async def api_withdraw_card(
     id_usuario: int = Form(),
     monto: str = Form()
 ):
+    """
+    Procesa un retiro a tarjeta, verifica saldo y actualiza la base de datos
+    """
     print(f"🔹 API: Solicitando retiro de ${monto} a Tarjeta para usuario: {id_usuario}")
-    # Similar al retiro a banco.
-    return JSONResponse({"success": True, "message": "Solicitud de retiro recibida. Se procesará en breve."})
+    conn = None
+    try:
+        monto_decimal = decimal.Decimal(monto)
+        if monto_decimal <= 0:
+            return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
+
+        conn = db_connect.get_connection()
+        if conn is None:
+            return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # 1. Verificar saldo suficiente
+        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (id_usuario,))
+        result = cursor.fetchone()
+        
+        if not result:
+            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
+        
+        saldo_actual = result[0]
+        if saldo_actual < monto_decimal:
+            return JSONResponse({"error": "Saldo insuficiente"}, status_code=400)
+        
+        # 2. Registrar la transacción como 'Completada'
+        cursor.execute(
+            """
+            INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
+            VALUES (%s, 'Retiro', %s, 'Completada', 'Tarjeta', %s)
+            """,
+            (id_usuario, monto_decimal, datetime.now())
+        )
+        
+        # 3. Actualizar el saldo del usuario
+        cursor.execute(
+            """
+            UPDATE Saldo 
+            SET saldo_actual = saldo_actual - %s,
+                ultima_actualizacion = %s
+            WHERE id_usuario = %s
+            """,
+            (monto_decimal, datetime.now(), id_usuario)
+        )
+        
+        conn.commit()
+        cursor.close()
+        
+        print(f"✅ API: Retiro completado para usuario {id_usuario}")
+        return JSONResponse({"success": True, "message": "Retiro realizado con éxito."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Withdraw Card): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
 
 # ==========================================================
 #  NUEVO: GUARDAR MÉTODO DE PAGO (TARJETA)
