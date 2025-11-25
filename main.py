@@ -33,6 +33,11 @@ def render(tpl: str, request: Request) -> HTMLResponse:
 # CORRECCIÓN FINAL: Se importa el objeto 'router' desde el archivo 'api.auth'
 # y se le da el alias 'auth_router' para que el resto del código funcione.
 from api.auth import router as auth_router
+from api.user import router as user_router
+from api.wallet import router as wallet_router
+from api.admin import router as admin_router
+from api.bonos import router as bonos_router
+from api.support import router as support_router
 
 # =========================
 #  RUTAS DE LÓGICA / API
@@ -40,49 +45,14 @@ from api.auth import router as auth_router
 # CORRECCIÓN FINAL: `app.include_router` espera el objeto APIRouter directamente.
 # Como `auth_router` ya es el router, eliminamos el `.router` extra.
 app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
-# app.include_router(user_router.router, prefix="/api/user", tags=["Usuarios"])
-# ... (Puedes descomentar las otras rutas una vez que el login funcione)
+app.include_router(user_router, tags=["User"]) # user.py ya tiene prefijos internos o rutas completas
+app.include_router(wallet_router, tags=["Wallet"]) # wallet.py tiene rutas completas
+app.include_router(admin_router, tags=["Admin"]) # admin.py tiene rutas completas
+app.include_router(bonos_router, tags=["Bonos"]) # bonos.py tiene rutas completas
+app.include_router(support_router, tags=["Support"]) # support.py tiene rutas completas
 
 # --- AÑADIDO: ENDPOINT PARA OBTENER DATOS DEL USUARIO ---
-@app.get("/api/user/{user_id}")
-async def get_user_data(user_id: int):
-    """
-    Esta ruta busca en la base de datos la información de un usuario
-    por su ID y también su saldo, y los devuelve en un JSON.
-    """
-    print(f"🔹 API: Solicitud de datos para el usuario ID: {user_id}")
-    conn = None
-    cursor = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None:
-            return JSONResponse({"error": "Error de conexión a la base de datos"}, status_code=500)
-        
-        cursor = conn.cursor()
-        # Consulta que une las tablas Usuario y Saldo para obtener todos los datos
-        cursor.execute(
-            """
-            SELECT u.nombre, u.apellido, u.email, s.saldo_actual
-            FROM Usuario u
-            JOIN Saldo s ON u.id_usuario = s.id_usuario
-            WHERE u.id_usuario = %s
-            """,
-            (user_id,)
-        )
-        user_data = cursor.fetchone()
 
-        if not user_data:
-            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
-
-        # Devolvemos los datos en un formato JSON claro
-        return {"nombre": user_data[0], "apellido": user_data[1], "email": user_data[2], "saldo": user_data[3]}
-
-    except Exception as e:
-        print(f"🚨 API ERROR (get_user_data): {e}")
-        return JSONResponse({"error": "Error interno del servidor"}, status_code=500)
-    finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
 
 
 # =========================
