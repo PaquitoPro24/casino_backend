@@ -6,3 +6,4 @@ gunicorn
 psycopg2-binary # Para PostgreSQL
 passlib[argon2]
 pydantic[email] # Para validación de emails con EmailStr
+python-dotenv # Para cargar variables de entorno desde .env

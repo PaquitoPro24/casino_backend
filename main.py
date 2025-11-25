@@ -1,3 +1,12 @@
+# =========================
+#  CARGAR VARIABLES DE ENTORNO
+# =========================
+# IMPORTANTE: Esto debe ir ANTES de cualquier otra importación
+# para que las variables de entorno estén disponibles cuando
+# db_connect.py intente conectarse a la base de datos
+from dotenv import load_dotenv
+load_dotenv()  # Carga las variables desde el archivo .env
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
