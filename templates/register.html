@@ -45,7 +45,10 @@
       try {
         const res = await fetch("/api/auth/register", {
           method: "POST",
-          body: formData 
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
         });
 
         const result = await res.json();
