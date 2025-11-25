@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balance - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-balance.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -18,7 +20,7 @@
     <!-- SECCIÓN SUPERIOR -->
     <section class="balance-top">
       <h2 class="rc-subtitle">Saldo Total</h2>
-      <p class="saldo-total">$1,600.00</p>
+      <p class="saldo-total" id="saldo-total">Cargando...</p>
 
       <div class="btn-row">
         <button class="btn-dorado">Depositar</button>
@@ -28,7 +30,7 @@
 
     <!-- DISTRIBUCIÓN RESPONSIVA -->
     <div class="balance-layout">
-      
+
       <!-- IZQUIERDA: PRÉSTAMO -->
       <section class="prestamo-section">
         <h2 class="rc-subtitle">Préstamo</h2>
@@ -108,5 +110,42 @@
     </a>
   </nav>
 
+  <!-- SCRIPT PARA CARGAR SALDO -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const saldoElement = document.getElementById("saldo-total");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      // Cargar saldo del usuario
+      async function loadBalance() {
+        try {
+          const response = await fetch(`/api/user/${userId}`);
+          if (!response.ok) throw new Error("Error al cargar el saldo");
+
+          const data = await response.json();
+
+          // Formatear en MXN (Pesos Mexicanos)
+          const formattedBalance = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+          }).format(data.saldo);
+
+          saldoElement.textContent = formattedBalance;
+        } catch (error) {
+          console.error("Error:", error);
+          saldoElement.textContent = "No disponible";
+        }
+      }
+
+      loadBalance();
+    });
+  </script>
+
 </body>
+
 </html>
