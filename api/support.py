@@ -30,16 +30,11 @@ async def api_create_ticket(
         if conn is None:
             return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
-        cursor = conn.cursor()
-
-        # Insertamos en la tabla 'Soporte' con estado 'Abierto'
-        cursor.execute(
-            """
-            INSERT INTO Soporte (id_usuario, asunto, mensaje, estado, fecha_creacion)
-            VALUES (%s, %s, %s, 'Abierto', %s)
-            """,
-            (id_usuario, asunto, mensaje, datetime.now())
-        )
+        # Validar que asunto y mensaje no estén vacíos
+        if not asunto.strip():
+            return JSONResponse({"error": "El asunto no puede estar vacío."}, status_code=400)
+        if not mensaje.strip():
+            return JSONResponse({"error": "El mensaje no puede estar vacío."}, status_code=400)
         
         conn.commit()
         

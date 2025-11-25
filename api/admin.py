@@ -36,7 +36,7 @@ async def api_get_admin_stats():
         
         # 3. Total de depósitos hoy
         cursor.execute(
-            "SELECT COALESCE(SUM(monto), 0) as deposits_today FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completado' AND fecha_transaccion >= CURRENT_DATE"
+            "SELECT COALESCE(SUM(monto), 0) as deposits_today FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completada' AND fecha_transaccion >= CURRENT_DATE"
         )
         deposits_today = cursor.fetchone()['deposits_today']
         
@@ -282,8 +282,6 @@ async def api_create_bono(
     nombre_bono: str = Form(),
     tipo: str = Form(),
     descripcion: str = Form(),
-    valor: float = Form(),
-    requisito_apuesta: float = Form(),
     fecha_expiracion: str = Form(None), # Puede ser opcional
     activo: bool = Form()
 ):
@@ -301,8 +299,8 @@ async def api_create_bono(
 
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO Bono (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_exp, activo)
+            "INSERT INTO Bono (nombre_bono, tipo, descripcion, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s)",
+            (nombre_bono, tipo, descripcion, fecha_exp, activo)
         )
         conn.commit()
         cursor.close()
