@@ -35,91 +35,63 @@
     <!-- ===== PROMOCIONES ACTIVAS ===== -->
     <section class="promo-list">
       <h2>Promociones Existentes</h2>
-      <div id="promo-list-container">
-        <p style="text-align: center; color: white;">Cargando promociones...</p>
+      listContainer.innerHTML = "";
+      data.bonos.forEach(bono => {
+      const statusClass = bono.activo ? "active" : "inactive"; // Asumimos estilos CSS si existen
+      const statusText = bono.activo ? "Activo" : "Inactivo";
+
+      const item = document.createElement("div");
+      item.className = "promo-card";
+      item.innerHTML = `
+      <div class="promo-info">
+        <p class="promo-title">${bono.nombre_bono}</p>
+        <p class="promo-subtitle">${bono.tipo}</p>
+        <small style="color: #ccc;">${bono.descripcion}</small>
       </div>
-    </section>
-
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const promoForm = document.getElementById("promoForm");
-      const listContainer = document.getElementById("promo-list-container");
-
-      // Verificar admin
-      const adminRol = (localStorage.getItem("rol") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        alert("Acceso denegado.");
-        window.location.href = "/login";
-        return;
+      <span class="promo-status" style="color: ${bono.activo ? '#4caf50' : '#f44336'}">${statusText}</span>
+      `;
+      listContainer.appendChild(item);
+      });
+      } else {
+      listContainer.innerHTML = '<p style="text-align: center; color: #aaa;">No hay promociones creadas.</p>';
       }
-
-      // 1. Cargar promociones
-      async function loadPromos() {
-        listContainer.innerHTML = '<p style="text-align: center; color: white;">Cargando...</p>';
-        try {
-          const res = await fetch("/api/admin/bonos");
-          const data = await res.json();
-
-          if (data.bonos && data.bonos.length > 0) {
-            listContainer.innerHTML = "";
-            data.bonos.forEach(bono => {
-              const statusClass = bono.activo ? "active" : "inactive"; // Asumimos estilos CSS si existen
-              const statusText = bono.activo ? "Activo" : "Inactivo";
-
-              const item = document.createElement("div");
-              item.className = "promo-card";
-              item.innerHTML = `
-                <div class="promo-info">
-                  <p class="promo-title">${bono.nombre_bono}</p>
-                  <p class="promo-subtitle">${bono.tipo}</p>
-                  <small style="color: #ccc;">${bono.descripcion}</small>
-                </div>
-                <span class="promo-status" style="color: ${bono.activo ? '#4caf50' : '#f44336'}">${statusText}</span>
-              `;
-              listContainer.appendChild(item);
-            });
-          } else {
-            listContainer.innerHTML = '<p style="text-align: center; color: #aaa;">No hay promociones creadas.</p>';
-          }
-        } catch (error) {
-          console.error(error);
-          listContainer.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
-        }
+      } catch (error) {
+      console.error(error);
+      listContainer.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
+      }
       }
 
       // 2. Crear promoción
       promoForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(promoForm);
+      e.preventDefault();
+      const formData = new FormData(promoForm);
 
-        // Ajuste para checkbox o valores booleanos si fuera necesario, 
-        // pero aquí enviamos 'true' fijo en el hidden input.
+      // Ajuste para checkbox o valores booleanos si fuera necesario,
+      // pero aquí enviamos 'true' fijo en el hidden input.
 
-        try {
-          const res = await fetch("/api/admin/bonos", {
-            method: "POST",
-            body: formData
-          });
-          const result = await res.json();
+      try {
+      const res = await fetch("/api/admin/bonos", {
+      method: "POST",
+      body: formData
+      });
+      const result = await res.json();
 
-          if (result.success) {
-            alert("Promoción creada con éxito");
-            promoForm.reset();
-            loadPromos();
-          } else {
-            alert("Error: " + (result.error || "Error desconocido"));
-          }
-        } catch (error) {
-          console.error(error);
-          alert("Error de conexión");
-        }
+      if (result.success) {
+      alert("Promoción creada con éxito");
+      promoForm.reset();
+      loadPromos();
+      } else {
+      alert("Error: " + (result.error || "Error desconocido"));
+      }
+      } catch (error) {
+      console.error(error);
+      alert("Error de conexión");
+      }
       });
 
       loadPromos();
-    });
-  </script>
+      });
+      </script>
 
   </div>
 </body>

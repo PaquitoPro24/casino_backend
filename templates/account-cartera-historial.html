@@ -55,39 +55,98 @@
     <a href="/games" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
       <span>Juegos</span>
-    </a>
-    <a href="/support" class="rc-nav-item">
-      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
-      <span>Soporte</span>
-    </a>
-    <a href="/account/cartera" class="rc-nav-item active">
+      <!DOCTYPE html>
+      <html lang="es">
 
-      // ============================
-      // 👤 Cargar resumen del usuario
-      // ============================
-      async function cargarUsuario() {
-      try {
-      const res = await fetch(`/api/user/${userId}`);
-      const data = await res.json();
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Historial - Royal Crumbs</title>
+        <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial.css') }}">
+      </head>
 
-      if (data.error) {
-      document.getElementById("userInfo").textContent = "Usuario no encontrado.";
-      return;
-      }
+      <body>
 
-      document.getElementById("userInfo").innerHTML = `
-      <span>${data.nombre || "Usuario"} • Rol: ${userRol}</span><br>
-      <small>Saldo actual: <strong>$${data.saldo?.toFixed(2) || "0.00"}</strong></small>
-      `;
-      } catch (error) {
-      console.error(error);
-      document.getElementById("userInfo").textContent = "Error al cargar información.";
-      }
-      }
+        <div class="rc-container">
+          <!-- ENCABEZADO -->
+          <div class="rc-header">
+            <a href="/account/cartera" class="rc-back">‹</a>
+            <h1 class="rc-screen-title">Historial</h1>
+          </div>
 
-      cargarUsuario();
-      </script>
+          <!-- RESUMEN DEL USUARIO -->
+          <section class="user-summary" style="margin: 10px 0; text-align:center;">
+            <p id="userInfo" style="color:#d8bb76; font-weight:600;">Cargando usuario...</p>
+          </section>
 
-</body>
+          <!-- CONTENIDO PRINCIPAL -->
+          <section class="deposit-section">
+            <h2 class="rc-subtitle">Historial Transacciones y Juegos</h2>
 
-</html>
+            <!-- Opción: Historial Transacciones -->
+            <a href="/account/cartera/historial-transacciones" class="payment-option">
+              <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
+              <div class="payment-info">
+                <h3>Historial de transacciones</h3>
+                <p>Visa, MasterCard</p>
+              </div>
+            </a>
+
+            <!-- Opción: Juegos -->
+            <a href="/account/cartera/historial-juegos" class="payment-option">
+              <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
+              <div class="payment-info">
+                <h3>Historial de juegos</h3>
+                <p>Transferencia Bancaria</p>
+              </div>
+            </a>
+          </section>
+        </div>
+
+        <!-- NAV INFERIOR -->
+        <nav class="rc-nav">
+          <a href="/home" class="rc-nav-item">
+            <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+            <span>Inicio</span>
+          </a>
+          <a href="/games" class="rc-nav-item">
+            <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+            <span>Juegos</span>
+          </a>
+          <a href="/support" class="rc-nav-item">
+            <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+            <span>Soporte</span>
+          </a>
+          <a href="/account/cartera" class="rc-nav-item active">
+            <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+            <span>Cartera</span>
+          </a>
+        </nav>
+
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            const userId = localStorage.getItem("user_id");
+            const userRol = localStorage.getItem("user_role");
+
+            if (!userId) {
+              window.location.href = "/login";
+              return;
+            }
+
+            // ============================
+            // 👤 Cargar resumen del usuario
+            // ============================
+            async function cargarUsuario() {
+              try {
+                const res = await fetch(`/api/user/${userId}`);
+                const data = await res.json();
+
+              }
+
+            cargarUsuario();
+            });
+        </script>
+
+      </body>
+
+      </html>

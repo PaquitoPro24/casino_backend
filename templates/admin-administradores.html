@@ -28,53 +28,51 @@
       <p style="text-align: center; color: white;">Cargando administradores...</p>
     </section>
 
-  </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const container = document.getElementById("admins-list-container");
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const container = document.getElementById("admins-list-container");
-
-      // Verificar admin
-      const adminRol = (localStorage.getItem("rol") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        alert("Acceso denegado.");
-        window.location.href = "/login";
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/admin/administradores");
-        const data = await res.json();
-
-        if (data.admins && data.admins.length > 0) {
-          container.innerHTML = "";
-          data.admins.forEach(admin => {
-            const item = document.createElement("a");
-            item.href = `/admin/usuarios/perfil?id=${admin.id_usuario}`; // Reutilizamos perfil de usuario
-            item.className = "user-item";
-
-            item.innerHTML = `
-              <div class="user-info">
-                <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-                <div>
-                  <p class="username">${admin.nombre} ${admin.apellido}</p>
-                  <p class="email">${admin.email}</p>
-                </div>
-              </div>
-              <span style="color: #d8bb76; font-weight: bold;">${admin.rol}</span>
-            `;
-            container.appendChild(item);
-          });
-        } else {
-          container.innerHTML = '<p style="text-align: center; color: #aaa;">No se encontraron administradores.</p>';
+        // Verificar admin
+        const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
+        if (adminRol !== 'administrador' && adminRol !== 'auditor') {
+          alert("Acceso denegado.");
+          window.location.href = "/login";
+          return;
         }
 
-      } catch (error) {
-        console.error(error);
-        container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
-      }
-    });
-  </script>
+        try {
+          const res = await fetch("/api/admin/administradores");
+          const data = await res.json();
+
+          if (data.admins && data.admins.length > 0) {
+            container.innerHTML = "";
+            data.admins.forEach(admin => {
+              const item = document.createElement("a");
+              item.href = `/admin/usuarios/perfil?id=${admin.id_usuario}`; // Reutilizamos perfil de usuario
+              item.className = "user-item";
+
+              item.innerHTML = `
+    <div class="user-info">
+      <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
+      <div>
+        <p class="username">${admin.nombre} ${admin.apellido}</p>
+        <p class="email">${admin.email}</p>
+      </div>
+    </div>
+    <span style="color: #d8bb76; font-weight: bold;">${admin.rol}</span>
+    `;
+              container.appendChild(item);
+            });
+          } else {
+            container.innerHTML = '<p style="text-align: center; color: #aaa;">No se encontraron administradores.</p>';
+          }
+
+        } catch (error) {
+          console.error(error);
+          container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
+        }
+      });
+    </script>
 
   </div>
 </body>

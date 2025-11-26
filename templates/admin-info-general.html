@@ -83,7 +83,7 @@
       const depositsTodayEl = document.querySelector(".metric-card:nth-child(3) .value");
 
       // Verificar sesión de admin
-      const adminRol = (localStorage.getItem("rol") || "").toLowerCase().trim();
+      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
       if (adminRol !== 'administrador' && adminRol !== 'auditor') {
         alert("Acceso denegado.");
         window.location.href = "/login";

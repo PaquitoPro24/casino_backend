@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuarios.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
 
@@ -23,8 +25,6 @@
 
     <!-- 
       LISTA DE USUARIOS (DINÁMICA)
-      - Añadido id="users-list-container"
-      - El contenido se generará por script
     -->
     <section class="users-list" id="users-list-container">
       <p style="text-align: center; color: white; padding: 20px;">Cargando usuarios...</p>
@@ -32,87 +32,86 @@
 
   </div>
 
-  <!-- 
-    ==================================================
-    SCRIPT DE CONEXIÓN (¡Añadido!)
-    ==================================================
-  -->
   <script>
-    // 1. Verificar sesión de Admin
-    const adminRol = (localStorage.getItem("rol") || "").toLowerCase().trim();
-    if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-      alert("Acceso denegado.");
-      window.location.href = "/login";
-    }
+    document.addEventListener("DOMContentLoaded", async () => {
+      const container = document.getElementById("users-list-container");
+      const searchInput = document.getElementById("searchInput");
+      let allUsers = []; // Para guardar la lista completa para el buscador
 
-    const container = document.getElementById("users-list-container");
-    const searchInput = document.getElementById("searchInput");
-    let allUsers = []; // Para guardar la lista completa para el buscador
-
-    // 2. FUNCIÓN PARA DIBUJAR LA LISTA
-    function dibujarLista(usuarios) {
-      container.innerHTML = ""; // Limpiar
-      
-      if (usuarios.length === 0) {
-        container.innerHTML = "<p style='text-align:center; color: #fff;'>No se encontraron usuarios.</p>";
+      // Verificar admin
+      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
+      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
+        alert("Acceso denegado.");
+        window.location.href = "/login";
         return;
       }
-      
-      usuarios.forEach(user => {
-        const itemHTML = `
-          <!-- El enlace ahora es dinámico y pasa el ID del usuario -->
-          <a href="/admin/usuarios/perfil?id=${user.id_usuario}" class="user-item">
-            <div class="user-info">
-              <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-              <div>
-                <p class="username">${user.nombre} ${user.apellido}</p>
-                <p class="email">${user.email}</p>
-              </div>
-            </div>
-            <span style="color: ${user.activo ? '#4CAF50' : '#f44336'}; font-weight: bold;">
-              ${user.activo ? 'Activo' : 'Inactivo'}
-            </span>
-          </a>
-        `;
-        container.insertAdjacentHTML('beforeend', itemHTML);
-      });
-    }
 
-    // 3. FUNCIÓN PARA CARGAR DATOS (GET)
-    async function cargarUsuarios() {
-      container.innerHTML = `<p style="text-align: center; color: white;">Cargando usuarios...</p>`;
-      try {
-        const res = await fetch(`/api/admin/usuarios`);
-        const data = await res.json();
+      // 2. FUNCIÓN PARA DIBUJAR LA LISTA
+      function dibujarLista(usuarios) {
+        container.innerHTML = ""; // Limpiar
 
-        if (data.error) {
-          container.innerHTML = `<p style='text-align:center; color: red;'>${data.error}</p>`;
+        if (usuarios.length === 0) {
+          container.innerHTML = "<p style='text-align:center; color: #fff;'>No se encontraron usuarios.</p>";
           return;
         }
 
-        allUsers = data.users; // Guardar lista original
-        dibujarLista(allUsers); // Dibujar la lista completa
-
-      } catch (error) {
-        console.error("Error al cargar usuarios:", error);
-        container.innerHTML = "<p style='text-align:center; color: red;'>Error al cargar la lista.</p>";
+        usuarios.forEach(user => {
+          const itemHTML = `
+            <!-- El enlace ahora es dinámico y pasa el ID del usuario -->
+            <a href="/admin/usuarios/perfil?id=${user.id_usuario}" class="user-item">
+              <div class="user-info">
+                <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
+                <div>
+                  <p class="username">${user.nombre} ${user.apellido}</p>
+                  <p class="email">${user.email}</p>
+                </div>
+              </div>
+              <span style="color: ${user.activo ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                ${user.activo ? 'Activo' : 'Inactivo'}
+              </span>
+            </a>
+          `;
+          container.insertAdjacentHTML('beforeend', itemHTML);
+        });
       }
-    }
 
-    // 4. FUNCIONALIDAD DEL BUSCADOR
-    searchInput.addEventListener("input", (e) => {
-      const termino = e.target.value.toLowerCase();
-      const filtrados = allUsers.filter(user => 
-        user.nombre.toLowerCase().includes(termino) ||
-        user.apellido.toLowerCase().includes(termino) ||
-        user.email.toLowerCase().includes(termino)
-      );
-      dibujarLista(filtrados);
+      // 3. FUNCIÓN PARA CARGAR DATOS (GET)
+      async function cargarUsuarios() {
+        container.innerHTML = `<p style="text-align: center; color: white;">Cargando usuarios...</p>`;
+        try {
+          const res = await fetch(`/api/admin/usuarios`);
+          const data = await res.json();
+
+          if (data.error) {
+            container.innerHTML = `<p style='text-align:center; color: red;'>${data.error}</p>`;
+            return;
+          }
+
+          allUsers = data.users; // Guardar lista original
+          dibujarLista(allUsers); // Dibujar la lista completa
+
+        } catch (error) {
+          console.error("Error al cargar usuarios:", error);
+          container.innerHTML = "<p style='text-align:center; color: red;'>Error al cargar la lista.</p>";
+        }
+      }
+
+      // 4. FUNCIONALIDAD DEL BUSCADOR
+      searchInput.addEventListener("input", (e) => {
+        const termino = e.target.value.toLowerCase();
+        const filtrados = allUsers.filter(user =>
+          user.nombre.toLowerCase().includes(termino) ||
+          user.apellido.toLowerCase().includes(termino) ||
+          user.email.toLowerCase().includes(termino)
+        );
+        dibujarLista(filtrados);
+      });
+
+      // Cargar la lista de usuarios
+      cargarUsuarios();
     });
-
-    // Cargar la lista de usuarios cuando la página esté lista
-    document.addEventListener("DOMContentLoaded", cargarUsuarios);
   </script>
 
 </body>
+
 </html>
