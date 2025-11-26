@@ -40,7 +40,6 @@
       loginForm.addEventListener("submit", async (event) => {
         event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
 
-        // --- INICIO DE LA CORRECCIÓN ---
         // 1. Obtenemos los datos del formulario y los convertimos a un objeto JavaScript.
         const formData = new FormData(loginForm);
         const data = Object.fromEntries(formData.entries());
@@ -60,7 +59,6 @@
             },
             body: JSON.stringify(data) // 3. Convertimos el objeto a una cadena JSON
           });
-          // --- FIN DE LA CORRECCIÓN ---
 
           const result = await response.json();
 
@@ -69,7 +67,24 @@
             throw new Error(result.error || "Error desconocido al iniciar sesión.");
           }
 
-          // ✨ ¡AQUÍ ESTÁ LA MAGIA! ✨
+          // Si el login es exitoso, la API devuelve el id_usuario y el rol.
+          // Los guardamos en el almacenamiento local del navegador.
+          localStorage.setItem("user_id", result.id_usuario);
+          localStorage.setItem("user_role", result.rol);
+
+          // Redirigir según el rol del usuario (case-insensitive)
+          const role = (result.rol || "").toLowerCase().trim();
+
+          if (role === 'administrador' || role === 'auditor') {
+            window.location.href = "/admin"; // Redirige al panel de admin
+          } else {
+            window.location.href = "/home"; // Redirige al home para jugadores
+          }
+
+        } catch (error) {
+          console.error("Error de login:", error);
+          errorMessageDiv.textContent = error.message;
+          errorMessageDiv.style.display = "block";
         }
       });
     });
