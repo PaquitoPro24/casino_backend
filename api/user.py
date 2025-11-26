@@ -29,11 +29,7 @@ async def api_get_user_info(id_usuario: int):
                 u.apellido,
                 u.email,
                 u.rol,
-                s.saldo_actual,
-                (SELECT COALESCE(SUM(b.valor), 0) 
-                 FROM Usuario_Bono ub 
-                 JOIN Bono b ON ub.id_bono = b.id_bono 
-                 WHERE ub.id_usuario = u.id_usuario AND ub.estado = 'Activo') as saldo_bono
+                s.saldo_actual
             FROM
                 Usuario u
             LEFT JOIN
@@ -55,7 +51,7 @@ async def api_get_user_info(id_usuario: int):
             "apellido": usuario['apellido'],
             "email": usuario['email'],
             "saldo": float(usuario['saldo_actual'] or 0.0), # (Añadido 'or 0.0' por si es None)
-            "saldo_bono": float(usuario['saldo_bono'] or 0.0),
+            "saldo_bono": 0.0, # No hay campo valor en Bono, devolvemos 0 por ahora
             "rol": usuario['rol']
         })
 
