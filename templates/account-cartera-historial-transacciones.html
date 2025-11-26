@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historial de Transacciones - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial-transacciones.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -19,22 +21,8 @@
     <input type="text" class="search-bar" placeholder="Buscar transacciones">
 
     <!-- LISTA DE TRANSACCIONES -->
-    <div class="transaction-list">
-      <div class="transaction-item">
-        <div>
-          <h3>15 mayo de 2024</h3>
-          <p>Depósito</p>
-        </div>
-        <span class="positivo">+ 500</span>
-      </div>
-
-      <div class="transaction-item">
-        <div>
-          <h3>15 mayo de 2024</h3>
-          <p>Retiro</p>
-        </div>
-        <span class="positivo">+ 2500</span>
-      </div>
+    <div class="transaction-list" id="transactionList">
+      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando transacciones...</p>
     </div>
   </div>
 
@@ -52,11 +40,68 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item active">
+    <a href="/account/cartera" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const transactionList = document.getElementById("transactionList");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/wallet/transactions/${userId}`);
+        const data = await response.json();
+
+        if (data.transacciones && data.transacciones.length > 0) {
+          transactionList.innerHTML = ""; // Limpiar mensaje de carga
+
+          data.transacciones.forEach(tx => {
+            const item = document.createElement("div");
+            item.className = "transaction-item";
+
+            // Formatear fecha
+            const fecha = new Date(tx.fecha_transaccion);
+            const fechaStr = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Formatear monto y clase (positivo/negativo)
+            const isDeposit = tx.tipo_transaccion === 'Depósito';
+            const sign = isDeposit ? '+' : '-';
+            const amountClass = isDeposit ? 'positivo' : 'negativo'; // Asumimos que existe clase 'negativo' en CSS, si no, usará el color por defecto o podemos añadir estilo inline
+
+            // Si no existe la clase negativo en el CSS original, podemos forzar color rojo
+            const colorStyle = isDeposit ? 'color: #4caf50;' : 'color: #f44336;';
+
+            const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+            const montoStr = formatter.format(tx.monto);
+
+            item.innerHTML = `
+              <div>
+                <h3>${fechaStr}</h3>
+                <p>${tx.tipo_transaccion} - ${tx.metodo_pago} (${tx.estado})</p>
+              </div>
+              <span style="${colorStyle}" class="${amountClass}">${sign} ${montoStr}</span>
+            `;
+            transactionList.appendChild(item);
+          });
+        } else {
+          transactionList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay transacciones recientes.</p>';
+        }
+
+      } catch (error) {
+        console.error("Error al cargar transacciones:", error);
+        transactionList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar el historial.</p>';
+      }
+    });
+  </script>
+
 </body>
+
 </html>

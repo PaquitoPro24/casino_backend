@@ -23,8 +23,8 @@
       <p class="saldo-total" id="saldo-total">Cargando...</p>
 
       <div class="btn-row">
-        <button class="btn-dorado">Depositar</button>
-        <button class="btn-dorado">Retirar</button>
+        <button class="btn-dorado" onclick="window.location.href='/account/cartera/depositos'">Depositar</button>
+        <button class="btn-dorado" onclick="window.location.href='/account/cartera/retiros'">Retirar</button>
       </div>
     </section>
 
@@ -57,11 +57,11 @@
           <h3>Detalle del Saldo</h3>
           <div class="detail-row">
             <span>Saldo Principal</span>
-            <span>$1500.00</span>
+            <span id="saldo-principal">Cargando...</span>
           </div>
           <div class="detail-row">
             <span>Saldo de Bonificación</span>
-            <span>$100.00</span>
+            <span id="saldo-bono">Cargando...</span>
           </div>
         </div>
 
@@ -113,7 +113,10 @@
   <!-- SCRIPT PARA CARGAR SALDO -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const saldoElement = document.getElementById("saldo-total");
+      const saldoTotalEl = document.getElementById("saldo-total");
+      const saldoPrincipalEl = document.getElementById("saldo-principal");
+      const saldoBonoEl = document.getElementById("saldo-bono");
+
       const userId = localStorage.getItem("user_id");
 
       if (!userId) {
@@ -129,16 +132,21 @@
 
           const data = await response.json();
 
-          // Formatear en MXN (Pesos Mexicanos)
-          const formattedBalance = new Intl.NumberFormat('es-MX', {
+          const formatter = new Intl.NumberFormat('es-MX', {
             style: 'currency',
             currency: 'MXN'
-          }).format(data.saldo);
+          });
 
-          saldoElement.textContent = formattedBalance;
+          // Saldo Total = Principal + Bono
+          const total = data.saldo + data.saldo_bono;
+
+          saldoTotalEl.textContent = formatter.format(total);
+          saldoPrincipalEl.textContent = formatter.format(data.saldo);
+          saldoBonoEl.textContent = formatter.format(data.saldo_bono);
+
         } catch (error) {
           console.error("Error:", error);
-          saldoElement.textContent = "No disponible";
+          saldoTotalEl.textContent = "No disponible";
         }
       }
 

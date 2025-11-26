@@ -394,3 +394,39 @@ async def api_deposit_transfer(
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
+# ==========================================================
+#  NUEVO: HISTORIAL DE TRANSACCIONES
+# ==========================================================
+@router.get("/api/wallet/transactions/{id_usuario}")
+async def api_get_transactions(id_usuario: int):
+    """
+    Obtiene el historial de transacciones (depósitos y retiros) del usuario.
+    """
+    print(f"🔹 API: Obteniendo transacciones para usuario: {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        cursor.execute(
+            """
+            SELECT tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion
+            FROM Transaccion
+            WHERE id_usuario = %s
+            ORDER BY fecha_transaccion DESC
+            """,
+            (id_usuario,)
+        )
+        transacciones = cursor.fetchall()
+        cursor.close()
+        
+        return JSONResponse({"transacciones": transacciones})
+
+    except Exception as e:
+        print(f"🚨 API ERROR (Get Transactions): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
