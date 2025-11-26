@@ -28,23 +28,21 @@
     </div>
 
     <!-- ======== FORMULARIO ======== -->
-    <form id="profile-form" class="profile-form">
-      <label>Nombre</label>
+    <form id="profile-form" class="rc-form">
       <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-
-      <label>Apellido</label>
       <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-
-      <label>Correo Electrónico</label>
-      <input type="email" id="email" name="email" placeholder="Correo" required>
-
+      <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
       <button type="submit" class="btn-save">Guardar Cambios</button>
     </form>
 
     <!-- ======== OPCIONES ADICIONALES ======== -->
-    <div class="additional-options">
-      <a href="#" class="option-link" id="changePasswordBtn">Cambiar Contraseña</a>
-      <a href="#" class="option-link danger" id="deleteAccountBtn">Eliminar Cuenta</a>
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+      <a href="#" id="changePasswordBtn"
+        style="color: #AB925C; text-decoration: none; text-align: center; padding: 10px; background: #2a2a2a; border-radius: 8px;">Cambiar
+        Contraseña</a>
+      <a href="#" id="deleteAccountBtn"
+        style="color: #f44336; text-decoration: none; text-align: center; padding: 10px; background: #2a2a2a; border-radius: 8px;">Eliminar
+        Cuenta</a>
     </div>
 
   </div>

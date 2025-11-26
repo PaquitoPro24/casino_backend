@@ -12,10 +12,11 @@
 
   <div class="rc-container">
     <!-- ENCABEZADO -->
-    <div class="rc-header">
+    <header class="rc-header">
       <a href="/account/cartera" class="rc-back">‹</a>
       <h1 class="rc-screen-title">Historial</h1>
-    </div>
+      <div></div>
+    </header>
 
     <!-- RESUMEN DEL USUARIO -->
     <section class="user-summary" style="margin: 10px 0; text-align:center;">
@@ -31,16 +32,16 @@
         <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
         <div class="payment-info">
           <h3>Historial de transacciones</h3>
-          <p>Visa, MasterCard</p>
+          <p>Depósitos y retiros</p>
         </div>
       </a>
 
       <!-- Opción: Juegos -->
       <a href="/account/cartera/historial-juegos" class="payment-option">
-        <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
+        <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Juegos" class="payment-icon">
         <div class="payment-info">
           <h3>Historial de juegos</h3>
-          <p>Transferencia Bancaria</p>
+          <p>Apuestas y ganancias</p>
         </div>
       </a>
     </section>
@@ -55,98 +56,44 @@
     <a href="/games" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
       <span>Juegos</span>
-      <!DOCTYPE html>
-      <html lang="es">
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/account/cartera" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
 
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Historial - Royal Crumbs</title>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial.css') }}">
-      </head>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const userId = localStorage.getItem("user_id");
+      const userInfoEl = document.getElementById("userInfo");
 
-      <body>
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
 
-        <div class="rc-container">
-          <!-- ENCABEZADO -->
-          <div class="rc-header">
-            <a href="/account/cartera" class="rc-back">‹</a>
-            <h1 class="rc-screen-title">Historial</h1>
-          </div>
+      // Cargar información del usuario
+      try {
+        const res = await fetch(`/api/user/${userId}`);
+        const data = await res.json();
 
-          <!-- RESUMEN DEL USUARIO -->
-          <section class="user-summary" style="margin: 10px 0; text-align:center;">
-            <p id="userInfo" style="color:#d8bb76; font-weight:600;">Cargando usuario...</p>
-          </section>
+        if (data.nombre && data.apellido) {
+          userInfoEl.textContent = `${data.nombre} ${data.apellido}`;
+        } else {
+          userInfoEl.textContent = "Usuario";
+        }
+      } catch (error) {
+        console.error("Error al cargar usuario:", error);
+        userInfoEl.textContent = "Usuario";
+      }
+    });
+  </script>
 
-          <!-- CONTENIDO PRINCIPAL -->
-          <section class="deposit-section">
-            <h2 class="rc-subtitle">Historial Transacciones y Juegos</h2>
+</body>
 
-            <!-- Opción: Historial Transacciones -->
-            <a href="/account/cartera/historial-transacciones" class="payment-option">
-              <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
-              <div class="payment-info">
-                <h3>Historial de transacciones</h3>
-                <p>Visa, MasterCard</p>
-              </div>
-            </a>
-
-            <!-- Opción: Juegos -->
-            <a href="/account/cartera/historial-juegos" class="payment-option">
-              <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
-              <div class="payment-info">
-                <h3>Historial de juegos</h3>
-                <p>Transferencia Bancaria</p>
-              </div>
-            </a>
-          </section>
-        </div>
-
-        <!-- NAV INFERIOR -->
-        <nav class="rc-nav">
-          <a href="/home" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
-            <span>Inicio</span>
-          </a>
-          <a href="/games" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
-            <span>Juegos</span>
-          </a>
-          <a href="/support" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
-            <span>Soporte</span>
-          </a>
-          <a href="/account/cartera" class="rc-nav-item active">
-            <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
-            <span>Cartera</span>
-          </a>
-        </nav>
-
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const userId = localStorage.getItem("user_id");
-            const userRol = localStorage.getItem("user_role");
-
-            if (!userId) {
-              window.location.href = "/login";
-              return;
-            }
-
-            // ============================
-            // 👤 Cargar resumen del usuario
-            // ============================
-            async function cargarUsuario() {
-              try {
-                const res = await fetch(`/api/user/${userId}`);
-                const data = await res.json();
-
-              }
-
-            cargarUsuario();
-            });
-        </script>
-
-      </body>
-
-      </html>
+</html>
