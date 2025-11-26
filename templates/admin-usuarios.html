@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuarios.css') }}">
-  <script src="{{ url_for(\'static\', path=\'js/admin-auth.js\') }}"></script>
+  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
 
 <body>
@@ -24,9 +24,7 @@
       <input type="text" id="searchInput" placeholder="Buscar por email o nombre..." />
     </div>
 
-    <!-- 
-      LISTA DE USUARIOS (DINÁMICA)
-    -->
+    <!-- LISTA DE USUARIOS (DINÁMICA) -->
     <section class="users-list" id="users-list-container">
       <p style="text-align: center; color: white; padding: 20px;">Cargando usuarios...</p>
     </section>
@@ -37,19 +35,16 @@
     document.addEventListener("DOMContentLoaded", async () => {
       const container = document.getElementById("users-list-container");
       const searchInput = document.getElementById("searchInput");
-      let allUsers = []; // Para guardar la lista completa para el buscador
+      let allUsers = [];
 
       // Verificar admin
-      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        alert("Acceso denegado.");
-        window.location.href = "/login";
+      if (!checkAdminAuth()) {
         return;
       }
 
-      // 2. FUNCIÓN PARA DIBUJAR LA LISTA
+      // Función para dibujar la lista
       function dibujarLista(usuarios) {
-        container.innerHTML = ""; // Limpiar
+        container.innerHTML = "";
 
         if (usuarios.length === 0) {
           container.innerHTML = "<p style='text-align:center; color: #fff;'>No se encontraron usuarios.</p>";
@@ -57,26 +52,27 @@
         }
 
         usuarios.forEach(user => {
-          const itemHTML = `
-            <!-- El enlace ahora es dinámico y pasa el ID del usuario -->
-            <a href="/admin/usuarios/perfil?id=${user.id_usuario}" class="user-item">
-              <div class="user-info">
-                <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-                <div>
-                  <p class="username">${user.nombre} ${user.apellido}</p>
-                  <p class="email">${user.email}</p>
-                </div>
+          const item = document.createElement("a");
+          item.href = `/admin/usuarios/perfil?id=${user.id_usuario}`;
+          item.className = "user-item";
+
+          item.innerHTML = `
+            <div class="user-info">
+              <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
+              <div>
+                <p class="username">${user.nombre} ${user.apellido}</p>
+                <p class="email">${user.email}</p>
               </div>
-              <span style="color: ${user.activo ? '#4CAF50' : '#f44336'}; font-weight: bold;">
-                ${user.activo ? 'Activo' : 'Inactivo'}
-              </span>
-            </a>
+            </div>
+            <span style="color: ${user.activo ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+              ${user.activo ? 'Activo' : 'Inactivo'}
+            </span>
           `;
-          container.insertAdjacentHTML('beforeend', itemHTML);
+          container.appendChild(item);
         });
       }
 
-      // 3. FUNCIÓN PARA CARGAR DATOS (GET)
+      // Función para cargar datos
       async function cargarUsuarios() {
         container.innerHTML = `<p style="text-align: center; color: white;">Cargando usuarios...</p>`;
         try {
@@ -88,8 +84,8 @@
             return;
           }
 
-          allUsers = data.users; // Guardar lista original
-          dibujarLista(allUsers); // Dibujar la lista completa
+          allUsers = data.users;
+          dibujarLista(allUsers);
 
         } catch (error) {
           console.error("Error al cargar usuarios:", error);
@@ -97,7 +93,7 @@
         }
       }
 
-      // 4. FUNCIONALIDAD DEL BUSCADOR
+      // Funcionalidad del buscador
       searchInput.addEventListener("input", (e) => {
         const termino = e.target.value.toLowerCase();
         const filtrados = allUsers.filter(user =>
