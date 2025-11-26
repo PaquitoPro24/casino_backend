@@ -430,3 +430,49 @@ async def api_get_transactions(id_usuario: int):
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
+
+# ==========================================================
+#  NUEVO: HISTORIAL DE JUEGOS
+# ==========================================================
+@router.get("/api/wallet/game-history/{id_usuario}")
+async def api_get_game_history(id_usuario: int):
+    """
+    Obtiene el historial de juegos del usuario.
+    NOTA: Por ahora devuelve una lista vacía o datos simulados si no existe la tabla.
+    """
+    print(f"🔹 API: Obteniendo historial de juegos para usuario: {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Intentamos consultar una tabla hipotética 'Historial_Juego'
+        # Si falla, devolvemos lista vacía para no romper el frontend
+        try:
+            cursor.execute(
+                """
+                SELECT h.id_historial, j.nombre as nombre_juego, h.fecha_inicio, h.fecha_fin, h.ganancia
+                FROM Historial_Juego h
+                JOIN Juego j ON h.id_juego = j.id_juego
+                WHERE h.id_usuario = %s
+                ORDER BY h.fecha_inicio DESC
+                """,
+                (id_usuario,)
+            )
+            games = cursor.fetchall()
+        except psycopg2.Error:
+            if conn: conn.rollback()
+            print("⚠️ API: Tabla Historial_Juego no encontrada, devolviendo lista vacía.")
+            games = []
+
+        cursor.close()
+        
+        return JSONResponse({"games": games})
+
+    except Exception as e:
+        print(f"🚨 API ERROR (Get Game History): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()

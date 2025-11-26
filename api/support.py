@@ -36,6 +36,15 @@ async def api_create_ticket(
         if not mensaje.strip():
             return JSONResponse({"error": "El mensaje no puede estar vacío."}, status_code=400)
         
+        # Insertar el ticket en la base de datos
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO Soporte (id_usuario, asunto, mensaje, estado, fecha_creacion)
+            VALUES (%s, %s, %s, 'Abierto', %s)
+            """,
+            (id_usuario, asunto, mensaje, datetime.now())
+        )
         conn.commit()
         
         print(f"✅ API: Ticket creado para {id_usuario}")

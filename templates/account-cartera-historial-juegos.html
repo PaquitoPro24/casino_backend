@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historial de Juegos - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial-juegos.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -16,22 +18,8 @@
 
     <input type="text" class="search-bar" placeholder="Buscar transacciones">
 
-    <div class="transaction-list">
-      <div class="transaction-item">
-        <div>
-          <h3>Ruleta</h3>
-          <p>Inicio: 15/07/2024 14:30 | Fin: 15/07/2024 15:00</p>
-        </div>
-        <span class="positivo">+ 500</span>
-      </div>
-
-      <div class="transaction-item">
-        <div>
-          <h3>Blackjack</h3>
-          <p>Inicio: 16/07/2024 14:30 | Fin: 16/07/2024 15:00</p>
-        </div>
-        <span class="negativo">- 2500</span>
-      </div>
+    <div class="transaction-list" id="gameList">
+      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando historial de juegos...</p>
     </div>
   </div>
 
@@ -48,11 +36,66 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item active">
+    <a href="/account/cartera" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const gameList = document.getElementById("gameList");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/wallet/game-history/${userId}`);
+        const data = await response.json();
+
+        if (data.games && data.games.length > 0) {
+          gameList.innerHTML = ""; // Limpiar mensaje de carga
+
+          data.games.forEach(game => {
+            const item = document.createElement("div");
+            item.className = "transaction-item";
+
+            // Formatear fechas
+            const inicio = new Date(game.fecha_inicio).toLocaleString();
+            const fin = game.fecha_fin ? new Date(game.fecha_fin).toLocaleString() : 'En curso';
+
+            // Determinar clase y signo
+            const isWin = game.ganancia > 0;
+            const amountClass = isWin ? 'positivo' : 'negativo';
+            const sign = isWin ? '+' : '';
+            const colorStyle = isWin ? 'color: #4caf50;' : 'color: #f44336;';
+
+            const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+            const montoStr = formatter.format(game.ganancia);
+
+            item.innerHTML = `
+              <div>
+                <h3>${game.nombre_juego}</h3>
+                <p>Inicio: ${inicio} | Fin: ${fin}</p>
+              </div>
+              <span style="${colorStyle}" class="${amountClass}">${sign} ${montoStr}</span>
+            `;
+            gameList.appendChild(item);
+          });
+        } else {
+          gameList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay historial de juegos reciente.</p>';
+        }
+
+      } catch (error) {
+        console.error("Error al cargar historial de juegos:", error);
+        gameList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar el historial.</p>';
+      }
+    });
+  </script>
+
 </body>
+
 </html>

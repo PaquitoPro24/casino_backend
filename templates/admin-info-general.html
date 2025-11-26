@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Información General — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-info-general.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin" class="rc-back">‹</a>
@@ -72,5 +74,44 @@
     </section>
 
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Elementos del DOM
+      const totalUsersEl = document.querySelector(".metric-card:nth-child(1) .value");
+      const activeGamesEl = document.querySelector(".metric-card:nth-child(2) .value");
+      const depositsTodayEl = document.querySelector(".metric-card:nth-child(3) .value");
+
+      // Verificar sesión de admin
+      const adminRol = (localStorage.getItem("rol") || "").toLowerCase().trim();
+      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
+        alert("Acceso denegado.");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/admin/stats");
+        const data = await response.json();
+
+        if (data.error) {
+          console.error("Error API:", data.error);
+          return;
+        }
+
+        // Formateador de moneda
+        const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+
+        // Actualizar valores
+        if (totalUsersEl) totalUsersEl.textContent = data.total_users;
+        if (activeGamesEl) activeGamesEl.textContent = data.active_games;
+        if (depositsTodayEl) depositsTodayEl.textContent = formatter.format(data.deposits_today);
+
+      } catch (error) {
+        console.error("Error al cargar estadísticas:", error);
+      }
+    });
+  </script>
 </body>
+
 </html>

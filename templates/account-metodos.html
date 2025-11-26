@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Depósitos - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -19,21 +21,21 @@
     <section class="deposit-section">
       <h2 class="rc-subtitle">Metodos de pago</h2>
 
-      <!-- Opción: Historial Transacciones -->
+      <!-- Opción: Tarjeta -->
       <a href="/account/cartera/depositos/tarjeta" class="payment-option">
         <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
         <div class="payment-info">
-          <h3>Historial de transacciones</h3>
+          <h3>Tarjeta de Crédito/Débito</h3>
           <p>Visa, MasterCard</p>
         </div>
       </a>
 
-      <!-- Opción: Juegos -->
+      <!-- Opción: Transferencia -->
       <a href="/account/cartera/depositos/transferencia" class="payment-option">
         <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
         <div class="payment-info">
-          <h3>Historial de juegos</h3>
-          <p>Transferencia Bancaria</p>
+          <h3>Transferencia Bancaria</h3>
+          <p>SPEI, CLABE</p>
         </div>
       </a>
     </section>
@@ -60,4 +62,5 @@
   </nav>
 
 </body>
+
 </html>

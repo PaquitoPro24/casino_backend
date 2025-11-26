@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bonos y Promociones - Historial</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos-historial.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -24,16 +26,8 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="bonos-historial">
-      <div class="bono-item">
-        <p class="bono-titulo">Bono de Bienvenida</p>
-        <p class="bono-fecha">Utilizado el 07/01/2022</p>
-      </div>
-
-      <div class="bono-item">
-        <p class="bono-titulo">Bono por Recomendación</p>
-        <p class="bono-fecha">Utilizado el 07/01/2022</p>
-      </div>
+    <div class="bonos-historial" id="bonusHistoryList">
+      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando historial de bonos...</p>
     </div>
   </div>
 
@@ -51,11 +45,53 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item">
+    <a href="/account/cartera" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="">
       <span>Cartera</span>
     </a>
   </nav>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const bonusHistoryList = document.getElementById("bonusHistoryList");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/bonos/historial/${userId}`);
+        const data = await response.json();
+
+        if (data.bonos && data.bonos.length > 0) {
+          bonusHistoryList.innerHTML = "";
+          data.bonos.forEach(bono => {
+            const item = document.createElement("div");
+            item.className = "bono-item";
+
+            // Formatear fecha
+            const fecha = new Date(bono.fecha_adquisicion).toLocaleDateString('es-ES');
+            const estado = bono.estado; // 'Usado' o 'Expirado'
+
+            item.innerHTML = `
+              <p class="bono-titulo">${bono.nombre_bono}</p>
+              <p class="bono-fecha">${estado} el ${fecha}</p>
+            `;
+            bonusHistoryList.appendChild(item);
+          });
+        } else {
+          bonusHistoryList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay historial de bonos.</p>';
+        }
+
+      } catch (error) {
+        console.error("Error al cargar historial de bonos:", error);
+        bonusHistoryList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar historial.</p>';
+      }
+    });
+  </script>
+
 </body>
+
 </html>

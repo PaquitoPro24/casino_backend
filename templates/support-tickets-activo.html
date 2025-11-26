@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tickets Activos</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -14,15 +16,53 @@
       <div></div>
     </header>
 
-    <section class="rc-content">
-      <div class="ticket-item">
-        <div>
-          <h3>Chat #1234</h3>
-          <p>Problema con el juego</p>
-        </div>
-        <span class="ticket-date">06/05/2025</span>
-      </div>
+    <section class="rc-content" id="active-tickets-list">
+      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando tickets activos...</p>
     </section>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const container = document.getElementById("active-tickets-list");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/support/tickets/active/${userId}`);
+        const data = await res.json();
+
+        if (data.tickets && data.tickets.length > 0) {
+          container.innerHTML = "";
+          data.tickets.forEach(ticket => {
+            const fecha = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
+
+            const item = document.createElement("div");
+            item.className = "ticket-item";
+            item.innerHTML = `
+              <div>
+                <h3>Ticket #${ticket.id_ticket}</h3>
+                <p>${ticket.asunto}</p>
+                <small style="color: #4caf50;">Estado: ${ticket.estado}</small>
+              </div>
+              <span class="ticket-date">${fecha}</span>
+            `;
+            container.appendChild(item);
+          });
+        } else {
+          container.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No tienes tickets activos.</p>';
+        }
+
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar tickets.</p>';
+      }
+    });
+  </script>
+  </div>
 </body>
+
 </html>

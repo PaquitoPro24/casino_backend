@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuevo Ticket</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -15,20 +17,64 @@
     </header>
 
     <section class="rc-content">
-      <form class="ticket-form">
-        <select required>
-          <option value="">Selecciona un tema</option>
-          <option value="juego">Problema con el juego</option>
-          <option value="pago">Problema con el pago</option>
-          <option value="cuenta">Acceso a la cuenta</option>
-        </select>
+      <section class="rc-content">
+        <form class="ticket-form" id="createTicketForm">
+          <select name="asunto" required>
+            <option value="">Selecciona un tema</option>
+            <option value="Juego">Problema con el juego</option>
+            <option value="Pago">Problema con el pago</option>
+            <option value="Cuenta">Acceso a la cuenta</option>
+            <option value="Otro">Otro asunto</option>
+          </select>
 
-        <input type="text" placeholder="Nombre" required>
-        <textarea placeholder="Mensaje" required></textarea>
+          <!-- El backend espera 'id_usuario' (lo inyectamos con JS), 'asunto' y 'mensaje' -->
+          <!-- El nombre no es necesario si ya tenemos el ID del usuario, pero podemos dejarlo visualmente o quitarlo -->
 
-        <button type="submit" class="rc-button">Enviar Ticket</button>
-      </form>
-    </section>
+          <textarea name="mensaje" placeholder="Describe tu problema..." required style="height: 150px;"></textarea>
+
+          <button type="submit" class="rc-button">Enviar Ticket</button>
+        </form>
+      </section>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("createTicketForm");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        formData.append("id_usuario", userId);
+
+        try {
+          const res = await fetch("/api/support/tickets/create", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            alert("Ticket creado con éxito.");
+            window.location.href = "/support/tickets/historial";
+          } else {
+            alert("Error: " + (result.error || "No se pudo crear el ticket."));
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Error de conexión.");
+        }
+      });
+    });
+  </script>
+  </section>
   </div>
 </body>
+
 </html>

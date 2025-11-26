@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bonos y Promociones - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -23,33 +25,8 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="bonus-list">
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Bono de Bienvenida</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Bono de bienvenida">
-      </div>
-
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Bono por Recomendación</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Bono por recomendación">
-      </div>
-
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Giro gratis semanal</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Giro gratis semanal">
-      </div>
+    <div class="bonus-list" id="bonusList">
+      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando bonos disponibles...</p>
     </div>
   </div>
 
@@ -67,11 +44,84 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item">
+    <a href="/account/cartera" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const bonusList = document.getElementById("bonusList");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      // Función para reclamar bono
+      window.reclamarBono = async (idBono) => {
+        if (!confirm("¿Quieres reclamar este bono?")) return;
+
+        const formData = new FormData();
+        formData.append("id_usuario", userId);
+        formData.append("id_bono", idBono);
+
+        try {
+          const res = await fetch("/api/bonos/reclamar", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            alert("¡Bono reclamado con éxito!");
+            location.reload(); // Recargar para actualizar listas
+          } else {
+            alert("Error: " + (result.error || "No se pudo reclamar."));
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Error de conexión.");
+        }
+      };
+
+      // Cargar bonos disponibles
+      try {
+        const response = await fetch(`/api/bonos/disponibles/${userId}`);
+        const data = await response.json();
+
+        if (data.bonos && data.bonos.length > 0) {
+          bonusList.innerHTML = "";
+          data.bonos.forEach(bono => {
+            const item = document.createElement("div");
+            item.className = "bonus-card";
+            // Usamos una imagen genérica o basada en el tipo si tuviéramos lógica para ello
+            const imgUrl = "{{ url_for('static', path='img/tragamonedas.jpg') }}";
+
+            item.innerHTML = `
+              <div class="bonus-info">
+                <h3>${bono.nombre_bono}</h3>
+                <p style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;">${bono.descripcion}</p>
+                <button class="btn-reclamar" onclick="reclamarBono(${bono.id_bono})">Reclamar</button>
+                <button class="btn-saber" onclick="alert('${bono.descripcion}')">Saber más</button>
+              </div>
+              <img src="${imgUrl}" alt="${bono.nombre_bono}">
+            `;
+            bonusList.appendChild(item);
+          });
+        } else {
+          bonusList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay bonos disponibles por el momento.</p>';
+        }
+
+      } catch (error) {
+        console.error("Error al cargar bonos:", error);
+        bonusList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar bonos.</p>';
+      }
+    });
+  </script>
+
 </body>
+
 </html>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cuenta Bancaria - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bancaria.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -19,8 +21,9 @@
     <h2 class="rc-section-title">Cuenta Bancaria</h2>
 
     <!-- FORMULARIO -->
-    <form class="bank-form">
-      <input type="text" placeholder="Cuenta CLABE">
+    <form class="bank-form" id="bankForm">
+      <input type="text" name="clabe" placeholder="Cuenta CLABE (18 dígitos)" required>
+      <input type="text" name="nombre_banco" placeholder="Nombre del Banco" required>
 
       <button type="submit" class="btn-save">Guardar</button>
       <button type="button" class="btn-delete">Eliminar</button>
@@ -41,11 +44,57 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item">
+    <a href="/account/cartera" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const bankForm = document.getElementById("bankForm");
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      bankForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(bankForm);
+        formData.append("id_usuario", userId);
+
+        const clabe = formData.get("clabe");
+        if (clabe.length !== 18 || !/^\d+$/.test(clabe)) {
+          alert("La CLABE debe tener 18 dígitos numéricos.");
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/wallet/save-method-bank", {
+            method: "POST",
+            body: formData
+          });
+
+          const result = await res.json();
+
+          if (result.success) {
+            alert("¡Cuenta bancaria guardada con éxito!");
+            window.location.href = "/account/metodos";
+          } else {
+            alert("Error: " + (result.error || "No se pudo guardar."));
+          }
+
+        } catch (error) {
+          console.error("Error al guardar:", error);
+          alert("Error de conexión.");
+        }
+      });
+    });
+  </script>
+
 </body>
+
 </html>
