@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestionar perfil de Usuario — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuario-perfil.css') }}">
-  <script src="{{ url_for(\'static\', path=\'js/admin-auth.js\') }}"></script>
+  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
 
 <body>
@@ -20,12 +20,11 @@
     </header>
 
     <!-- ===== FORMULARIO ===== -->
-    <form class="user-form">
-      <input type="text" placeholder="Usuario" required>
-      <input type="text" placeholder="Rol" required>
-      <input type="text" placeholder="Nombre(s)" required>
-      <input type="text" placeholder="Apellido(s)" required>
-      <input type="email" placeholder="Correo" required>
+    <form class="user-form" id="userForm">
+      <input type="text" id="nombre" placeholder="Nombre(s)" required>
+      <input type="text" id="apellido" placeholder="Apellido(s)" required>
+      <input type="email" id="email" placeholder="Correo" required>
+      <input type="text" id="rol" placeholder="Rol" value="Jugador" readonly>
     </form>
 
     <!-- ===== CONFIGURACIÓN DE CUENTA ===== -->
@@ -33,30 +32,135 @@
       <h2>Configuración de Cuenta</h2>
       <div class="password-reset">
         <p>Restablecer Contraseña</p>
-        <a href="#" class="rc-chevron"></a>
+        <a href="#" class="rc-chevron" id="resetPasswordBtn"></a>
       </div>
 
       <div class="status-buttons">
-        <button class="status-btn active">Activa</button>
-        <button class="status-btn suspended">Suspendida</button>
-        <button class="status-btn blocked">Bloqueada</button>
+        <button class="status-btn active" data-status="true">Activa</button>
+        <button class="status-btn suspended" data-status="false">Suspendida</button>
       </div>
     </section>
 
     <!-- ===== BOTONES ===== -->
     <div class="action-buttons">
-      <button class="save-btn">Guardar Cambios</button>
-      <button class="delete-btn">Eliminar Cuenta</button>
+      <button class="save-btn" id="saveBtn">Guardar Cambios</button>
+      <button class="delete-btn" id="deleteBtn">Eliminar Cuenta</button>
     </div>
 
   </div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        window.location.href = "/login";
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Verificar autenticación
+      if (!checkAdminAuth()) {
+        return;
       }
-      // Aquí faltaría la lógica para cargar los datos del usuario, pero por ahora solo aseguramos el acceso.
+
+      // Obtener ID del usuario de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('id');
+
+      if (!userId) {
+        alert("No se especificó un ID de usuario");
+        window.location.href = "/admin/usuarios";
+        return;
+      }
+
+      // Elementos del formulario
+      const nombreInput = document.getElementById('nombre');
+      const apellidoInput = document.getElementById('apellido');
+      const emailInput = document.getElementById('email');
+      const rolInput = document.getElementById('rol');
+      const statusButtons = document.querySelectorAll('.status-btn');
+      const saveBtn = document.getElementById('saveBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+
+      let currentStatus = true;
+
+      // Cargar datos del usuario
+      try {
+        const response = await fetch(`/api/admin/user-profile/${userId}`);
+        const data = await response.json();
+
+        if (data.error) {
+          alert("Error al cargar el perfil: " + data.error);
+          window.location.href = "/admin/usuarios";
+          return;
+        }
+
+        // Llenar el formulario
+        nombreInput.value = data.nombre || '';
+        apellidoInput.value = data.apellido || '';
+        emailInput.value = data.email || '';
+        rolInput.value = data.rol || 'Jugador';
+        currentStatus = data.activo;
+
+        // Actualizar botones de estado
+        statusButtons.forEach(btn => {
+          const btnStatus = btn.getAttribute('data-status') === 'true';
+          if (btnStatus === currentStatus) {
+            btn.classList.add('selected');
+          }
+        });
+
+      } catch (error) {
+        console.error("Error al cargar perfil:", error);
+        alert("Error al cargar el perfil del usuario");
+      }
+
+      // Manejar cambio de estado
+      statusButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          statusButtons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          currentStatus = btn.getAttribute('data-status') === 'true';
+        });
+      });
+
+      // Guardar cambios
+      saveBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('nombre', nombreInput.value);
+        formData.append('apellido', apellidoInput.value);
+        formData.append('email', emailInput.value);
+        formData.append('rol', rolInput.value);
+        formData.append('activo', currentStatus);
+
+        try {
+          const response = await fetch(`/api/admin/user-profile/${userId}`, {
+            method: 'PUT',
+            body: formData
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            alert("Perfil actualizado exitosamente");
+            window.location.href = "/admin/usuarios";
+          } else {
+            alert("Error: " + (result.error || "No se pudo actualizar"));
+          }
+        } catch (error) {
+          console.error("Error al guardar:", error);
+          alert("Error al guardar los cambios");
+        }
+      });
+
+      // Eliminar cuenta
+      deleteBtn.addEventListener('click', () => {
+        if (confirm("¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.")) {
+          alert("Funcionalidad de eliminación pendiente de implementar");
+        }
+      });
+
+      // Restablecer contraseña
+      resetPasswordBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("Funcionalidad de restablecimiento de contraseña pendiente de implementar");
+      });
     });
   </script>
 </body>

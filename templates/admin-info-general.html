@@ -24,26 +24,26 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>Usuarios Totales</h3>
-          <p class="value">12,345</p>
+          <p class="value">-</p>
           <span class="percent green">+5%</span>
         </div>
 
         <div class="metric-card">
           <h3>Usuarios Activos</h3>
-          <p class="value">8,765</p>
-          <span class="percent red">-2%</span>
+          <p class="value">-</p>
+          <span class="percent green">-</span>
         </div>
 
         <div class="metric-card">
-          <h3>Depósitos Totales</h3>
-          <p class="value">$500,000.00</p>
+          <h3>Depósitos Hoy</h3>
+          <p class="value">$0.00</p>
           <span class="percent green">+10%</span>
         </div>
 
         <div class="metric-card">
-          <h3>Retiros Totales</h3>
-          <p class="value">$300,000.00</p>
-          <span class="percent red">-8%</span>
+          <h3>Retiros Hoy</h3>
+          <p class="value">$0.00</p>
+          <span class="percent red">-</span>
         </div>
       </div>
     </section>
@@ -80,8 +80,9 @@
     document.addEventListener("DOMContentLoaded", async () => {
       // Elementos del DOM
       const totalUsersEl = document.querySelector(".metric-card:nth-child(1) .value");
-      const activeGamesEl = document.querySelector(".metric-card:nth-child(2) .value");
+      const activeUsersEl = document.querySelector(".metric-card:nth-child(2) .value");
       const depositsTodayEl = document.querySelector(".metric-card:nth-child(3) .value");
+      const withdrawalsTodayEl = document.querySelector(".metric-card:nth-child(4) .value");
 
       // Verificar sesión de admin usando la utilidad centralizada
       if (!checkAdminAuth()) {
@@ -101,9 +102,10 @@
         const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 
         // Actualizar valores
-        if (totalUsersEl) totalUsersEl.textContent = data.total_users;
-        if (activeGamesEl) activeGamesEl.textContent = data.active_games;
-        if (depositsTodayEl) depositsTodayEl.textContent = formatter.format(data.deposits_today);
+        if (totalUsersEl) totalUsersEl.textContent = data.total_users || 0;
+        if (activeUsersEl) activeUsersEl.textContent = data.active_users || 0;
+        if (depositsTodayEl) depositsTodayEl.textContent = formatter.format(data.deposits_today || 0);
+        if (withdrawalsTodayEl) withdrawalsTodayEl.textContent = formatter.format(data.withdrawals_today || 0);
 
       } catch (error) {
         console.error("Error al cargar estadísticas:", error);

@@ -30,9 +30,9 @@ async def api_get_admin_stats():
         cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE rol = 'Jugador'")
         total_users = cursor.fetchone()['total_users']
         
-        # 2. Total de juegos activos
-        cursor.execute("SELECT COUNT(*) as active_games FROM Juego WHERE activo = true")
-        active_games = cursor.fetchone()['active_games']
+        # 2. Usuarios activos (jugadores con cuenta activa)
+        cursor.execute("SELECT COUNT(*) as active_users FROM Usuario WHERE rol = 'Jugador' AND activo = true")
+        active_users = cursor.fetchone()['active_users']
         
         # 3. Total de depósitos hoy
         cursor.execute(
@@ -40,12 +40,19 @@ async def api_get_admin_stats():
         )
         deposits_today = cursor.fetchone()['deposits_today']
         
+        # 4. Total de retiros hoy
+        cursor.execute(
+            "SELECT COALESCE(SUM(monto), 0) as withdrawals_today FROM Transaccion WHERE tipo_transaccion = 'Retiro' AND estado = 'Completada' AND fecha_transaccion >= CURRENT_DATE"
+        )
+        withdrawals_today = cursor.fetchone()['withdrawals_today']
+        
         cursor.close()
         
         return JSONResponse({
             "total_users": total_users,
-            "active_games": active_games,
-            "deposits_today": float(deposits_today)
+            "active_users": active_users,
+            "deposits_today": float(deposits_today),
+            "withdrawals_today": float(withdrawals_today)
         })
 
     except Exception as e:
