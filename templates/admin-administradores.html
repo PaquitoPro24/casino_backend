@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usuarios — Royal Crumbs</title>
+  <title>Administradores — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuarios.css') }}">
-  <script src="{{ url_for(\'static\', path=\'js/admin-auth.js\') }}"></script>
+  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
 
 <body>
@@ -21,61 +21,86 @@
 
     <!-- ===== BUSCADOR ===== -->
     <div class="search-bar">
-      <input type="text" placeholder="Buscar transacciones" />
+      <input type="text" id="searchInput" placeholder="Buscar administrador..." />
     </div>
 
-    <!-- ===== LISTA DE USUARIOS ===== -->
+    <!-- ===== LISTA DE ADMINISTRADORES ===== -->
     <section class="users-list" id="admins-list-container">
       <p style="text-align: center; color: white;">Cargando administradores...</p>
     </section>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const container = document.getElementById("admins-list-container");
+  </div>
 
-        // Verificar admin
-        const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-        if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-          alert("Acceso denegado.");
-          window.location.href = "/login";
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const container = document.getElementById("admins-list-container");
+      const searchInput = document.getElementById("searchInput");
+      let allAdmins = [];
+
+      // Verificar admin
+      if (!checkAdminAuth()) {
+        return;
+      }
+
+      // Función para dibujar la lista
+      function dibujarLista(admins) {
+        container.innerHTML = "";
+
+        if (admins.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: #aaa;">No se encontraron administradores.</p>';
           return;
         }
 
-        try {
-          const res = await fetch("/api/admin/administradores");
-          const data = await res.json();
+        admins.forEach(admin => {
+          const item = document.createElement("a");
+          item.href = `/admin/administradores/perfil?id=${admin.id_usuario}`;
+          item.className = "user-item";
 
-          if (data.admins && data.admins.length > 0) {
-            container.innerHTML = "";
-            data.admins.forEach(admin => {
-              const item = document.createElement("a");
-              item.href = `/admin/usuarios/perfil?id=${admin.id_usuario}`; // Reutilizamos perfil de usuario
-              item.className = "user-item";
+          item.innerHTML = `
+            <div class="user-info">
+              <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
+              <div>
+                <p class="username">${admin.nombre} ${admin.apellido}</p>
+                <p class="email">${admin.email}</p>
+              </div>
+            </div>
+            <span style="color: #d8bb76; font-weight: bold;">${admin.rol}</span>
+          `;
+          container.appendChild(item);
+        });
+      }
 
-              item.innerHTML = `
-    <div class="user-info">
-      <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-      <div>
-        <p class="username">${admin.nombre} ${admin.apellido}</p>
-        <p class="email">${admin.email}</p>
-      </div>
-    </div>
-    <span style="color: #d8bb76; font-weight: bold;">${admin.rol}</span>
-    `;
-              container.appendChild(item);
-            });
-          } else {
-            container.innerHTML = '<p style="text-align: center; color: #aaa;">No se encontraron administradores.</p>';
-          }
+      // Cargar administradores
+      try {
+        const res = await fetch("/api/admin/administradores");
+        const data = await res.json();
 
-        } catch (error) {
-          console.error(error);
-          container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
+        if (data.error) {
+          container.innerHTML = `<p style="text-align: center; color: red;">${data.error}</p>`;
+          return;
         }
-      });
-    </script>
 
-  </div>
+        allAdmins = data.admins || [];
+        dibujarLista(allAdmins);
+
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = '<p style="text-align: center; color: red;">Error al cargar.</p>';
+      }
+
+      // Funcionalidad del buscador
+      searchInput.addEventListener("input", (e) => {
+        const termino = e.target.value.toLowerCase();
+        const filtrados = allAdmins.filter(admin =>
+          admin.nombre.toLowerCase().includes(termino) ||
+          admin.apellido.toLowerCase().includes(termino) ||
+          admin.email.toLowerCase().includes(termino)
+        );
+        dibujarLista(filtrados);
+      });
+    });
+  </script>
+
 </body>
 
 </html>

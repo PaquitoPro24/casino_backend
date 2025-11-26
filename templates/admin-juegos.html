@@ -101,102 +101,84 @@
       <div id="game-list-container">
         <p style="text-align: center; color: white;">Cargando juegos...</p>
       </div>
-    </section>
+      async function cargarJuegos() {
+      container.innerHTML = `<p style="text-align: center; color: white;">Cargando juegos...</p>`;
+      try {
+      const res = await fetch(`/api/admin/games`);
+      const data = await res.json();
 
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      // 1. Verificar sesión de Admin
-      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        alert("Acceso denegado.");
-        window.location.href = "/login";
-        return;
+      if (data.error) {
+      container.innerHTML = `<p style='text-align:center; color: red;'>${data.error}</p>`;
+      return;
       }
 
-      const gameForm = document.getElementById("gameForm");
-      const container = document.getElementById("game-list-container");
+      if (data.games.length === 0) {
+      container.innerHTML = "<p style='text-align:center; color: #fff;'>No hay juegos creados.</p>";
+      return;
+      }
 
-      // 2. FUNCIÓN PARA CARGAR LA LISTA DE JUEGOS (GET)
-      async function cargarJuegos() {
-        container.innerHTML = `<p style="text-align: center; color: white;">Cargando juegos...</p>`;
-        try {
-          const res = await fetch(`/api/admin/games`);
-          const data = await res.json();
+      container.innerHTML = ""; // Limpiar "Cargando..."
 
-          if (data.error) {
-            container.innerHTML = `<p style='text-align:center; color: red;'>${data.error}</p>`;
-            return;
-          }
+      data.games.forEach(game => {
+      const statusClass = game.activo ? "active" : "inactive";
+      const statusText = game.activo ? "Activo" : "Inactivo";
+      const itemHTML = `
+      <div class="game-item">
+        <div>
+          <h3>${game.nombre}</h3>
+          <p>${game.descripcion}</p>
+          <small style="color: #888;">Min: $${game.min_apuesta} / Max: $${game.max_apuesta}</small>
+        </div>
+        <span class="game-status ${statusClass}">${statusText}</span>
+      </div>
+      `;
+      container.insertAdjacentHTML('beforeend', itemHTML);
+      });
 
-          if (data.games.length === 0) {
-            container.innerHTML = "<p style='text-align:center; color: #fff;'>No hay juegos creados.</p>";
-            return;
-          }
-
-          container.innerHTML = ""; // Limpiar "Cargando..."
-
-          data.games.forEach(game => {
-            const statusClass = game.activo ? "active" : "inactive";
-            const statusText = game.activo ? "Activo" : "Inactivo";
-            const itemHTML = `
-              <div class="game-item">
-                <div>
-                  <h3>${game.nombre}</h3>
-                  <p>${game.descripcion}</p>
-                  <small style="color: #888;">Min: $${game.min_apuesta} / Max: $${game.max_apuesta}</small>
-                </div>
-                <span class="game-status ${statusClass}">${statusText}</span>
-              </div>
-            `;
-            container.insertAdjacentHTML('beforeend', itemHTML);
-          });
-
-        } catch (error) {
-          console.error("Error al cargar juegos:", error);
-          container.innerHTML = "<p style='text-align:center; color: red;'>Error al cargar la lista.</p>";
-        }
+      } catch (error) {
+      console.error("Error al cargar juegos:", error);
+      container.innerHTML = "<p style='text-align:center; color: red;'>Error al cargar la lista.</p>";
+      }
       }
 
       // 3. FUNCIÓN PARA CREAR JUEGO (POST)
       gameForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      e.preventDefault();
 
-        const formData = new FormData(gameForm);
-        const button = gameForm.querySelector("button");
-        button.disabled = true;
-        button.textContent = "Creando...";
+      const formData = new FormData(gameForm);
+      const button = gameForm.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Creando...";
 
-        try {
-          const res = await fetch("/api/admin/games", {
-            method: "POST",
-            body: formData
-          });
+      try {
+      const res = await fetch("/api/admin/games", {
+      method: "POST",
+      body: formData
+      });
 
-          const result = await res.json();
+      const result = await res.json();
 
-          if (result.error) {
-            alert("Error: " + result.error);
-          } else if (result.success) {
-            alert("¡Juego creado con éxito!");
-            gameForm.reset(); // Limpiar el formulario
-            cargarJuegos(); // Recargar la lista de juegos
-          }
+      if (result.error) {
+      alert("Error: " + result.error);
+      } else if (result.success) {
+      alert("¡Juego creado con éxito!");
+      gameForm.reset(); // Limpiar el formulario
+      cargarJuegos(); // Recargar la lista de juegos
+      }
 
-        } catch (error) {
-          console.error("Error al crear juego:", error);
-          alert("Error de conexión al crear el juego.");
-        }
+      } catch (error) {
+      console.error("Error al crear juego:", error);
+      alert("Error de conexión al crear el juego.");
+      }
 
-        button.disabled = false;
-        button.textContent = "Crear Nuevo Juego";
+      button.disabled = false;
+      button.textContent = "Crear Nuevo Juego";
       });
 
       // Cargar la lista de juegos
       cargarJuegos();
-    });
-  </script>
+      });
+      </script>
 
 </body>
 
