@@ -154,8 +154,11 @@ async def api_get_user_profile(id_usuario: int):
         if not user_profile:
             return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
 
-        # Aseguramos que el saldo sea un float
+        # Convertir tipos no serializables a JSON
         user_profile['saldo_actual'] = float(user_profile['saldo_actual'] or 0.0)
+        if user_profile.get('fecha_registro'):
+            user_profile['fecha_registro'] = user_profile['fecha_registro'].isoformat()
+        
         return JSONResponse(user_profile)
 
     except Exception as e:

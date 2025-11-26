@@ -12,13 +12,16 @@
 
   <div class="rc-container">
     <!-- ENCABEZADO -->
-    <div class="rc-header">
-      <a href="/account/cartera" class="rc-back">‹</a>
+    <header class="rc-header">
+      <a href="/account/cartera/historial" class="rc-back">‹</a>
       <h1 class="rc-screen-title">Historial de transacciones</h1>
-    </div>
+      <div></div>
+    </header>
 
     <!-- BUSCADOR -->
-    <input type="text" class="search-bar" placeholder="Buscar transacciones">
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-bar" placeholder="Buscar transacciones">
+    </div>
 
     <!-- LISTA DE TRANSACCIONES -->
     <div class="transaction-list" id="transactionList">
@@ -49,48 +52,66 @@
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       const transactionList = document.getElementById("transactionList");
+      const searchInput = document.getElementById("searchInput");
       const userId = localStorage.getItem("user_id");
+      let allTransactions = [];
 
       if (!userId) {
         window.location.href = "/login";
         return;
       }
 
+      // Función para renderizar transacciones
+      function renderTransactions(transactions) {
+        if (transactions.length === 0) {
+          transactionList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay transacciones recientes.</p>';
+          return;
+        }
+
+        transactionList.innerHTML = "";
+
+        transactions.forEach(tx => {
+          const item = document.createElement("div");
+          item.className = "transaction-item";
+
+          // Formatear fecha
+          const fecha = new Date(tx.fecha_transaccion);
+          const fechaStr = fecha.toLocaleDateString('es-ES', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+
+          // Formatear monto y clase
+          const isDeposit = tx.tipo_transaccion === 'Depósito';
+          const sign = isDeposit ? '+' : '-';
+          const colorStyle = isDeposit ? 'color: #4caf50;' : 'color: #f44336;';
+
+          const formatter = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+          });
+          const montoStr = formatter.format(tx.monto);
+
+          item.innerHTML = `
+            <div class="transaction-info">
+              <h3>${fechaStr}</h3>
+              <p>${tx.tipo_transaccion} - ${tx.metodo_pago || 'N/A'} (${tx.estado})</p>
+            </div>
+            <span style="${colorStyle}; font-weight: bold; font-size: 1.1em;">${sign} ${montoStr}</span>
+          `;
+          transactionList.appendChild(item);
+        });
+      }
+
+      // Cargar transacciones
       try {
         const response = await fetch(`/api/wallet/transactions/${userId}`);
         const data = await response.json();
 
         if (data.transacciones && data.transacciones.length > 0) {
-          transactionList.innerHTML = ""; // Limpiar mensaje de carga
-
-          data.transacciones.forEach(tx => {
-            const item = document.createElement("div");
-            item.className = "transaction-item";
-
-            // Formatear fecha
-            const fecha = new Date(tx.fecha_transaccion);
-            const fechaStr = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-
-            // Formatear monto y clase (positivo/negativo)
-            const isDeposit = tx.tipo_transaccion === 'Depósito';
-            const sign = isDeposit ? '+' : '-';
-            const amountClass = isDeposit ? 'positivo' : 'negativo'; // Asumimos que existe clase 'negativo' en CSS, si no, usará el color por defecto o podemos añadir estilo inline
-
-            // Si no existe la clase negativo en el CSS original, podemos forzar color rojo
-            const colorStyle = isDeposit ? 'color: #4caf50;' : 'color: #f44336;';
-
-            const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
-            const montoStr = formatter.format(tx.monto);
-
-            item.innerHTML = `
-              <div>
-                <h3>${fechaStr}</h3>
-                <p>${tx.tipo_transaccion} - ${tx.metodo_pago} (${tx.estado})</p>
-              </div>
-              <span style="${colorStyle}" class="${amountClass}">${sign} ${montoStr}</span>
-            `;
-            transactionList.appendChild(item);
-          });
+          allTransactions = data.transacciones;
+          renderTransactions(allTransactions);
         } else {
           transactionList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No hay transacciones recientes.</p>';
         }
@@ -99,6 +120,17 @@
         console.error("Error al cargar transacciones:", error);
         transactionList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar el historial.</p>';
       }
+
+      // Funcionalidad de búsqueda
+      searchInput.addEventListener("input", (e) => {
+        const termino = e.target.value.toLowerCase();
+        const filtradas = allTransactions.filter(tx =>
+          tx.tipo_transaccion.toLowerCase().includes(termino) ||
+          tx.estado.toLowerCase().includes(termino) ||
+          (tx.metodo_pago && tx.metodo_pago.toLowerCase().includes(termino))
+        );
+        renderTransactions(filtradas);
+      });
     });
   </script>
 
