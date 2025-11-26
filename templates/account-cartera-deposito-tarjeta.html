@@ -12,30 +12,30 @@
 
   <div class="rc-container">
     <!-- ENCABEZADO -->
-    <div class="rc-header">
+    <header class="rc-header">
       <a href="/account/cartera/depositos" class="rc-back">‹</a>
       <h1 class="rc-screen-title">Depósitos</h1>
-    </div>
+      <div></div>
+    </header>
 
-    <!-- 
-      FORMULARIO DE DEPÓSITO 
-      - Quitamos 'action' y 'method'
-      - Añadimos 'id="depositForm"'
-      - Añadimos 'name' a los inputs
-    -->
+    <!-- FORMULARIO DE DEPÓSITO -->
     <section class="deposit-card-section">
       <h2 class="rc-subtitle">Tarjeta de Crédito/Débito</h2>
 
       <form id="depositForm" class="deposit-form">
-        <input type="text" name="numero_tarjeta" placeholder="Número de Tarjeta" class="input-field" required>
-        <input type="text" name="nombre_titular" placeholder="Nombre del Titular" class="input-field" required>
+        <input type="text" id="numero_tarjeta" name="numero_tarjeta" placeholder="Número de Tarjeta" class="input-field"
+          maxlength="16" required>
+        <input type="text" id="nombre_titular" name="nombre_titular" placeholder="Nombre del Titular"
+          class="input-field" required>
 
         <div class="input-row">
-          <input type="text" name="fecha_exp" placeholder="MM/AA" class="input-field half" required>
-          <input type="text" name="cvv" placeholder="CVV" class="input-field half" required>
+          <input type="text" id="fecha_exp" name="fecha_exp" placeholder="MM/AA" class="input-field half" maxlength="5"
+            required>
+          <input type="text" id="cvv" name="cvv" placeholder="CVV" class="input-field half" maxlength="3" required>
         </div>
 
-        <input type="number" name="monto" placeholder="Monto del Depósito" class="input-field" required>
+        <input type="number" id="monto" name="monto" placeholder="Monto del Depósito" class="input-field" min="1"
+          step="0.01" required>
 
         <button type="submit" class="btn-dorado">Depositar</button>
       </form>
@@ -44,7 +44,6 @@
 
   <!-- NAV INFERIOR -->
   <nav class="rc-nav">
-    <!-- (Tu nav bar ... no necesita cambios) -->
     <a href="/home" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
       <span>Inicio</span>
@@ -63,32 +62,78 @@
     </a>
   </nav>
 
-  <!-- 
-    ==================================================
-    SCRIPT DE CONEXIÓN (¡Añadido!)
-    ==================================================
-  -->
   <script>
-    // 1. Verificar sesión
+    // Verificar sesión
     const userId = localStorage.getItem("user_id");
     if (!userId) {
       alert("No has iniciado sesión.");
       window.location.href = "/login";
     }
 
-    // 2. Capturar el formulario
+    // Formateo automático de fecha de expiración
+    const fechaExpInput = document.getElementById("fecha_exp");
+    fechaExpInput.addEventListener("input", (e) => {
+      let value = e.target.value.replace(/\D/g, ''); // Solo números
+
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+      }
+
+      e.target.value = value;
+    });
+
+    // Validación de fecha de expiración
+    function validarFechaExp(fecha) {
+      const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+      if (!regex.test(fecha)) {
+        return false;
+      }
+
+      const [mes, anio] = fecha.split('/');
+      const mesNum = parseInt(mes);
+      const anioNum = parseInt('20' + anio);
+
+      const fechaActual = new Date();
+      const mesActual = fechaActual.getMonth() + 1;
+      const anioActual = fechaActual.getFullYear();
+
+      // Verificar que no esté expirada
+      if (anioNum < anioActual || (anioNum === anioActual && mesNum < mesActual)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    // Solo números en CVV
+    const cvvInput = document.getElementById("cvv");
+    cvvInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Solo números en número de tarjeta
+    const numeroTarjetaInput = document.getElementById("numero_tarjeta");
+    numeroTarjetaInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Capturar el formulario
     const depositForm = document.getElementById("depositForm");
 
     depositForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const formData = new FormData(depositForm);
+      // Validar fecha de expiración
+      const fechaExp = fechaExpInput.value;
+      if (!validarFechaExp(fechaExp)) {
+        alert("Fecha de expiración inválida. Use formato MM/AA y asegúrese de que no esté expirada.");
+        return;
+      }
 
-      // Añadimos el id_usuario al formulario antes de enviarlo
+      const formData = new FormData(depositForm);
       formData.append("id_usuario", userId);
 
       try {
-        // 3. Llamar a la NUEVA ruta de API
         const res = await fetch("/api/wallet/deposit-card", {
           method: "POST",
           body: formData
@@ -100,7 +145,6 @@
           alert("Error: " + result.error);
         } else if (result.success) {
           alert("¡Depósito realizado con éxito!");
-          // 4. Redirigir a la cartera
           window.location.href = "/account/cartera/balance";
         }
 
