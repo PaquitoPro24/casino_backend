@@ -423,6 +423,13 @@ async def api_get_transactions(id_usuario: int):
         transacciones = cursor.fetchall()
         cursor.close()
         
+        # Convertir datetime a ISO format para JSON
+        for tx in transacciones:
+            if tx.get('fecha_transaccion'):
+                tx['fecha_transaccion'] = tx['fecha_transaccion'].isoformat()
+            if tx.get('monto'):
+                tx['monto'] = float(tx['monto'])
+        
         return JSONResponse({"transacciones": transacciones})
 
     except Exception as e:

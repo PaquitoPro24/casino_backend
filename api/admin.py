@@ -279,6 +279,12 @@ async def api_get_all_bonos():
         cursor.execute("SELECT * FROM Bono ORDER BY nombre_bono")
         bonos = cursor.fetchall()
         cursor.close()
+        
+        # Convertir date a ISO format para JSON
+        for bono in bonos:
+            if bono.get('fecha_expiracion'):
+                bono['fecha_expiracion'] = bono['fecha_expiracion'].isoformat()
+        
         return JSONResponse({"bonos": bonos})
 
     except Exception as e:
