@@ -88,6 +88,12 @@ async def api_get_active_tickets(id_usuario: int):
         )
         tickets = cursor.fetchall()
         cursor.close()
+        
+        # Convertir datetime a ISO format para JSON
+        for ticket in tickets:
+            if ticket.get('fecha_creacion'):
+                ticket['fecha_creacion'] = ticket['fecha_creacion'].isoformat()
+        
         return JSONResponse({"tickets": tickets})
 
     except Exception as e:
@@ -122,6 +128,12 @@ async def api_get_ticket_history(id_usuario: int):
         )
         tickets = cursor.fetchall()
         cursor.close()
+        
+        # Convertir datetime a ISO format para JSON
+        for ticket in tickets:
+            if ticket.get('fecha_creacion'):
+                ticket['fecha_creacion'] = ticket['fecha_creacion'].isoformat()
+        
         return JSONResponse({"tickets": tickets})
 
     except Exception as e:

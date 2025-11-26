@@ -118,6 +118,14 @@ async def api_get_active_bonos(id_usuario: int):
         )
         bonos = cursor.fetchall()
         cursor.close()
+        
+        # Convertir datetime a ISO format para JSON
+        for bono in bonos:
+            if bono.get('fecha_adquisicion'):
+                bono['fecha_adquisicion'] = bono['fecha_adquisicion'].isoformat()
+            if bono.get('progreso'):
+                bono['progreso'] = float(bono['progreso'])
+        
         return JSONResponse({"bonos": bonos})
 
     except Exception as e:
@@ -153,6 +161,12 @@ async def api_get_bonus_history(id_usuario: int):
         )
         bonos = cursor.fetchall()
         cursor.close()
+        
+        # Convertir datetime a ISO format para JSON
+        for bono in bonos:
+            if bono.get('fecha_adquisicion'):
+                bono['fecha_adquisicion'] = bono['fecha_adquisicion'].isoformat()
+        
         return JSONResponse({"bonos": bonos})
 
     except Exception as e:
