@@ -144,3 +144,36 @@ html, body {
   color: #d8bb76;
   transform: scale(1.05);
 }
+
+/* ======== RESPONSIVE DESKTOP ======== */
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 800px;
+    padding: 40px 60px 120px;
+  }
+
+  .rc-screen-title {
+    font-size: 32px;
+  }
+
+  .rc-subtitle {
+    font-size: 22px;
+  }
+
+  .deposit-form {
+    gap: 16px;
+  }
+
+  .input-field {
+    font-size: 17px;
+    padding: 14px 16px;
+  }
+
+  .btn-dorado {
+    font-size: 18px;
+    padding: 16px;
+    max-width: 400px;
+    margin: 20px auto 0;
+    display: block;
+  }
+}
