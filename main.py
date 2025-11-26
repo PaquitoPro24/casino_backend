@@ -262,6 +262,11 @@ async def cartera_balance(request: Request):
 # =========================
 #  ADMINISTRACIÓN
 # =========================
+# Test route for debugging authentication
+@app.get("/test-auth", response_class=HTMLResponse)
+async def test_auth(request: Request):
+    return render("test-auth.html", request)
+
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_menu(request: Request):
     return render("admin.html", request)

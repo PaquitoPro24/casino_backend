@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administrador — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin.css') }}">
+  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
 
 <body>
@@ -52,10 +53,8 @@
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        window.location.href = "/login";
-      }
+      // Usar la utilidad centralizada de autenticación con debug activado
+      checkAdminAuthDebug();
     });
   </script>
 </body>

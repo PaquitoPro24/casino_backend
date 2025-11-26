@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Información General — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-info-general.css') }}">
+  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
 
 <body>
@@ -82,12 +83,9 @@
       const activeGamesEl = document.querySelector(".metric-card:nth-child(2) .value");
       const depositsTodayEl = document.querySelector(".metric-card:nth-child(3) .value");
 
-      // Verificar sesión de admin
-      const adminRol = (localStorage.getItem("user_role") || "").toLowerCase().trim();
-      if (adminRol !== 'administrador' && adminRol !== 'auditor') {
-        alert("Acceso denegado.");
-        window.location.href = "/login";
-        return;
+      // Verificar sesión de admin usando la utilidad centralizada
+      if (!checkAdminAuth()) {
+        return; // Si no está autenticado, la función ya redirige
       }
 
       try {
