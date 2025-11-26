@@ -3,7 +3,8 @@
    ========================================================== */
 
 /* ======== Fondo global ======== */
-html, body {
+html,
+body {
   background-color: #202020;
   margin: 0;
   padding: 0;
@@ -133,4 +134,29 @@ html, body {
 .rc-nav-item:hover span {
   color: #d8bb76;
   transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 800px;
+    padding: 40px 60px 120px;
+  }
+
+  .rc-screen-title {
+    font-size: 36px;
+  }
+
+  .rc-list-card {
+    max-width: 600px;
+    margin: 40px auto;
+  }
+
+  .rc-list-item {
+    font-size: 18px;
+    padding: 20px 24px;
+  }
+
+  .rc-chevron::after {
+    font-size: 26px;
+  }
 }
