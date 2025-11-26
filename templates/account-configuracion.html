@@ -27,22 +27,8 @@
       <input id="file-input" type="file" accept="image/*">
     </div>
 
-    <!-- ======== FORMULARIO DE DATOS ======== -->
-    <form id="profile-form" class="rc-form">
-      <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-      <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-      <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
-
-      <button type="submit" class="btn-save">Guardar Cambios</button>
-      <button type="button" class="btn-delete">Eliminar Cuenta</button>
-    </form>
-  </div>
-
-  <!-- ======== NAV INFERIOR ======== -->
-  <nav class="rc-nav">
-    <a href="/home" class="rc-nav-item">
-      <img src="{{ url_for('static', path='img/icons/nav-home.png') }}" alt="Home">
-      <span>Home</span>
+    <img src="{{ url_for('static', path='img/icons/nav-home.png') }}" alt="Home">
+    <span>Home</span>
     </a>
     <a href="/games" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/icons/nav-games.png') }}" alt="Juegos">
@@ -56,78 +42,78 @@
       <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Mi Cuenta">
       <span>Mi Cuenta</span>
     </a>
-  </nav>
+    </nav>
 
-  <!-- ======== SCRIPT ======== -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const profileForm = document.getElementById("profile-form");
-      const nombreInput = document.getElementById("nombre");
-      const apellidoInput = document.getElementById("apellido");
-      const emailInput = document.getElementById("email");
-
-
-      // 1. Obtener el ID del usuario (asumimos que está en localStorage)
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
-        alert("No se ha iniciado sesión. Redirigiendo al login.");
-        window.location.href = "/login";
-        return;
-      }
-
-      // 2. Función para cargar los datos del usuario
-      async function loadUserData() {
-        try {
-          const response = await fetch(`/api/user/${userId}`);
-          if (!response.ok) {
-            throw new Error("Error al cargar los datos del usuario.");
-          }
-          const data = await response.json();
-
-          // Rellenar el formulario
-          nombreInput.value = data.nombre;
-          apellidoInput.value = data.apellido;
-          emailInput.value = data.email;
+    <!-- ======== SCRIPT ======== -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const profileForm = document.getElementById("profile-form");
+        const nombreInput = document.getElementById("nombre");
+        const apellidoInput = document.getElementById("apellido");
+        const emailInput = document.getElementById("email");
 
 
-
-        } catch (error) {
-          console.error("Error:", error);
-
-          alert(error.message);
+        // 1. Obtener el ID del usuario (asumimos que está en localStorage)
+        const userId = localStorage.getItem("user_id");
+        if (!userId) {
+          alert("No se ha iniciado sesión. Redirigiendo al login.");
+          window.location.href = "/login";
+          return;
         }
-      }
 
-      // 3. Función para guardar los cambios
-      profileForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+        // 2. Función para cargar los datos del usuario
+        async function loadUserData() {
+          try {
+            const response = await fetch(`/api/user/${userId}`);
+            if (!response.ok) {
+              throw new Error("Error al cargar los datos del usuario.");
+            }
+            const data = await response.json();
 
-        const formData = new FormData(profileForm);
+            // Rellenar el formulario
+            nombreInput.value = data.nombre;
+            apellidoInput.value = data.apellido;
+            emailInput.value = data.email;
 
-        try {
-          const response = await fetch(`/api/user/update/${userId}`, {
-            method: 'PUT',
-            body: formData
-          });
 
-          const result = await response.json();
 
-          if (!response.ok) {
-            throw new Error(result.error || 'Error al actualizar el perfil.');
+          } catch (error) {
+            console.error("Error:", error);
+
+            alert(error.message);
           }
-
-          alert("Perfil actualizado con éxito.");
-
-        } catch (error) {
-          console.error("Error al guardar:", error);
-          alert(error.message);
         }
+
+        // 3. Función para guardar los cambios
+        profileForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(profileForm);
+
+          try {
+            const response = await fetch(`/api/user/update/${userId}`, {
+              method: 'PUT',
+              body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              throw new Error(result.error || 'Error al actualizar el perfil.');
+            }
+
+            alert("Perfil actualizado con éxito.");
+
+          } catch (error) {
+            console.error("Error al guardar:", error);
+            alert(error.message);
+          }
+        });
+
+        // Cargar los datos al entrar en la página
+        loadUserData();
       });
-
-      // Cargar los datos al entrar en la página
-      loadUserData();
-    });
-  </script>
+    </script>
 
 </body>
 

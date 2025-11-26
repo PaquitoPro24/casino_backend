@@ -61,12 +61,11 @@
         });
 
         const result = await res.json();
-        console.log("🔹 Datos recibidos:", result);
 
         if (result.error) {
           alert(result.error);
         } else if (result.success) {
-          alert("¡Registro exitoso! Por favor, inicia sesión.");
+          alert("¡Registro exitoso! Bienvenido a Royal Crumbs. Por favor, inicia sesión.");
           window.location.href = "/login";
         }
 
