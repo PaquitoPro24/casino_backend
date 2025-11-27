@@ -1,34 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuevo Ticket</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
       <a href="/support" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Tickets de Asistencia</h1>
+      <h1 class="rc-screen-title">Nuevo Ticket</h1>
       <div></div>
     </header>
 
     <section class="rc-content">
-      <form class="ticket-form">
-        <select required>
+      <form class="ticket-form" id="ticket-form">
+        <select id="asunto" name="asunto" required>
           <option value="">Selecciona un tema</option>
-          <option value="juego">Problema con el juego</option>
-          <option value="pago">Problema con el pago</option>
-          <option value="cuenta">Acceso a la cuenta</option>
+          <option value="Problema con el juego">Problema con el juego</option>
+          <option value="Problema con el pago">Problema con el pago</option>
+          <option value="Acceso a la cuenta">Acceso a la cuenta</option>
+          <option value="Retiro de fondos">Retiro de fondos</option>
+          <option value="Depósito de fondos">Depósito de fondos</option>
+          <option value="Bonos y promociones">Bonos y promociones</option>
+          <option value="Otro">Otro</option>
         </select>
 
-        <input type="text" placeholder="Nombre" required>
-        <textarea placeholder="Mensaje" required></textarea>
+        <textarea id="mensaje" name="mensaje" placeholder="Describe tu problema con detalle..." rows="6"
+          required></textarea>
 
         <button type="submit" class="rc-button">Enviar Ticket</button>
       </form>
+
+      <div id="success-message"
+        style="display: none; color: #2ecc71; text-align: center; margin-top: 20px; font-weight: 600;"></div>
+      <div id="error-message"
+        style="display: none; color: #e74c3c; text-align: center; margin-top: 20px; font-weight: 600;"></div>
     </section>
   </div>
+
+  <script>
+    // Obtener ID del usuario desde localStorage
+    const userId = parseInt(localStorage.getItem('userId'));
+
+    if (!userId) {
+      alert('Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.');
+      window.location.href = '/login';
+    }
+
+    // Manejar envío del formulario
+    document.getElementById('ticket-form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const asunto = document.getElementById('asunto').value;
+      const mensaje = document.getElementById('mensaje').value;
+
+      const formData = new FormData();
+      formData.append('id_usuario', userId);
+      formData.append('asunto', asunto);
+      formData.append('mensaje', mensaje);
+
+      // Ocultar mensajes previos
+      document.getElementById('success-message').style.display = 'none';
+      document.getElementById('error-message').style.display = 'none';
+
+      try {
+        const response = await fetch('/api/support/tickets/create', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Mostrar mensaje de éxito
+          document.getElementById('success-message').textContent = data.message;
+          document.getElementById('success-message').style.display = 'block';
+
+          // Limpiar formulario
+          document.getElementById('ticket-form').reset();
+
+          // Redirigir a tickets activos después de 2 segundos
+          setTimeout(() => {
+            window.location.href = '/support/tickets/active';
+          }, 2000);
+        } else {
+          throw new Error(data.error || 'Error al crear ticket');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('error-message').textContent = 'Error al enviar el ticket. Por favor, intenta nuevamente.';
+        document.getElementById('error-message').style.display = 'block';
+      }
+    });
+  </script>
 </body>
+
 </html>

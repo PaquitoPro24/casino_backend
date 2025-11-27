@@ -1,0 +1,212 @@
+/* ============================================================
+🎫 GESTIÓN DE TICKETS - Agente Soporte
+============================================================ */
+
+html,
+body {
+    background-color: #202020;
+    color: #FFFFFF;
+    font-family: 'Timeless', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.rc-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ===== ENCABEZADO ===== */
+.rc-header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+}
+
+.rc-back {
+    color: #FFFFFF;
+    font-size: 32px;
+    text-decoration: none;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.rc-back:hover {
+    color: #AB925C;
+}
+
+.rc-screen-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ===== FILTROS ===== */
+.filters-section {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    color: #d8bb76;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-group select {
+    background-color: #202020;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #AB925C;
+}
+
+.filter-btn {
+    background-color: #AB925C;
+    color: #202020;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.filter-btn:hover {
+    background-color: #d8bb76;
+}
+
+/* ===== LISTA DE TICKETS ===== */
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ticket-card {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.ticket-card:hover {
+    border-color: #AB925C;
+    transform: translateX(4px);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.ticket-id {
+    font-size: 12px;
+    color: #d8bb76;
+    font-weight: 600;
+}
+
+.ticket-estado {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.estado-abierto {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.estado-asignado {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+.estado-cerrado {
+    background-color: rgba(149, 165, 166, 0.2);
+    color: #95a5a6;
+}
+
+.ticket-info h3 {
+    font-size: 16px;
+    margin: 0 0 6px 0;
+    color: #FFFFFF;
+}
+
+.ticket-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.ticket-mensaje {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 10px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.no-tickets {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .ticket-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tarjeta - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-tarjeta.css') }}">
 </head>
-
 <body>
 
   <div class="rc-container">
@@ -45,7 +43,7 @@
 
   <!-- BARRA INFERIOR -->
   <nav class="rc-nav">
-    [Immersive content redacted for brevity.]
+[Immersive content redacted for brevity.]
   </nav>
 
   <!-- 
@@ -55,7 +53,7 @@
   -->
   <script>
     // 1. Verificar sesión
-    const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("usuario_id");
     if (!userId) {
       alert("No has iniciado sesión.");
       window.location.href = "/login";
@@ -69,11 +67,11 @@
 
       const formData = new FormData(cardForm);
       formData.append("id_usuario", userId);
-
+      
       const numero = formData.get("numero_tarjeta");
       if (numero.length < 15 || numero.length > 16 || !/^\d+$/.test(numero)) {
-        alert("El número de tarjeta debe tener 15 o 16 dígitos.");
-        return;
+          alert("El número de tarjeta debe tener 15 o 16 dígitos.");
+          return;
       }
 
       try {
@@ -100,5 +98,4 @@
   </script>
 
 </body>
-
 </html>

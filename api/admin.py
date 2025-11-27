@@ -26,13 +26,13 @@ async def api_get_admin_stats():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # 1. Total de usuarios (solo jugadores)
-        cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE rol = 'Jugador'")
+        # 1. Total de usuarios (solo jugadores - id_rol = 1)
+        cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE id_rol = 1")
         total_users = cursor.fetchone()['total_users']
         
-        # 2. Usuarios activos (jugadores con cuenta activa)
-        cursor.execute("SELECT COUNT(*) as active_users FROM Usuario WHERE rol = 'Jugador' AND activo = true")
-        active_users = cursor.fetchone()['active_users']
+        # 2. Total de juegos activos
+        cursor.execute("SELECT COUNT(*) as active_games FROM Juego WHERE activo = true")
+        active_games = cursor.fetchone()['active_games']
         
         # 3. Total de depósitos hoy
         cursor.execute(
@@ -40,19 +40,12 @@ async def api_get_admin_stats():
         )
         deposits_today = cursor.fetchone()['deposits_today']
         
-        # 4. Total de retiros hoy
-        cursor.execute(
-            "SELECT COALESCE(SUM(monto), 0) as withdrawals_today FROM Transaccion WHERE tipo_transaccion = 'Retiro' AND estado = 'Completada' AND fecha_transaccion >= CURRENT_DATE"
-        )
-        withdrawals_today = cursor.fetchone()['withdrawals_today']
-        
         cursor.close()
         
         return JSONResponse({
             "total_users": total_users,
-            "active_users": active_users,
-            "deposits_today": float(deposits_today),
-            "withdrawals_today": float(withdrawals_today)
+            "active_games": active_games,
+            "deposits_today": float(deposits_today)
         })
 
     except Exception as e:
@@ -78,9 +71,15 @@ async def api_get_all_users():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Buscamos solo Jugadores
+        # Buscamos solo Jugadores (id_rol = 1)
         cursor.execute(
-            "SELECT id_usuario, nombre, apellido, email, activo FROM Usuario WHERE rol = 'Jugador' ORDER BY nombre",
+            """
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre as rol
+            FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
+            WHERE u.id_rol = 1
+            ORDER BY u.nombre
+            """
         )
         usuarios = cursor.fetchall()
         cursor.close()
@@ -107,9 +106,15 @@ async def api_get_all_admins():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Buscamos Admins y Auditores
+        # Buscamos Admins (id_rol = 2) y Auditores (id_rol = 3)
         cursor.execute(
-            "SELECT id_usuario, nombre, apellido, email, rol, activo FROM Usuario WHERE rol IN ('Administrador', 'Auditor') ORDER BY nombre",
+            """
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre as rol, u.activo
+            FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
+            WHERE u.id_rol IN (2, 3)
+            ORDER BY u.nombre
+            """
         )
         admins = cursor.fetchall()
         cursor.close()
@@ -141,8 +146,9 @@ async def api_get_user_profile(id_usuario: int):
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
             """
-            SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.rol, u.activo, u.fecha_registro, s.saldo_actual
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre as rol, u.activo, u.fecha_registro, s.saldo_actual
             FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
             LEFT JOIN Saldo s ON u.id_usuario = s.id_usuario
             WHERE u.id_usuario = %s
             """,
@@ -154,11 +160,8 @@ async def api_get_user_profile(id_usuario: int):
         if not user_profile:
             return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
 
-        # Convertir tipos no serializables a JSON
+        # Aseguramos que el saldo sea un float
         user_profile['saldo_actual'] = float(user_profile['saldo_actual'] or 0.0)
-        if user_profile.get('fecha_registro'):
-            user_profile['fecha_registro'] = user_profile['fecha_registro'].isoformat()
-        
         return JSONResponse(user_profile)
 
     except Exception as e:
@@ -186,9 +189,18 @@ async def api_update_user_profile(
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
+        
+        # Primero obtenemos el id_rol correspondiente al nombre del rol
+        cursor.execute("SELECT id_rol FROM Rol WHERE nombre = %s", (rol,))
+        rol_result = cursor.fetchone()
+        if not rol_result:
+            return JSONResponse({" error": "Rol inválido"}, status_code=400)
+        id_rol = rol_result[0]
+        
+        # Ahora actualizamos con id_rol
         cursor.execute(
-            "UPDATE Usuario SET nombre = %s, apellido = %s, email = %s, rol = %s, activo = %s WHERE id_usuario = %s",
-            (nombre, apellido, email, rol, activo, id_usuario)
+            "UPDATE Usuario SET nombre = %s, apellido = %s, email = %s, id_rol = %s, activo = %s WHERE id_usuario = %s",
+            (nombre, apellido, email, id_rol, activo, id_usuario)
         )
         conn.commit()
         cursor.close()
@@ -279,12 +291,6 @@ async def api_get_all_bonos():
         cursor.execute("SELECT * FROM Bono ORDER BY nombre_bono")
         bonos = cursor.fetchall()
         cursor.close()
-        
-        # Convertir date a ISO format para JSON
-        for bono in bonos:
-            if bono.get('fecha_expiracion'):
-                bono['fecha_expiracion'] = bono['fecha_expiracion'].isoformat()
-        
         return JSONResponse({"bonos": bonos})
 
     except Exception as e:
@@ -298,6 +304,8 @@ async def api_create_bono(
     nombre_bono: str = Form(),
     tipo: str = Form(),
     descripcion: str = Form(),
+    valor: float = Form(),
+    requisito_apuesta: float = Form(),
     fecha_expiracion: str = Form(None), # Puede ser opcional
     activo: bool = Form()
 ):
@@ -315,8 +323,8 @@ async def api_create_bono(
 
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO Bono (nombre_bono, tipo, descripcion, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s)",
-            (nombre_bono, tipo, descripcion, fecha_exp, activo)
+            "INSERT INTO Bono (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_exp, activo)
         )
         conn.commit()
         cursor.close()

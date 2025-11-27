@@ -1,82 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat en Vivo - Historial</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-chat.css') }}">
 </head>
-
 <body>
   <div class="rc-container">
     <header class="rc-header">
       <a href="/support" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Historial de Chats</h1>
+      <h1 class="rc-screen-title">Chat en Vivo</h1>
       <div></div>
     </header>
 
-    <section class="chat-list" id="chat-history-container">
-      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando historial...</p>
+    <section class="chat-list">
+      <div class="chat-item">
+        <div class="chat-info">
+          <span class="chat-title">Chat #1234</span>
+          <span class="chat-date">06/05/2025</span>
+        </div>
+        <p class="chat-desc">Problema con el juego</p>
+      </div>
+
+      <div class="chat-item">
+        <div class="chat-info">
+          <span class="chat-title">Chat #4567</span>
+          <span class="chat-date">12/03/2024</span>
+        </div>
+        <p class="chat-desc">Transacción</p>
+      </div>
+
+      <div class="chat-item">
+        <div class="chat-info">
+          <span class="chat-title">Chat #8910</span>
+          <span class="chat-date">07/01/2022</span>
+        </div>
+        <p class="chat-desc">Problema con el pago</p>
+      </div>
     </section>
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const container = document.getElementById("chat-history-container");
-
-      // 1. Obtener ID de usuario
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
-        window.location.href = "/login";
-        return;
-      }
-
-      // 2. Fetch a la API de historial de tickets
-      try {
-        const res = await fetch(`/api/support/tickets/history/${userId}`);
-        const data = await res.json();
-
-        if (data.error) {
-          container.innerHTML = `<p style="text-align: center; color: red;">${data.error}</p>`;
-          return;
-        }
-
-        if (!data.tickets || data.tickets.length === 0) {
-          container.innerHTML = `
-            <div style="text-align: center; margin-top: 40px;">
-              <p style="color: #aaa;">No tienes chats cerrados en tu historial.</p>
-            </div>
-          `;
-          return;
-        }
-
-        // 3. Renderizar lista
-        container.innerHTML = "";
-        data.tickets.forEach(ticket => {
-          // Formatear fecha
-          const dateObj = new Date(ticket.fecha_creacion);
-          const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-          const item = document.createElement("div");
-          item.className = "chat-item";
-          item.innerHTML = `
-            <div class="chat-info">
-              <span class="chat-title">Chat #${ticket.id_ticket}</span>
-              <span class="chat-date">${dateStr}</span>
-            </div>
-            <p class="chat-desc">${ticket.asunto}</p>
-            <span style="color: #888; font-size: 0.8em; font-weight: bold;">${ticket.estado}</span>
-          `;
-          container.appendChild(item);
-        });
-
-      } catch (error) {
-        console.error("Error cargando historial:", error);
-        container.innerHTML = `<p style="text-align: center; color: red;">Error de conexión.</p>`;
-      }
-    });
-  </script>
 </body>
-
 </html>

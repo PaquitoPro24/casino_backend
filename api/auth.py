@@ -53,28 +53,34 @@ async def api_login(user_data: UserLogin):
         # Se elimina el argumento `cursor_factory`. Esta configuración se maneja a nivel de conexión (en db_connect.py).
         cursor = conn.cursor()
         
-        # 1. Usamos los nombres correctos: 'Usuario', 'email', 'password_hash'
+        # 1. Query actualizado para obtener el rol desde la tabla Rol
         cursor.execute(
-            "SELECT id_usuario, rol, password_hash, activo FROM Usuario WHERE email = %s",
+            """
+            SELECT u.id_usuario, u.id_rol, r.nombre as rol_nombre, u.password_hash, u.activo 
+            FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
+            WHERE u.email = %s
+            """,
             (user_data.correo,)
         )
         usuario = cursor.fetchone()
         
         # 2. Verificar si el usuario existe y la contraseña es correcta
-        if not usuario or not pwd_context.verify(user_data.contrasena, usuario[2]): # Índice 2 para password_hash
+        if not usuario or not pwd_context.verify(user_data.contrasena, usuario[3]): # Índice 3 para password_hash
             print("❌ API: Credenciales incorrectas (email no encontrado o contraseña no coincide)")
             return JSONResponse({"error": "Correo o contraseña incorrectos"}, status_code=401)
         
         # 3. Verificar si la cuenta está activa (solo si el usuario y la contraseña son válidos)
-        if not usuario[3]: # Índice 3 para activo
+        if not usuario[4]: # Índice 4 para activo
             print("❌ API: Cuenta inactiva")
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
         # 4. ¡Éxito!
-        print(f"✅ API: Login exitoso para {usuario[0]}") # Índice 0 para id_usuario
+        print(f"✅ API: Login exitoso para {usuario[0]} con rol {usuario[2]}")
         return JSONResponse({
-            "id_usuario": usuario[0], # Índice 0 para id_usuario
-            "rol": usuario[1]         # Índice 1 para rol
+            "id_usuario": usuario[0],  # Índice 0 para id_usuario
+            "id_rol": usuario[1],       # Índice 1 para id_rol
+            "rol": usuario[2]           # Índice 2 para rol_nombre
         })
 
     except Exception as e:
@@ -108,11 +114,11 @@ async def api_register(user_data: UserRegister):
         
         cursor = conn.cursor()
         
-        # 3. PASO 1: Insertar en la tabla 'Usuario'
+        # 3. PASO 1: Insertar en la tabla 'Usuario' con id_rol = 1 (Jugador)
         cursor.execute(
             """
-            INSERT INTO Usuario (nombre, apellido, curp, email, password_hash, rol, fecha_registro, activo)
-            VALUES (%s, %s, %s, %s, %s, 'Jugador', %s, true)
+            INSERT INTO Usuario (nombre, apellido, curp, email, password_hash, id_rol, fecha_registro, activo)
+            VALUES (%s, %s, %s, %s, %s, 1, %s, true)
             RETURNING id_usuario
             """,
             (user_data.nombre, user_data.apellido, user_data.curp, user_data.correo, hashed_password, datetime.now())

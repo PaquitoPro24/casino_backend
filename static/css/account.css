@@ -1,12 +1,17 @@
 /* ==========================================================
-   👤 MI CUENTA - Royal Crumbs (idéntico a cartera)
+   👤 MI CUENTA - Royal Crumbs
    ========================================================== */
 
-/* ======== Fondo global ======== */
-html, body {
-  background-color: #202020;
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+/* ======== Fondo global ======== */
+html,
+body {
+  background-color: #202020;
   height: 100%;
   width: 100%;
   font-family: 'Timeless', 'Arial', sans-serif;
@@ -15,9 +20,10 @@ html, body {
 
 /* ======== Contenedor principal ======== */
 .rc-container {
-  max-width: 420px;
+  max-width: 600px;
+  width: 100%;
   margin: 0 auto;
-  padding: 20px 16px 80px;
+  padding: clamp(16px, 3vw, 20px) clamp(12px, 2.5vw, 16px) 80px;
   background-color: #202020;
   min-height: 100vh;
   display: flex;
@@ -31,15 +37,17 @@ html, body {
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   background-color: #202020;
-  padding: 18px 0;
+  padding: clamp(14px, 3vw, 18px) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .rc-back {
   color: #FFFFFF;
-  font-size: 34px;
+  font-size: clamp(28px, 6vw, 34px);
   text-decoration: none;
   text-align: center;
   transition: 0.2s;
+  line-height: 1;
 }
 
 .rc-back:hover {
@@ -48,7 +56,7 @@ html, body {
 
 .rc-screen-title {
   text-align: center;
-  font-size: 28px;
+  font-size: clamp(22px, 5vw, 28px);
   font-weight: 700;
   color: #FFFFFF;
 }
@@ -57,7 +65,7 @@ html, body {
 .rc-list-card {
   background-color: transparent;
   border-radius: 0;
-  margin-top: 28px;
+  margin-top: clamp(20px, 4vw, 28px);
 }
 
 .rc-list-item {
@@ -66,8 +74,8 @@ html, body {
   align-items: center;
   text-decoration: none;
   color: #FFFFFF;
-  font-size: 16px;
-  padding: 16px 18px;
+  font-size: clamp(15px, 3.5vw, 16px);
+  padding: clamp(14px, 3vw, 16px) clamp(16px, 3.5vw, 18px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
@@ -78,19 +86,19 @@ html, body {
 
 .rc-list-item:hover {
   background-color: rgba(255, 255, 255, 0.08);
-  color: #d8bb76;
+  color: #ab925c;
 }
 
-/* Flechita blanca */
+/* Flechita */
 .rc-chevron::after {
   content: "›";
-  font-size: 22px;
+  font-size: clamp(20px, 4vw, 22px);
   color: #FFFFFF;
   transition: color 0.3s ease;
 }
 
 .rc-list-item:hover .rc-chevron::after {
-  color: #d8bb76;
+  color: #ab925c;
 }
 
 /* ======== NAV INFERIOR ======== */
@@ -99,13 +107,14 @@ html, body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #111;
-  border-top: 1px solid #b59557;
+  background-color: #202020;
+  border-top: 1px solid #ab925c;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
+  padding: clamp(8px, 2vw, 10px) 0;
   z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .rc-nav-item {
@@ -113,15 +122,18 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  color: #b59557;
-  font-size: 15px;
+  color: #ab925c;
+  font-size: clamp(12px, 2.5vw, 15px);
+  padding: 4px 8px;
+  transition: all 0.3s ease;
 }
 
 .rc-nav-item img {
-  width: 32px;
-  height: 32px;
+  width: clamp(26px, 6vw, 32px);
+  height: clamp(26px, 6vw, 32px);
   margin-bottom: 5px;
   filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
+  transition: all 0.3s ease;
 }
 
 .rc-nav-item:hover img {
@@ -130,6 +142,38 @@ html, body {
 }
 
 .rc-nav-item:hover span {
-  color: #d8bb76;
+  color: #FFFFFF;
   transform: scale(1.05);
+}
+
+.rc-nav-item.active {
+  color: #FFFFFF;
+}
+
+/* ============================================================
+   📱 RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
+
+  .rc-list-item {
+    padding: clamp(14px, 3vw, 18px) 24px;
+  }
 }

@@ -17,7 +17,7 @@ html, body {
 .rc-container {
   max-width: 420px;
   margin: 0 auto;
-  padding: 20px 16px 100px;
+  padding: clamp(16px, 3vw, 20px) 16px 100px;
   min-height: 100vh;
   overflow-y: auto;
   transition: all 0.3s ease;
@@ -43,7 +43,7 @@ html, body {
 }
 
 .rc-screen-title {
-  font-size: 24px;
+  font-size: clamp(20px, 4.5vw, 24px);
   font-weight: 700;
   color: #FFFFFF;
   margin: 0;
@@ -51,13 +51,13 @@ html, body {
 
 /* ===== SECCIÓN SALDO ===== */
 .rc-subtitle {
-  font-size: 22px;
+  font-size: clamp(18px, 4vw, 22px);
   font-weight: 700;
   margin: 16px 0 6px;
 }
 
 .saldo-total {
-  font-size: 28px;
+  font-size: clamp(22px, 5vw, 28px);
   font-weight: bold;
   color: #fff;
   text-align: center;
@@ -76,10 +76,10 @@ html, body {
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 14px 30px;
+  padding: clamp(11px, 2.3vw, 14px) 30px;
   font-weight: 700;
   cursor: pointer;
-  font-size: 17px;
+  font-size: clamp(15px, 3.3vw, 17px);
   transition: 0.3s;
 }
 
@@ -93,7 +93,7 @@ html, body {
   border: none;
   color: #fff;
   border-radius: 8px;
-  padding: 12px 20px;
+  padding: clamp(10px, 2vw, 12px) 20px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
@@ -108,20 +108,20 @@ html, body {
 .balance-box {
   background-color: #242424;
   border-radius: 10px;
-  padding: 18px;
+  padding: clamp(14px, 3vw, 18px);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   margin-top: 20px;
 }
 
 .balance-box h3 {
   margin: 0 0 8px;
-  font-size: 18px;
+  font-size: clamp(16px, 3.5vw, 18px);
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   padding: 4px 0;
 }
 
@@ -137,9 +137,9 @@ html, body {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   margin: 8px 0;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
 }
 
 .input-field::placeholder {
@@ -156,7 +156,7 @@ html, body {
 .limite-etiquetas {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
 }
 
 /* ===== NAV INFERIOR ===== */
@@ -180,7 +180,7 @@ html, body {
   align-items: center;
   text-decoration: none;
   color: #b59557;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
 }
 
 .rc-nav-item img {
@@ -225,15 +225,15 @@ html, body {
   }
 
   .prestamo-section h2 {
-    font-size: 24px;
+    font-size: clamp(20px, 4.5vw, 24px);
     margin-bottom: 14px;
   }
 
   .prestamo-section .btn-dorado {
     display: block;
     margin: 15px auto 20px auto;
-    padding: 16px 60px;
-    font-size: 18px;
+    padding: clamp(12px, 2.5vw, 16px) 60px;
+    font-size: clamp(16px, 3.5vw, 18px);
   }
 
   .right-column {
@@ -248,8 +248,8 @@ html, body {
   }
 
   .btn-dorado {
-    font-size: 18px;
-    padding: 16px 36px;
+    font-size: clamp(16px, 3.5vw, 18px);
+    padding: clamp(12px, 2.5vw, 16px) 36px;
   }
 }
 
@@ -279,7 +279,7 @@ html, body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 14px 90px;
+    padding: clamp(16px, 3vw, 20px) 14px 90px;
     gap: 25px;
   }
 
@@ -301,15 +301,15 @@ html, body {
   .btn-gris {
     width: auto;
     min-width: 130px;
-    padding: 12px 20px;
-    font-size: 16px;
+    padding: clamp(10px, 2vw, 12px) 20px;
+    font-size: clamp(14px, 3vw, 16px);
     text-align: center;
     border-radius: 10px;
   }
 
   .input-field {
     width: 90%;
-    font-size: 15px;
+    font-size: clamp(13px, 2.8vw, 15px);
     margin: 10px auto;
     display: block;
   }

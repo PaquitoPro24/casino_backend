@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bloquear IP — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-configuracion-bloquear-ip.css') }}">
-  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
-
 <body>
   <div class="rc-container">
-
+    
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin/configuracion" class="rc-back">‹</a>
@@ -20,88 +17,22 @@
     </header>
 
     <!-- ===== FORMULARIO ===== -->
-    <form class="ip-form" id="blockIpForm">
-      <input type="text" id="ipInput" placeholder="Ingresa IP (ej: 192.168.1.1)" pattern="^(\d{1,3}\.){3}\d{1,3}$"
-        required>
-      <button type="submit" class="btn-gold">Bloquear IP</button>
+    <form class="ip-form">
+      <input type="text" placeholder="Buscar IP">
+      <button type="button" class="btn-gold">Bloquear IP</button>
     </form>
 
     <!-- ===== LISTA DE IP BLOQUEADAS ===== -->
     <section class="ip-list">
       <h2>IP Bloqueadas</h2>
-      <ul id="blocked-ips-list">
-        <li style="text-align: center; color: #aaa;">Cargando...</li>
+      <ul>
+        <li>192.168.21.1</li>
+        <li>192.168.251.15</li>
+        <li>192.168.281.12</li>
+        <li>192.168.121.17</li>
       </ul>
     </section>
 
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Verificar autenticación
-      if (!checkAdminAuth()) {
-        return;
-      }
-
-      const blockIpForm = document.getElementById("blockIpForm");
-      const ipInput = document.getElementById("ipInput");
-      const blockedIpsList = document.getElementById("blocked-ips-list");
-
-      // Lista temporal de IPs bloqueadas (hasta que se implemente el backend)
-      let blockedIps = [
-        "192.168.21.1",
-        "192.168.251.15",
-        "192.168.281.12",
-        "192.168.121.17"
-      ];
-
-      // Función para renderizar la lista
-      function renderBlockedIps() {
-        if (blockedIps.length === 0) {
-          blockedIpsList.innerHTML = '<li style="text-align: center; color: #aaa;">No hay IPs bloqueadas</li>';
-          return;
-        }
-
-        blockedIpsList.innerHTML = "";
-        blockedIps.forEach((ip, index) => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            ${ip}
-            <button onclick="unblockIp(${index})" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Desbloquear</button>
-          `;
-          blockedIpsList.appendChild(li);
-        });
-      }
-
-      // Función para desbloquear IP
-      window.unblockIp = function (index) {
-        if (confirm(`¿Desbloquear la IP ${blockedIps[index]}?`)) {
-          blockedIps.splice(index, 1);
-          renderBlockedIps();
-          alert("IP desbloqueada exitosamente");
-        }
-      };
-
-      // Manejar formulario
-      blockIpForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const newIp = ipInput.value.trim();
-
-        if (blockedIps.includes(newIp)) {
-          alert("Esta IP ya está bloqueada");
-          return;
-        }
-
-        blockedIps.push(newIp);
-        renderBlockedIps();
-        ipInput.value = "";
-        alert("IP bloqueada exitosamente");
-      });
-
-      // Renderizar lista inicial
-      renderBlockedIps();
-    });
-  </script>
 </body>
-
 </html>

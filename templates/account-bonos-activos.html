@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bonos y Promociones - Activos</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos-activos.css') }}">
 </head>
-
 <body>
 
   <div class="rc-container">
@@ -26,8 +24,16 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="bonos-activos" id="activeBonusList">
-      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando bonos activos...</p>
+    <div class="bonos-activos">
+      <div class="bono-item">
+        <p class="bono-titulo">Bono de bienvenida</p>
+        <p class="bono-fecha">Activado el 07/01/2022</p>
+      </div>
+
+      <div class="bono-item">
+        <p class="bono-titulo">Bono por Recomendación</p>
+        <p class="bono-fecha">Activado el 07/01/2022</p>
+      </div>
     </div>
   </div>
 
@@ -45,53 +51,11 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="">
       <span>Soporte</span>
     </a>
-    <a href="/account/cartera" class="rc-nav-item">
+    <a href="/wallet" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="">
       <span>Cartera</span>
     </a>
   </nav>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const activeBonusList = document.getElementById("activeBonusList");
-      const userId = localStorage.getItem("user_id");
-
-      if (!userId) {
-        window.location.href = "/login";
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/bonos/activos/${userId}`);
-        const data = await response.json();
-
-        if (data.bonos && data.bonos.length > 0) {
-          activeBonusList.innerHTML = "";
-          data.bonos.forEach(bono => {
-            const item = document.createElement("div");
-            item.className = "bono-item";
-
-            // Formatear fecha
-            const fecha = new Date(bono.fecha_adquisicion).toLocaleDateString('es-ES');
-
-            item.innerHTML = `
-              <p class="bono-titulo">${bono.nombre_bono}</p>
-              <p class="bono-fecha">Activado el ${fecha}</p>
-              <p style="font-size: 0.8em; color: #aaa;">Progreso: ${bono.progreso}%</p>
-            `;
-            activeBonusList.appendChild(item);
-          });
-        } else {
-          activeBonusList.innerHTML = '<p style="text-align: center; color: #aaa; margin-top: 20px;">No tienes bonos activos.</p>';
-        }
-
-      } catch (error) {
-        console.error("Error al cargar bonos activos:", error);
-        activeBonusList.innerHTML = '<p style="text-align: center; color: red;">Error al cargar bonos.</p>';
-      }
-    });
-  </script>
-
 </body>
-
 </html>

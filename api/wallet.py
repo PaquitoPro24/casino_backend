@@ -29,35 +29,19 @@ async def api_deposit_card(
         if monto_decimal <= 0:
             return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
 
-        # Validaciones básicas de tarjeta
-        if len(numero_tarjeta) < 15 or len(numero_tarjeta) > 16:
-            return JSONResponse({"error": "Número de tarjeta inválido."}, status_code=400)
-        if len(fecha_exp) < 5:
-            return JSONResponse({"error": "Fecha de expiración inválida."}, status_code=400)
-        if len(cvv) < 3 or len(cvv) > 4:
-            return JSONResponse({"error": "CVV inválido."}, status_code=400)
-
         conn = db_connect.get_connection()
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
         # 1. Registrar la transacción como 'Completada'
         cursor.execute(
-            """
-            INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
-            VALUES (%s, 'Depósito', %s, 'Completada', 'Tarjeta', %s)
-            """,
-            (id_usuario, monto_decimal, datetime.now())
+            "INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago) VALUES (%s, 'Depósito', %s, 'Completada', 'Tarjeta')",
+            (id_usuario, monto_decimal)
         )
         # 2. Actualizar el saldo del usuario
         cursor.execute(
-            """
-            UPDATE Saldo 
-            SET saldo_actual = saldo_actual + %s,
-                ultima_actualizacion = %s
-            WHERE id_usuario = %s
-            """,
-            (monto_decimal, datetime.now(), id_usuario)
+            "UPDATE Saldo SET saldo_actual = saldo_actual + %s WHERE id_usuario = %s",
+            (monto_decimal, id_usuario)
         )
         conn.commit()
         cursor.close()
@@ -86,15 +70,9 @@ async def api_save_bank_method(
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("SELECT id_metodo FROM Metodo_Pago WHERE nombre = 'Transferencia'")
         metodo = cursor.fetchone()
-        
         if not metodo:
-            # Si no existe, lo creamos automáticamente
-            cursor.execute(
-                "INSERT INTO Metodo_Pago (nombre, tipo, activo) VALUES ('Transferencia', 'Transferencia', true) RETURNING id_metodo"
-            )
-            id_metodo_pago = cursor.fetchone()['id_metodo']
-        else:
-            id_metodo_pago = metodo['id_metodo']
+            return JSONResponse({"error": "Configuración del servidor incompleta (M-406)"}, status_code=500)
+        id_metodo_pago = metodo['id_metodo']
 
         # Guardamos la CLABE como token
         cursor.execute(
@@ -123,130 +101,19 @@ async def api_withdraw_bank(
     id_usuario: int = Form(),
     monto: str = Form()
 ):
-    """
-    Procesa un retiro a cuenta bancaria, verifica saldo y actualiza la base de datos
-    """
     print(f"🔹 API: Solicitando retiro de ${monto} a CLABE para usuario: {id_usuario}")
-    conn = None
-    try:
-        monto_decimal = decimal.Decimal(monto)
-        if monto_decimal <= 0:
-            return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
-
-        conn = db_connect.get_connection()
-        if conn is None:
-            return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor()
-        
-        # 1. Verificar saldo suficiente
-        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (id_usuario,))
-        result = cursor.fetchone()
-        
-        if not result:
-            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
-        
-        saldo_actual = result[0]
-        if saldo_actual < monto_decimal:
-            return JSONResponse({"error": "Saldo insuficiente"}, status_code=400)
-        
-        # 2. Registrar la transacción como 'Completada'
-        cursor.execute(
-            """
-            INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
-            VALUES (%s, 'Retiro', %s, 'Completada', 'Transferencia', %s)
-            """,
-            (id_usuario, monto_decimal, datetime.now())
-        )
-        
-        # 3. Actualizar el saldo del usuario
-        cursor.execute(
-            """
-            UPDATE Saldo 
-            SET saldo_actual = saldo_actual - %s,
-                ultima_actualizacion = %s
-            WHERE id_usuario = %s
-            """,
-            (monto_decimal, datetime.now(), id_usuario)
-        )
-        
-        conn.commit()
-        cursor.close()
-        
-        print(f"✅ API: Retiro a banco completado para usuario {id_usuario}")
-        return JSONResponse({"success": True, "message": "Retiro realizado con éxito."})
-
-    except Exception as e:
-        if conn: conn.rollback()
-        print(f"🚨 API ERROR (Withdraw Bank): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
+    # Esta lógica es similar a un depósito pero a la inversa y queda 'Pendiente'
+    # Aquí iría la lógica para verificar saldo, crear transacción de retiro, etc.
+    return JSONResponse({"success": True, "message": "Solicitud de retiro recibida. Se procesará en breve."})
 
 @router.post("/api/wallet/withdraw-card")
 async def api_withdraw_card(
     id_usuario: int = Form(),
     monto: str = Form()
 ):
-    """
-    Procesa un retiro a tarjeta, verifica saldo y actualiza la base de datos
-    """
     print(f"🔹 API: Solicitando retiro de ${monto} a Tarjeta para usuario: {id_usuario}")
-    conn = None
-    try:
-        monto_decimal = decimal.Decimal(monto)
-        if monto_decimal <= 0:
-            return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
-
-        conn = db_connect.get_connection()
-        if conn is None:
-            return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor()
-        
-        # 1. Verificar saldo suficiente
-        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (id_usuario,))
-        result = cursor.fetchone()
-        
-        if not result:
-            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
-        
-        saldo_actual = result[0]
-        if saldo_actual < monto_decimal:
-            return JSONResponse({"error": "Saldo insuficiente"}, status_code=400)
-        
-        # 2. Registrar la transacción como 'Completada'
-        cursor.execute(
-            """
-            INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
-            VALUES (%s, 'Retiro', %s, 'Completada', 'Tarjeta', %s)
-            """,
-            (id_usuario, monto_decimal, datetime.now())
-        )
-        
-        # 3. Actualizar el saldo del usuario
-        cursor.execute(
-            """
-            UPDATE Saldo 
-            SET saldo_actual = saldo_actual - %s,
-                ultima_actualizacion = %s
-            WHERE id_usuario = %s
-            """,
-            (monto_decimal, datetime.now(), id_usuario)
-        )
-        
-        conn.commit()
-        cursor.close()
-        
-        print(f"✅ API: Retiro completado para usuario {id_usuario}")
-        return JSONResponse({"success": True, "message": "Retiro realizado con éxito."})
-
-    except Exception as e:
-        if conn: conn.rollback()
-        print(f"🚨 API ERROR (Withdraw Card): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
+    # Similar al retiro a banco.
+    return JSONResponse({"success": True, "message": "Solicitud de retiro recibida. Se procesará en breve."})
 
 # ==========================================================
 #  NUEVO: GUARDAR MÉTODO DE PAGO (TARJETA)
@@ -282,17 +149,15 @@ async def api_save_card_method(
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # 1. Averiguamos el id_metodo para 'Tarjeta'
+        # Asumiré que en tu tabla 'Metodo_Pago' tienes uno llamado 'Tarjeta'
         cursor.execute("SELECT id_metodo FROM Metodo_Pago WHERE nombre = 'Tarjeta'")
         metodo = cursor.fetchone()
         
         if not metodo:
-            # Si no existe, lo creamos automáticamente
-            cursor.execute(
-                "INSERT INTO Metodo_Pago (nombre, tipo, activo) VALUES ('Tarjeta', 'Tarjeta', true) RETURNING id_metodo"
-            )
-            id_metodo_pago = cursor.fetchone()['id_metodo']
-        else:
-            id_metodo_pago = metodo['id_metodo']
+            print("🚨 API ERROR: No se encontró 'Tarjeta' en la tabla Metodo_Pago")
+            return JSONResponse({"error": "Configuración del servidor incompleta (M-405)"}, status_code=500)
+
+        id_metodo_pago = metodo['id_metodo']
 
         # 2. SIMULACIÓN DE TOKEN: NUNCA guardes la tarjeta real.
         # Guardamos solo los últimos 4 dígitos como "token".
@@ -393,93 +258,4 @@ async def api_deposit_transfer(
     
     finally:
         if cursor: cursor.close()
-        if conn: conn.close()
-
-# ==========================================================
-#  NUEVO: HISTORIAL DE TRANSACCIONES
-# ==========================================================
-@router.get("/api/wallet/transactions/{id_usuario}")
-async def api_get_transactions(id_usuario: int):
-    """
-    Obtiene el historial de transacciones (depósitos y retiros) del usuario.
-    """
-    print(f"🔹 API: Obteniendo transacciones para usuario: {id_usuario}")
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        cursor.execute(
-            """
-            SELECT tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion
-            FROM Transaccion
-            WHERE id_usuario = %s
-            ORDER BY fecha_transaccion DESC
-            """,
-            (id_usuario,)
-        )
-        transacciones = cursor.fetchall()
-        cursor.close()
-        
-        # Convertir datetime a ISO format para JSON
-        for tx in transacciones:
-            if tx.get('fecha_transaccion'):
-                tx['fecha_transaccion'] = tx['fecha_transaccion'].isoformat()
-            if tx.get('monto'):
-                tx['monto'] = float(tx['monto'])
-        
-        return JSONResponse({"transacciones": transacciones})
-
-    except Exception as e:
-        print(f"🚨 API ERROR (Get Transactions): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
-
-# ==========================================================
-#  NUEVO: HISTORIAL DE JUEGOS
-# ==========================================================
-@router.get("/api/wallet/game-history/{id_usuario}")
-async def api_get_game_history(id_usuario: int):
-    """
-    Obtiene el historial de juegos del usuario.
-    NOTA: Por ahora devuelve una lista vacía o datos simulados si no existe la tabla.
-    """
-    print(f"🔹 API: Obteniendo historial de juegos para usuario: {id_usuario}")
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        
-        # Intentamos consultar una tabla hipotética 'Historial_Juego'
-        # Si falla, devolvemos lista vacía para no romper el frontend
-        try:
-            cursor.execute(
-                """
-                SELECT h.id_historial, j.nombre as nombre_juego, h.fecha_inicio, h.fecha_fin, h.ganancia
-                FROM Historial_Juego h
-                JOIN Juego j ON h.id_juego = j.id_juego
-                WHERE h.id_usuario = %s
-                ORDER BY h.fecha_inicio DESC
-                """,
-                (id_usuario,)
-            )
-            games = cursor.fetchall()
-        except psycopg2.Error:
-            if conn: conn.rollback()
-            print("⚠️ API: Tabla Historial_Juego no encontrada, devolviendo lista vacía.")
-            games = []
-
-        cursor.close()
-        
-        return JSONResponse({"games": games})
-
-    except Exception as e:
-        print(f"🚨 API ERROR (Get Game History): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
         if conn: conn.close()

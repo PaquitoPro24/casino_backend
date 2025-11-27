@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat en Vivo - Nuevo</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-chat.css') }}">
 </head>
-
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -29,7 +27,7 @@
           <option value="Problema con el pago">Problema con el pago</option>
           <option value="Consulta general">Consulta general</option>
         </select>
-
+        
         <!-- El campo "Nombre" no está en tu BD (Soporte) -->
         <textarea name="mensaje" placeholder="Mensaje" required></textarea>
 
@@ -45,7 +43,7 @@
   -->
   <script>
     // 1. Verificar sesión
-    const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("usuario_id");
     if (!userId) {
       alert("No has iniciado sesión.");
       window.location.href = "/login";
@@ -72,7 +70,7 @@
         if (result.error) {
           alert("Error: " + result.error);
         } else if (result.success) {
-          alert("¡Chat iniciado con éxito! Un agente te atenderá pronto.");
+          alert("¡Ticket de chat enviado con éxito!");
           // 4. Redirigir a la lista de "chats" activos
           window.location.href = "/support/chat/active";
         }
@@ -84,5 +82,4 @@
     });
   </script>
 </body>
-
 </html>

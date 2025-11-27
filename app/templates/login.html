@@ -1,88 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Royal Crumbs</title>
+  <title>Iniciar Sesión - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
 </head>
+
 <body>
-  <main class="main">
-    <section class="login-card">
-      <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-      <h1 class="auth-title">Bienvenido de nuevo</h1>
+  <div class="container">
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
 
-      <form id="loginForm">
-        <input type="email" name="correo" placeholder="Correo Electrónico" class="auth-input" required>
-        <input type="password" name="contrasena" placeholder="Contraseña" class="auth-input" required>
+    <form id="login-form">
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+      </div>
 
-        <a href="/forgot-password" class="forgot-link">¿Olvidaste tu Contraseña?</a>
+      <button type="submit" class="btn-primary">Iniciar Sesión</button>
 
-        <button type="submit" class="auth-button">Iniciar Sesión</button>
-      </form>
+      <div class="links">
+        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+        <a href="/register">¿No tienes cuenta? Regístrate</a>
+      </div>
+    </form>
 
-      <a href="/register" class="register-link">¿No tienes una cuenta? Regístrate</a>
-    </section>
-  </main>
+    <div id="error-message" class="error-message" style="display: none;"></div>
+
+  </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("login-form");
+      const errorMessageDiv = document.getElementById("error-message");
 
-      const form = e.target;
-      const dataToSend = {
-        correo: form.correo.value,
-        contrasena: form.contrasena.value
-      };
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataToSend)
-        });
-        const data = await res.json();
-        console.log("🔹 Datos recibidos:", data);
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries());
+        data.correo = data.email;
+        data.contrasena = data.password;
+        delete data.email;
+        delete data.password;
 
-        if (data.error) {
-          alert(data.error);
-          return;
+        errorMessageDiv.style.display = "none";
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || "Error desconocido al iniciar sesión.");
+          }
+
+          // Guardar datos en localStorage
+          localStorage.setItem("userId", result.id_usuario);
+          localStorage.setItem("idRol", result.id_rol);
+          localStorage.setItem("userRole", result.rol);
+
+          // Redirigir según el rol del usuario
+          if (result.rol === 'Administrador' || result.rol === 'Auditor') {
+            window.location.href = "/admin";
+          } else if (result.rol === 'Agente de Soporte') {
+            window.location.href = "/agente";
+          } else {
+            window.location.href = "/home";
+          }
+
+        } catch (error) {
+          console.error("Error de login:", error);
+          errorMessageDiv.textContent = error.message;
+          errorMessageDiv.style.display = "block";
         }
-
-        // Guardar sesión local
-        localStorage.setItem("usuario_id", data.id_usuario);
-        localStorage.setItem("rol", data.rol);
-
-        // Normalizamos el texto del rol
-        const rol = (data.rol || "").toLowerCase().trim();
-        let destino = "/home";
-
-        switch (rol) {
-          case "admin":
-          case "administrador":
-            destino = "/admin";
-            break;
-
-          case "soporte":
-          case "support":
-            destino = "/support";
-            break;
-
-          case "usuario":
-          case "user":
-          default:
-            destino = "/home";
-            break;
-        }
-
-        console.log("➡️ Redirigiendo a:", destino);
-        window.location.href = destino;
-
-      } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        alert("Error de conexión con el servidor.");
-      }
+      });
     });
   </script>
 </body>
+
 </html>

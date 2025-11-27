@@ -1,33 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Métodos de Pago - Royal Crumbs</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/account-metodos.css') }}">
+  <title>Depósitos - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial.css') }}">
 </head>
-
 <body>
 
   <div class="rc-container">
     <!-- ENCABEZADO -->
-    <header class="rc-header">
+    <div class="rc-header">
       <a href="/account" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Métodos de Pago</h1>
-      <div></div>
-    </header>
-
-    <!-- LISTA DE MÉTODOS -->
-    <div id="payment-methods-container">
-      <p style="text-align: center; color: #aaa; margin-top: 20px;">Cargando métodos de pago...</p>
+      <h1 class="rc-screen-title">Mi cuenta</h1>
     </div>
 
-    <!-- BOTÓN AGREGAR -->
-    <div id="add-method-container" style="display: none; margin-top: 20px;">
-      <button class="btn-add" id="addMethodBtn">+ Agregar Método de Pago</button>
-    </div>
+    <!-- CONTENIDO PRINCIPAL -->
+    <section class="deposit-section">
+      <h2 class="rc-subtitle">Metodos de pago</h2>
 
+      <!-- Opción: Historial Transacciones -->
+      <a href="/account/cartera/depositos/tarjeta" class="payment-option">
+        <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
+        <div class="payment-info">
+          <h3>Historial de transacciones</h3>
+          <p>Visa, MasterCard</p>
+        </div>
+      </a>
+
+      <!-- Opción: Juegos -->
+      <a href="/account/cartera/depositos/transferencia" class="payment-option">
+        <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
+        <div class="payment-info">
+          <h3>Historial de juegos</h3>
+          <p>Transferencia Bancaria</p>
+        </div>
+      </a>
+    </section>
   </div>
 
   <!-- NAV INFERIOR -->
@@ -44,113 +53,11 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/account" class="rc-nav-item active">
-      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cuenta">
-      <span>Cuenta</span>
+    <a href="/account/cartera" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
     </a>
   </nav>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const container = document.getElementById("payment-methods-container");
-      const addMethodContainer = document.getElementById("add-method-container");
-      const addMethodBtn = document.getElementById("addMethodBtn");
-      const userId = localStorage.getItem("user_id");
-
-      if (!userId) {
-        window.location.href = "/login";
-        return;
-      }
-
-      // Cargar métodos de pago del usuario
-      try {
-        const response = await fetch(`/api/user/payment-methods/${userId}`);
-        const data = await response.json();
-
-        if (data.methods && data.methods.length > 0) {
-          // Tiene métodos registrados - mostrarlos
-          container.innerHTML = "";
-          data.methods.forEach(method => {
-            const methodCard = document.createElement("div");
-            methodCard.className = "payment-card";
-            methodCard.innerHTML = `
-              <div class="payment-info">
-                <h3>${method.tipo}</h3>
-                <p>${method.detalles}</p>
-              </div>
-              <button class="btn-remove" onclick="removeMethod(${method.id})">Eliminar</button>
-            `;
-            container.appendChild(methodCard);
-          });
-        } else {
-          // No tiene métodos - mostrar opciones para agregar
-          container.innerHTML = `
-            <div class="no-methods">
-              <p style="text-align: center; color: #aaa; margin: 20px 0;">No tienes métodos de pago registrados</p>
-              <div class="payment-options">
-                <a href="/account/tarjeta" class="payment-option">
-                  <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta">
-                  <div>
-                    <h3>Tarjeta de Crédito/Débito</h3>
-                    <p>Visa, MasterCard</p>
-                  </div>
-                </a>
-                <a href="/account/bancaria" class="payment-option">
-                  <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Banco">
-                  <div>
-                    <h3>Cuenta Bancaria</h3>
-                    <p>SPEI, CLABE</p>
-                  </div>
-                </a>
-              </div>
-            </div>
-          `;
-        }
-
-        // Mostrar botón de agregar si ya tiene métodos
-        if (data.methods && data.methods.length > 0) {
-          addMethodContainer.style.display = "block";
-        }
-
-      } catch (error) {
-        console.error("Error al cargar métodos:", error);
-        // Si el endpoint no existe, mostrar opciones por defecto
-        container.innerHTML = `
-          <div class="no-methods">
-            <p style="text-align: center; color: #aaa; margin: 20px 0;">No tienes métodos de pago registrados</p>
-            <div class="payment-options">
-              <a href="/account/tarjeta" class="payment-option">
-                <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta">
-                <div>
-                  <h3>Tarjeta de Crédito/Débito</h3>
-                  <p>Visa, MasterCard</p>
-                </div>
-              </a>
-              <a href="/account/bancaria" class="payment-option">
-                <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Banco">
-                <div>
-                  <h3>Cuenta Bancaria</h3>
-                  <p>SPEI, CLABE</p>
-                </div>
-              </a>
-            </div>
-          </div>
-        `;
-      }
-
-      // Agregar nuevo método
-      addMethodBtn.addEventListener("click", () => {
-        window.location.href = "/account/metodos/agregar";
-      });
-    });
-
-    function removeMethod(methodId) {
-      if (confirm("¿Estás seguro de eliminar este método de pago?")) {
-        alert("Funcionalidad de eliminación pendiente de implementar");
-      }
-    }
-  </script>
-
 </body>
-
 </html>

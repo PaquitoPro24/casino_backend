@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lista Blanca IP — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-configuracion-lista-blanca.css') }}">
-  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
-
 <body>
   <div class="rc-container">
 
@@ -20,88 +17,22 @@
     </header>
 
     <!-- ===== FORMULARIO ===== -->
-    <form class="ip-form" id="whitelistIpForm">
-      <input type="text" id="ipInput" placeholder="Ingresa IP (ej: 192.168.1.1)" pattern="^(\d{1,3}\.){3}\d{1,3}$"
-        required>
-      <button type="submit" class="btn-gold">Agregar a Lista Blanca</button>
+    <form class="ip-form">
+      <input type="text" placeholder="Buscar IP">
+      <button type="button" class="btn-gold">Agregar a Lista Blanca</button>
     </form>
 
     <!-- ===== LISTA DE IP ===== -->
     <section class="ip-list">
       <h2>Lista Blanca IP</h2>
-      <ul id="whitelisted-ips-list">
-        <li style="text-align: center; color: #aaa;">Cargando...</li>
+      <ul>
+        <li>192.168.21.1</li>
+        <li>192.168.251.15</li>
+        <li>192.168.281.12</li>
+        <li>192.168.121.17</li>
       </ul>
     </section>
 
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Verificar autenticación
-      if (!checkAdminAuth()) {
-        return;
-      }
-
-      const whitelistIpForm = document.getElementById("whitelistIpForm");
-      const ipInput = document.getElementById("ipInput");
-      const whitelistedIpsList = document.getElementById("whitelisted-ips-list");
-
-      // Lista temporal de IPs en lista blanca (hasta que se implemente el backend)
-      let whitelistedIps = [
-        "192.168.21.1",
-        "192.168.251.15",
-        "192.168.281.12",
-        "192.168.121.17"
-      ];
-
-      // Función para renderizar la lista
-      function renderWhitelistedIps() {
-        if (whitelistedIps.length === 0) {
-          whitelistedIpsList.innerHTML = '<li style="text-align: center; color: #aaa;">No hay IPs en la lista blanca</li>';
-          return;
-        }
-
-        whitelistedIpsList.innerHTML = "";
-        whitelistedIps.forEach((ip, index) => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            ${ip}
-            <button onclick="removeFromWhitelist(${index})" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px;">Quitar</button>
-          `;
-          whitelistedIpsList.appendChild(li);
-        });
-      }
-
-      // Función para quitar IP de lista blanca
-      window.removeFromWhitelist = function (index) {
-        if (confirm(`¿Quitar la IP ${whitelistedIps[index]} de la lista blanca?`)) {
-          whitelistedIps.splice(index, 1);
-          renderWhitelistedIps();
-          alert("IP quitada de la lista blanca exitosamente");
-        }
-      };
-
-      // Manejar formulario
-      whitelistIpForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const newIp = ipInput.value.trim();
-
-        if (whitelistedIps.includes(newIp)) {
-          alert("Esta IP ya está en la lista blanca");
-          return;
-        }
-
-        whitelistedIps.push(newIp);
-        renderWhitelistedIps();
-        ipInput.value = "";
-        alert("IP agregada a la lista blanca exitosamente");
-      });
-
-      // Renderizar lista inicial
-      renderWhitelistedIps();
-    });
-  </script>
 </body>
-
 </html>

@@ -20,11 +20,11 @@
     <!-- SECCIÓN SUPERIOR -->
     <section class="balance-top">
       <h2 class="rc-subtitle">Saldo Total</h2>
-      <p class="saldo-total" id="saldo-total">Cargando...</p>
+      <p class="saldo-total">Cargando...</p>
 
       <div class="btn-row">
-        <button class="btn-dorado" onclick="window.location.href='/account/cartera/depositos'">Depositar</button>
-        <button class="btn-dorado" onclick="window.location.href='/account/cartera/retiros'">Retirar</button>
+        <button class="btn-dorado">Depositar</button>
+        <button class="btn-dorado">Retirar</button>
       </div>
     </section>
 
@@ -57,11 +57,11 @@
           <h3>Detalle del Saldo</h3>
           <div class="detail-row">
             <span>Saldo Principal</span>
-            <span id="saldo-principal">Cargando...</span>
+            <span class="saldo-principal">Cargando...</span>
           </div>
           <div class="detail-row">
             <span>Saldo de Bonificación</span>
-            <span id="saldo-bono">Cargando...</span>
+            <span>$0.00</span>
           </div>
         </div>
 
@@ -110,47 +110,67 @@
     </a>
   </nav>
 
-  <!-- SCRIPT PARA CARGAR SALDO -->
+  <!-- SCRIPT PARA CARGAR SALDO DINÁMICAMENTE -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const saldoTotalEl = document.getElementById("saldo-total");
-      const saldoPrincipalEl = document.getElementById("saldo-principal");
-      const saldoBonoEl = document.getElementById("saldo-bono");
+    document.addEventListener("DOMContentLoaded", async () => {
+      // MIGRACIÓN AUTOMÁTICA: Si existe el formato antiguo, migrar al nuevo
+      if (localStorage.getItem("userId") && !localStorage.getItem("user_id")) {
+        console.log("✅ Migrando localStorage de userId → user_id");
+        localStorage.setItem("user_id", localStorage.getItem("userId"));
+        localStorage.setItem("id_rol", localStorage.getItem("idRol"));
+        localStorage.setItem("user_role", localStorage.getItem("userRole"));
+        localStorage.removeItem("userId");
+        localStorage.removeItem("idRol");
+        localStorage.removeItem("userRole");
+      }
 
       const userId = localStorage.getItem("user_id");
 
+      console.log("📍 User ID:", userId);
+
       if (!userId) {
+        alert("No se ha iniciado sesión. Redirigiendo al login.");
         window.location.href = "/login";
         return;
       }
 
-      // Cargar saldo del usuario
-      async function loadBalance() {
-        try {
-          const response = await fetch(`/api/user/${userId}`);
-          if (!response.ok) throw new Error("Error al cargar el saldo");
+      try {
+        console.log("🔄 Llamando API:", `/api/user/${userId}`);
 
-          const data = await response.json();
+        const response = await fetch(`/api/user/${userId}`);
 
-          const formatter = new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN'
-          });
+        console.log("📡 Status:", response.status);
 
-          // Saldo Total = Principal + Bono
-          const total = data.saldo + data.saldo_bono;
-
-          saldoTotalEl.textContent = formatter.format(total);
-          saldoPrincipalEl.textContent = formatter.format(data.saldo);
-          saldoBonoEl.textContent = formatter.format(data.saldo_bono);
-
-        } catch (error) {
-          console.error("Error:", error);
-          saldoTotalEl.textContent = "No disponible";
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("❌ Error:", errorText);
+          throw new Error("Error al cargar datos");
         }
-      }
 
-      loadBalance();
+        const data = await response.json();
+        console.log("✅ Datos recibidos:", data);
+
+        // Formatear saldo
+        const formattedBalance = new Intl.NumberFormat('es-MX', {
+          style: 'currency',
+          currency: 'MXN'
+        }).format(data.saldo || 0);
+
+        console.log("💰 Saldo formateado:", formattedBalance);
+
+        // Actualizar elementos
+        const saldoTotal = document.querySelector(".saldo-total");
+        const saldoPrincipal = document.querySelector(".saldo-principal");
+
+        if (saldoTotal) saldoTotal.textContent = formattedBalance;
+        if (saldoPrincipal) saldoPrincipal.textContent = formattedBalance;
+
+      } catch (error) {
+        console.error("❌ Error completo:", error);
+        const saldoTotal = document.querySelector(".saldo-total");
+        if (saldoTotal) saldoTotal.textContent = "Error al cargar";
+        alert("Error: " + error.message + "\n\nRevisa la consola (F12) para más detalles.");
+      }
     });
   </script>
 

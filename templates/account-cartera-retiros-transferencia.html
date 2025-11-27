@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retiros - Transferencia Bancaria | Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-retiros-transferencia.css') }}">
 </head>
-
 <body>
 
   <div class="rc-container">
@@ -21,9 +19,9 @@
     <section class="withdraw-transfer-section">
       <h2 class="rc-subtitle">Transferencia Bancaria</h2>
 
-      <form id="withdrawBankForm" class="withdraw-form">
-        <input type="text" name="clabe" placeholder="Cuenta CLABE" class="input-field" required>
-        <input type="number" name="monto" placeholder="Monto del Retiro" class="input-field" required>
+      <form action="#" method="POST" class="withdraw-form">
+        <input type="text" placeholder="Cuenta CLABE" class="input-field" required>
+        <input type="number" placeholder="Monto del Retiro" class="input-field" required>
 
         <button type="submit" class="btn-dorado">Retirar</button>
       </form>
@@ -44,45 +42,11 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/account/cartera" class="rc-nav-item active">
+    <a href="/wallet" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
-  <script>
-    const userId = localStorage.getItem("user_id");
-    if (!userId) {
-      alert("No has iniciado sesión.");
-      window.location.href = "/login";
-    }
-
-    const form = document.getElementById("withdrawBankForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      formData.append("id_usuario", userId);
-
-      try {
-        const res = await fetch("/api/wallet/withdraw-bank", {
-          method: "POST",
-          body: formData
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          alert("Retiro exitoso.");
-          window.location.href = "/account/cartera/balance";
-        } else {
-          alert("Error: " + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error de conexión.");
-      }
-    });
-  </script>
-
 </body>
-
 </html>

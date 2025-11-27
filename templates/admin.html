@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administrador — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin.css') }}">
-  <script src="{{ url_for('static', path='js/admin-auth.js') }}"></script>
 </head>
-
 <body>
   <div class="rc-container">
-
+    
     <!-- ENCABEZADO -->
     <header class="rc-header">
       <a href="/home" class="rc-back">‹</a>
@@ -51,12 +48,5 @@
       </div>
     </section>
   </div>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Usar la utilidad centralizada de autenticación con debug activado
-      checkAdminAuthDebug();
-    });
-  </script>
 </body>
-
 </html>

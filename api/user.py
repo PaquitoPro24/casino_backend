@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -6,7 +6,7 @@ from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 
-@router.get("/api/user/{id_usuario}")
+@router.get("/{id_usuario}")
 async def api_get_user_info(id_usuario: int):
     """
     Ruta para OBTENER la info del usuario y rellenar el formulario
@@ -28,10 +28,12 @@ async def api_get_user_info(id_usuario: int):
                 u.nombre,
                 u.apellido,
                 u.email,
-                u.rol,
+                r.nombre as rol,
                 s.saldo_actual
             FROM
                 Usuario u
+            JOIN
+                Rol r ON u.id_rol = r.id_rol
             LEFT JOIN
                 Saldo s ON u.id_usuario = s.id_usuario
             WHERE
@@ -51,7 +53,6 @@ async def api_get_user_info(id_usuario: int):
             "apellido": usuario['apellido'],
             "email": usuario['email'],
             "saldo": float(usuario['saldo_actual'] or 0.0), # (Añadido 'or 0.0' por si es None)
-            "saldo_bono": 0.0, # No hay campo valor en Bono, devolvemos 0 por ahora
             "rol": usuario['rol']
         })
 
@@ -65,7 +66,7 @@ async def api_get_user_info(id_usuario: int):
 # ==========================================================
 #  RUTA PARA ACTUALIZAR EL PERFIL (GUARDAR CAMBIOS)
 # ==========================================================
-@router.put("/api/user/update/{id_usuario}")
+@router.put("/update/{id_usuario}")
 async def api_update_user_info(
     id_usuario: int,
     nombre: str = Form(),

@@ -38,47 +38,49 @@
       const errorMessageDiv = document.getElementById("error-message");
 
       loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Evita que el formulario se envíe de la forma tradicional
+        event.preventDefault();
 
-        // 1. Obtenemos los datos del formulario y los convertimos a un objeto JavaScript.
         const formData = new FormData(loginForm);
         const data = Object.fromEntries(formData.entries());
-        // Renombramos los campos para que coincidan con el modelo Pydantic (correo, contrasena)
         data.correo = data.email;
         data.contrasena = data.password;
         delete data.email;
         delete data.password;
 
-        errorMessageDiv.style.display = "none"; // Ocultar errores previos
+        errorMessageDiv.style.display = "none";
 
         try {
           const response = await fetch("/api/auth/login", {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json' // 2. Indicamos que estamos enviando JSON
+              'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data) // 3. Convertimos el objeto a una cadena JSON
+            body: JSON.stringify(data)
           });
 
           const result = await response.json();
 
           if (!response.ok) {
-            // Usamos el mensaje de error que definimos en la API
             throw new Error(result.error || "Error desconocido al iniciar sesión.");
           }
 
-          // Si el login es exitoso, la API devuelve el id_usuario y el rol.
-          // Los guardamos en el almacenamiento local del navegador.
+          // Guardar datos en localStorage con nombres consistentes
           localStorage.setItem("user_id", result.id_usuario);
+          localStorage.setItem("id_rol", result.id_rol);
           localStorage.setItem("user_role", result.rol);
 
-          // Redirigir según el rol del usuario (case-insensitive)
-          const role = (result.rol || "").toLowerCase().trim();
-
-          if (role === 'administrador' || role === 'auditor') {
-            window.location.href = "/admin"; // Redirige al panel de admin
+          // Redirigir según el id_rol del usuario
+          // 1 = Jugador, 2 = Administrador, 3 = Auditor, 4 = Agente de Soporte
+          if (result.id_rol === 1) {
+            window.location.href = "/home";
+          } else if (result.id_rol === 2) {
+            window.location.href = "/admin";
+          } else if (result.id_rol === 3) {
+            window.location.href = "/auditor";
+          } else if (result.id_rol === 4) {
+            window.location.href = "/agente";
           } else {
-            window.location.href = "/home"; // Redirige al home para jugadores
+            window.location.href = "/home"; // Fallback
           }
 
         } catch (error) {

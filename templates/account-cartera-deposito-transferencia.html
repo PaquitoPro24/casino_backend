@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,23 +15,19 @@
       margin-top: 20px;
       color: #fff;
     }
-
     .referencia-generada h3 {
       margin: 0 0 10px 0;
       color: #d8bb76;
     }
-
     .referencia-generada p {
       margin: 5px 0;
       font-size: 1.1em;
     }
-
     .referencia-generada small {
       color: #aaa;
     }
   </style>
 </head>
-
 <body>
 
   <div class="rc-container">
@@ -61,7 +56,7 @@
 
         <button type="submit" class="btn-dorado">Generar Referencia</button>
       </form>
-
+      
       <!-- 
         CONTENEDOR PARA LA RESPUESTA
       -->
@@ -73,7 +68,7 @@
 
   <!-- NAV INFERIOR -->
   <nav class="rc-nav">
-    [Immersive content redacted for brevity.]
+[Immersive content redacted for brevity.]
   </nav>
 
   <!-- 
@@ -83,7 +78,7 @@
   -->
   <script>
     // 1. Verificar sesión
-    const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("usuario_id");
     if (!userId) {
       alert("No has iniciado sesión.");
       window.location.href = "/login";
@@ -95,14 +90,14 @@
 
     transferForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-
+      
       const button = transferForm.querySelector("button");
       button.disabled = true;
       button.textContent = "Generando...";
-
+      
       const formData = new FormData(transferForm);
       formData.append("id_usuario", userId);
-
+      
       try {
         // 3. Llamar a la NUEVA ruta de API
         const res = await fetch("/api/wallet/deposit-transfer", {
@@ -111,7 +106,7 @@
         });
 
         const result = await res.json();
-
+        
         if (result.error) {
           alert("Error: " + result.error);
         } else if (result.success) {
@@ -132,12 +127,11 @@
         console.error("Error al generar:", error);
         alert("Error de conexión al generar la referencia.");
       }
-
+      
       button.disabled = false;
       button.textContent = "Generar Referencia";
     });
   </script>
 
 </body>
-
 </html>
