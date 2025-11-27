@@ -26,8 +26,8 @@ async def api_get_admin_stats():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # 1. Total de usuarios (solo jugadores)
-        cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE rol = 'Jugador'")
+        # 1. Total de usuarios (solo jugadores - id_rol = 1)
+        cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE id_rol = 1")
         total_users = cursor.fetchone()['total_users']
         
         # 2. Total de juegos activos
@@ -36,7 +36,7 @@ async def api_get_admin_stats():
         
         # 3. Total de depósitos hoy
         cursor.execute(
-            "SELECT COALESCE(SUM(monto), 0) as deposits_today FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completado' AND fecha_transaccion >= CURRENT_DATE"
+            "SELECT COALESCE(SUM(monto), 0) as deposits_today FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completada' AND fecha_transaccion >= CURRENT_DATE"
         )
         deposits_today = cursor.fetchone()['deposits_today']
         
@@ -71,9 +71,15 @@ async def api_get_all_users():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Buscamos solo Jugadores
+        # Buscamos solo Jugadores (id_rol = 1)
         cursor.execute(
-            "SELECT id_usuario, nombre, apellido, email, activo FROM Usuario WHERE rol = 'Jugador' ORDER BY nombre",
+            """
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.activo, r.nombre as rol
+            FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
+            WHERE u.id_rol = 1
+            ORDER BY u.nombre
+            """
         )
         usuarios = cursor.fetchall()
         cursor.close()
@@ -100,9 +106,15 @@ async def api_get_all_admins():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Buscamos Admins y Auditores
+        # Buscamos Admins (id_rol = 2) y Auditores (id_rol = 3)
         cursor.execute(
-            "SELECT id_usuario, nombre, apellido, email, rol, activo FROM Usuario WHERE rol IN ('Administrador', 'Auditor') ORDER BY nombre",
+            """
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre as rol, u.activo
+            FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
+            WHERE u.id_rol IN (2, 3)
+            ORDER BY u.nombre
+            """
         )
         admins = cursor.fetchall()
         cursor.close()
@@ -134,8 +146,9 @@ async def api_get_user_profile(id_usuario: int):
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
             """
-            SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.rol, u.activo, u.fecha_registro, s.saldo_actual
+            SELECT u.id_usuario, u.nombre, u.apellido, u.email, r.nombre as rol, u.activo, u.fecha_registro, s.saldo_actual
             FROM Usuario u
+            JOIN Rol r ON u.id_rol = r.id_rol
             LEFT JOIN Saldo s ON u.id_usuario = s.id_usuario
             WHERE u.id_usuario = %s
             """,
@@ -176,9 +189,18 @@ async def api_update_user_profile(
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
+        
+        # Primero obtenemos el id_rol correspondiente al nombre del rol
+        cursor.execute("SELECT id_rol FROM Rol WHERE nombre = %s", (rol,))
+        rol_result = cursor.fetchone()
+        if not rol_result:
+            return JSONResponse({" error": "Rol inválido"}, status_code=400)
+        id_rol = rol_result[0]
+        
+        # Ahora actualizamos con id_rol
         cursor.execute(
-            "UPDATE Usuario SET nombre = %s, apellido = %s, email = %s, rol = %s, activo = %s WHERE id_usuario = %s",
-            (nombre, apellido, email, rol, activo, id_usuario)
+            "UPDATE Usuario SET nombre = %s, apellido = %s, email = %s, id_rol = %s, activo = %s WHERE id_usuario = %s",
+            (nombre, apellido, email, id_rol, activo, id_usuario)
         )
         conn.commit()
         cursor.close()

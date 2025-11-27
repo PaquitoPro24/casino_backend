@@ -33,9 +33,9 @@ async def api_deposit_card(
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
-        # 1. Registrar la transacción como 'Completado'
+        # 1. Registrar la transacción como 'Completada'
         cursor.execute(
-            "INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago) VALUES (%s, 'Depósito', %s, 'Completado', 'Tarjeta')",
+            "INSERT INTO Transaccion (id_usuario, tipo_transaccion, monto, estado, metodo_pago) VALUES (%s, 'Depósito', %s, 'Completada', 'Tarjeta')",
             (id_usuario, monto_decimal)
         )
         # 2. Actualizar el saldo del usuario

@@ -28,10 +28,12 @@ async def api_get_user_info(id_usuario: int):
                 u.nombre,
                 u.apellido,
                 u.email,
-                u.rol,
+                r.nombre as rol,
                 s.saldo_actual
             FROM
                 Usuario u
+            JOIN
+                Rol r ON u.id_rol = r.id_rol
             LEFT JOIN
                 Saldo s ON u.id_usuario = s.id_usuario
             WHERE
