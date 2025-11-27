@@ -317,6 +317,21 @@ async def admin_promociones(request: Request):
     return render("admin-promociones.html", request)
 
 # =========================
+#  PANEL DE AUDITOR
+# =========================
+@app.get("/auditor", response_class=HTMLResponse)
+async def auditor_menu(request: Request):
+    return render("auditor.html", request)
+
+@app.get("/auditor/realizar", response_class=HTMLResponse)
+async def auditor_realizar(request: Request):
+    return render("auditor-realizar.html", request)
+
+@app.get("/auditor/historial", response_class=HTMLResponse)
+async def auditor_historial(request: Request):
+    return render("auditor-historial.html", request)
+
+# =========================
 #  PANEL DE AGENTE DE SOPORTE
 # =========================
 @app.get("/agente", response_class=HTMLResponse)

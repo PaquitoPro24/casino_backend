@@ -69,13 +69,18 @@
           localStorage.setItem("id_rol", result.id_rol);
           localStorage.setItem("user_role", result.rol);
 
-          // Redirigir según el rol del usuario
-          if (result.rol === 'Administrador' || result.rol === 'Auditor') {
+          // Redirigir según el id_rol del usuario
+          // 1 = Jugador, 2 = Administrador, 3 = Auditor, 4 = Agente de Soporte
+          if (result.id_rol === 1) {
+            window.location.href = "/home";
+          } else if (result.id_rol === 2) {
             window.location.href = "/admin";
-          } else if (result.rol === 'Agente de Soporte') {
+          } else if (result.id_rol === 3) {
+            window.location.href = "/auditor";
+          } else if (result.id_rol === 4) {
             window.location.href = "/agente";
           } else {
-            window.location.href = "/home";
+            window.location.href = "/home"; // Fallback
           }
 
         } catch (error) {
