@@ -4,69 +4,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuración - Royal Crumbs</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/account-configuracion.css') }}">
+  <title>Mi Cuenta - Configuración</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #202020;
+      color: #ffffff;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      background-color: #202020;
+    }
+
+    .back-btn {
+      font-size: 28px;
+      color: #ffffff;
+      text-decoration: none;
+      margin-right: 20px;
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .saldo-bar {
+      background-color: #0a0a0a;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 16px;
+      color: #999;
+      margin: 30px 0 20px;
+    }
+
+    .profile-section {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .profile-upload {
+      width: 120px;
+      height: 120px;
+    }
+
+    .upload-box {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .upload-box:hover {
+      transform: scale(1.05);
+    }
+
+    .upload-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    .form {
+      margin-top: 30px;
+    }
+
+    .form input {
+      width: 100%;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #000000;
+    }
+
+    .form input::placeholder {
+      color: #888;
+    }
+
+    .form input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(171, 146, 92, 0.3);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 14px;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
+      color: #ffffff;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(171, 146, 92, 0.4);
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, #c92a2a 0%, #e03131 100%);
+      color: #ffffff;
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(201, 42, 42, 0.4);
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #202020;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: #888;
+      transition: color 0.2s;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: #ab925c;
+    }
+
+    .nav-item img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+      filter: grayscale(1) brightness(0.6);
+    }
+
+    .nav-item:hover img,
+    .nav-item.active img {
+      filter: grayscale(0) brightness(1);
+    }
+
+    .nav-item span {
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 16px;
+      }
+
+      .header-title {
+        font-size: 20px;
+      }
+
+      .upload-box,
+      .profile-upload {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 0 40px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="rc-container">
-    <!-- ======== ENCABEZADO ======== -->
-    <header class="rc-header">
-      <a href="/account" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Configuración</h1>
-      <div></div> <!-- Elemento vacío para centrar el título -->
-    </header>
+  <div class="header">
+    <a href="/account" class="back-btn">‹</a>
+    <h1 class="header-title">Mi cuenta</h1>
+  </div>
 
-    <!-- ======== SALDO (NUEVO) ======== -->
-    <h2 class="rc-subtitle" id="user-balance">Saldo: Cargando...</h2>
+  <div class="container">
+    <div class="saldo-bar" id="user-balance">Saldo: Cargando...</div>
+    <div class="subtitle">Configuracion</div>
 
-    <!-- ======== FOTO DE PERFIL ======== -->
-    <div class="profile-upload">
-      <label for="file-input" class="upload-box">
-        <img id="profile-image" src="{{ url_for('static', path='img/icons/profile-placeholder.png') }}"
-          alt="Foto de perfil">
-      </label>
-      <input id="file-input" type="file" accept="image/*">
+    <div class="profile-section">
+      <div class="profile-upload">
+        <label for="file-input" class="upload-box">
+          <img id="preview" src="{{ url_for('static', path='img/icons/profile-placeholder.png') }}" alt="Foto">
+        </label>
+        <input id="file-input" type="file" accept="image/*">
+      </div>
     </div>
 
-    <!-- ======== FORMULARIO DE DATOS ======== -->
-    <form id="profile-form" class="rc-form">
-      <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-      <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-      <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+    <form class="form" id="profile-form">
+      <input type="text" id="nombre" name="nombre" placeholder="Nombre(s)" required>
+      <input type="text" id="apellido" name="apellido" placeholder="Apellido(s)" required>
+      <input type="email" id="email" name="email" placeholder="Correo" required>
 
-      <button type="submit" class="btn-save">Guardar Cambios</button>
-      <button type="button" class="btn-delete">Eliminar Cuenta</button>
+      <button type="submit" class="btn btn-save">Guardar Cambios</button>
+      <button type="button" class="btn btn-delete">Eliminar Cuenta</button>
     </form>
   </div>
 
-  <!-- ======== NAV INFERIOR ======== -->
-  <nav class="rc-nav">
-    <a href="/home" class="rc-nav-item">
+  <nav class="nav">
+    <a href="/home" class="nav-item">
       <img src="{{ url_for('static', path='img/icons/nav-home.png') }}" alt="Home">
-      <span>Home</span>
+      <span>Inicio</span>
     </a>
-    <a href="/games" class="rc-nav-item">
+    <a href="/games" class="nav-item">
       <img src="{{ url_for('static', path='img/icons/nav-games.png') }}" alt="Juegos">
       <span>Juegos</span>
     </a>
-    <a href="/account/cartera" class="rc-nav-item">
-      <img src="{{ url_for('static', path='img/icons/nav-wallet.png') }}" alt="Cartera">
-      <span>Cartera</span>
+    <a href="/support" class="nav-item">
+      <img src="{{ url_for('static', path='img/icons/nav-support.png') }}" alt="Soporte">
+      <span>Soporte</span>
     </a>
-    <a href="/account" class="rc-nav-item active">
-      <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Mi Cuenta">
-      <span>Mi Cuenta</span>
+    <a href="/account" class="nav-item active">
+      <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Cuenta">
+      <span>Cartera</span>
     </a>
   </nav>
 
-  <!-- ======== SCRIPT ======== -->
   <script>
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => document.getElementById('preview').src = event.target.result;
+        reader.readAsDataURL(file);
+      }
+    });
+
     document.addEventListener("DOMContentLoaded", async () => {
-      // MIGRACIÓN AUTOMÁTICA: Si existe el formato antiguo, migrar al nuevo
       if (localStorage.getItem("userId") && !localStorage.getItem("user_id")) {
-        console.log("✅ Migrando localStorage de userId → user_id");
         localStorage.setItem("user_id", localStorage.getItem("userId"));
         localStorage.setItem("id_rol", localStorage.getItem("idRol"));
         localStorage.setItem("user_role", localStorage.getItem("userRole"));
@@ -75,75 +291,45 @@
         localStorage.removeItem("userRole");
       }
 
-      // Obtener el ID del usuario desde localStorage
       const userId = localStorage.getItem("user_id");
-
-      console.log("📍 User ID:", userId);
-
       if (!userId) {
-        alert("No se ha iniciado sesión. Redirigiendo al login.");
+        alert("No se ha iniciado sesión");
         window.location.href = "/login";
         return;
       }
 
       try {
-        console.log("🔄 Llamando API:", `/api/user/${userId}`);
-
         const response = await fetch(`/api/user/${userId}`);
-
-        console.log("📡 Status:", response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("❌ Error:", errorText);
-          throw new Error("Error al cargar datos del usuario");
-        }
+        if (!response.ok) throw new Error("Error al cargar datos");
 
         const data = await response.json();
-        console.log("✅ Datos recibidos:", data);
-
-        // Rellenar formulario
         document.getElementById("nombre").value = data.nombre || "";
         document.getElementById("apellido").value = data.apellido || "";
         document.getElementById("email").value = data.email || "";
 
-        // Actualizar saldo
-        const formattedBalance = new Intl.NumberFormat('es-MX', {
+        const formatted = new Intl.NumberFormat('es-MX', {
           style: 'currency',
           currency: 'MXN'
         }).format(data.saldo || 0);
 
-        document.getElementById("user-balance").textContent = `Saldo: ${formattedBalance}`;
-        console.log("💰 Saldo actualizado:", formattedBalance);
-
+        document.getElementById("user-balance").textContent = `Saldo: ${formatted}`;
       } catch (error) {
-        console.error("❌ Error completo:", error);
+        console.error("Error:", error);
         document.getElementById("user-balance").textContent = "Saldo: Error";
-        alert("Error: " + error.message + "\n\nRevisa la consola (F12) para más detalles.");
       }
 
-      // Manejar envío del formulario
       document.getElementById("profile-form").addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        const formData = new FormData(document.getElementById("profile-form"));
-
         try {
           const response = await fetch(`/api/user/update/${userId}`, {
             method: 'PUT',
-            body: formData
+            body: new FormData(e.target)
           });
 
           const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.error || 'Error al actualizar');
-          }
-
-          alert("✅ Perfil actualizado con éxito");
-
+          if (!response.ok) throw new Error(result.error || 'Error');
+          alert("✅ Perfil actualizado");
         } catch (error) {
-          console.error("Error al guardar:", error);
           alert("Error: " + error.message);
         }
       });
