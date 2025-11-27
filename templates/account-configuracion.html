@@ -56,125 +56,100 @@
       <span>Cartera</span>
     </a>
     <a href="/account" class="rc-nav-item active">
-      <!DOCTYPE html>
-      <html lang="es">
+      <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Mi Cuenta">
+      <span>Mi Cuenta</span>
+    </a>
+  </nav>
 
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Configuración - Royal Crumbs</title>
-        <link rel="stylesheet" href="{{ url_for('static', path='css/account-configuracion.css') }}">
-      </head>
+  <!-- ======== SCRIPT ======== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // MIGRACIÓN AUTOMÁTICA: Si existe el formato antiguo, migrar al nuevo
+      if (localStorage.getItem("userId") && !localStorage.getItem("user_id")) {
+        console.log("✅ Migrando localStorage de userId → user_id");
+        localStorage.setItem("user_id", localStorage.getItem("userId"));
+        localStorage.setItem("id_rol", localStorage.getItem("idRol"));
+        localStorage.setItem("user_role", localStorage.getItem("userRole"));
+        localStorage.removeItem("userId");
+        localStorage.removeItem("idRol");
+        localStorage.removeItem("userRole");
+      }
 
-      <body>
+      // Obtener el ID del usuario desde localStorage
+      const userId = localStorage.getItem("user_id");
 
-        <div class="rc-container">
-          <!-- ======== ENCABEZADO ======== -->
-          <header class="rc-header">
-            <a href="/account" class="rc-back">‹</a>
-            <h1 class="rc-screen-title">Configuración</h1>
-            <div></div> <!-- Elemento vacío para centrar el título -->
-          </header>
+      console.log("📍 User ID:", userId);
 
-          <!-- ======== SALDO (NUEVO) ======== -->
-          <h2 class="rc-subtitle" id="user-balance">Saldo: Cargando...</h2>
+      if (!userId) {
+        alert("No se ha iniciado sesión. Redirigiendo al login.");
+        window.location.href = "/login";
+        return;
+      }
 
-          <!-- ======== FOTO DE PERFIL ======== -->
-          <div class="profile-upload">
-            <label for="file-input" class="upload-box">
-              <img id="profile-image" src="{{ url_for('static', path='img/icons/profile-placeholder.png') }}"
-                alt="Foto de perfil">
-            </label>
-            <input id="file-input" type="file" accept="image/*">
-          </div>
+      try {
+        console.log("🔄 Llamando API:", `/api/user/${userId}`);
 
-          <!-- ======== FORMULARIO DE DATOS ======== -->
-          <form id="profile-form" class="rc-form">
-            <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-            <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-            <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+        const response = await fetch(`/api/user/${userId}`);
 
-            <button type="submit" class="btn-save">Guardar Cambios</button>
-            <button type="button" class="btn-delete">Eliminar Cuenta</button>
-          </form>
-        </div>
+        console.log("📡 Status:", response.status);
 
-        <!-- ======== NAV INFERIOR ======== -->
-        <nav class="rc-nav">
-          <a href="/home" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/icons/nav-home.png') }}" alt="Home">
-            <span>Home</span>
-          </a>
-          <a href="/games" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/icons/nav-games.png') }}" alt="Juegos">
-            <span>Juegos</span>
-          </a>
-          <a href="/account/cartera" class="rc-nav-item">
-            <img src="{{ url_for('static', path='img/icons/nav-wallet.png') }}" alt="Cartera">
-            <span>Cartera</span>
-          </a>
-          <a href="/account" class="rc-nav-item active">
-            <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Mi Cuenta">
-            <span>Mi Cuenta</span>
-          </a>
-        </nav>
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("❌ Error:", errorText);
+          throw new Error("Error al cargar datos del usuario");
+        }
 
-        <!-- ======== SCRIPT ======== -->
-        <script>
-          document.addEventListener("DOMContentLoaded", async () => {
-            // MIGRACIÓN AUTOMÁTICA: Si existe el formato antiguo, migrar al nuevo
-            if (localStorage.getItem("userId") && !localStorage.getItem("user_id")) {
-              console.log("Migrando formato antiguo de localStorage...");
-              localStorage.setItem("user_id", localStorage.getItem("userId"));
-              localStorage.setItem("id_rol", localStorage.getItem("idRol"));
-              localStorage.setItem("user_role", localStorage.getItem("userRole"));
-              localStorage.removeItem("userId");
-              localStorage.removeItem("idRol");
-              localStorage.removeItem("userRole");
-            }
+        const data = await response.json();
+        console.log("✅ Datos recibidos:", data);
 
-            // Obtener el ID del usuario desde localStorage
-            const userId = localStorage.getItem("user_id");
+        // Rellenar formulario
+        document.getElementById("nombre").value = data.nombre || "";
+        document.getElementById("apellido").value = data.apellido || "";
+        document.getElementById("email").value = data.email || "";
 
-            if (!userId) {
-              alert("No se ha iniciado sesión. Redirigiendo al login.");
-              window.location.href = "/login";
-              return;
-            }
+        // Actualizar saldo
+        const formattedBalance = new Intl.NumberFormat('es-MX', {
+          style: 'currency',
+          currency: 'MXN'
+        }).format(data.saldo || 0);
 
-            try {
-              // Llamar al API para obtener datos del usuario
-              const response = await fetch(`/api/user/${userId}`);
+        document.getElementById("user-balance").textContent = `Saldo: ${formattedBalance}`;
+        console.log("💰 Saldo actualizado:", formattedBalance);
 
-              if (!response.ok) {
-                console.error("Error en la respuesta:", response.status, response.statusText);
-                throw new Error("Error al cargar los datos del usuario");
-              }
+      } catch (error) {
+        console.error("❌ Error completo:", error);
+        document.getElementById("user-balance").textContent = "Saldo: Error";
+        alert("Error: " + error.message + "\n\nRevisa la consola (F12) para más detalles.");
+      }
 
-              const data = await response.json();
-              console.log("Datos recibidos:", data);
+      // Manejar envío del formulario
+      document.getElementById("profile-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-              // Rellenar el formulario
-              document.getElementById("nombre").value = data.nombre || "";
-              document.getElementById("apellido").value = data.apellido || "";
-              document.getElementById("email").value = data.email || "";
+        const formData = new FormData(document.getElementById("profile-form"));
 
-              // Actualizar el saldo
-              const formattedBalance = new Intl.NumberFormat('es-MX', {
-                style: 'currency',
-                currency: 'MXN'
-              }).format(data.saldo || 0);
-
-              document.getElementById("user-balance").textContent = `Saldo: ${formattedBalance}`;
-
-            } catch (error) {
-              console.error("Error completo:", error);
-              document.getElementById("user-balance").textContent = "Saldo: Error al cargar";
-              alert("Error al cargar datos: " + error.message);
-            }
+        try {
+          const response = await fetch(`/api/user/update/${userId}`, {
+            method: 'PUT',
+            body: formData
           });
-        </script>
 
-      </body>
+          const result = await response.json();
 
-      </html>
+          if (!response.ok) {
+            throw new Error(result.error || 'Error al actualizar');
+          }
+
+          alert("✅ Perfil actualizado con éxito");
+
+        } catch (error) {
+          console.error("Error al guardar:", error);
+          alert("Error: " + error.message);
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
