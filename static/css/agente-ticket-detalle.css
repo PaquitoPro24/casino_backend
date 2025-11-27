@@ -1,0 +1,270 @@
+/* ============================================================
+📝 DETALLE DE TICKET - Agente Soporte
+============================================================ */
+
+html,
+body {
+    background-color: #202020;
+    color: #FFFFFF;
+    font-family: 'Timeless', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.rc-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rc-header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+}
+
+.rc-back {
+    color: #FFFFFF;
+    font-size: 32px;
+    text-decoration: none;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.rc-back:hover {
+    color: #AB925C;
+}
+
+.rc-screen-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ===== INFO DEL TICKET ===== */
+.ticket-info-card {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ticket-id {
+    font-size: 14px;
+    color: #d8bb76;
+    font-weight: 600;
+}
+
+.ticket-estado {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.estado-abierto {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.estado-asignado {
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+.estado-cerrado {
+    background-color: rgba(149, 165, 166, 0.2);
+    color: #95a5a6;
+}
+
+.ticket-subject {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 12px 0;
+}
+
+.ticket-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 16px;
+}
+
+.ticket-mensaje-inicial {
+    background-color: #202020;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== ACCIONES ===== */
+.actions-section {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background-color: #AB925C;
+    color: #202020;
+}
+
+.btn-primary:hover {
+    background-color: #d8bb76;
+}
+
+.btn-secondary {
+    background-color: #1a1a1a;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-danger {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: rgba(231, 76, 60, 0.3);
+}
+
+/* ===== RESPUESTAS ===== */
+.responses-section {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #d8bb76;
+}
+
+.response-item {
+    background-color: #202020;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-left: 3px solid transparent;
+}
+
+.response-item.agente {
+    border-left-color: #AB925C;
+}
+
+.response-item.usuario {
+    border-left-color: #3498db;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.response-author {
+    font-weight: 600;
+    color: #d8bb76;
+}
+
+.response-date {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.response-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.no-responses {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ===== FORMULARIO DE RESPUESTA ===== */
+.response-form {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: #d8bb76;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group textarea {
+    width: 100%;
+    background-color: #202020;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #AB925C;
+}
+
+@media (max-width: 600px) {
+    .actions-section {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

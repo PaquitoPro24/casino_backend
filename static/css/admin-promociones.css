@@ -1,0 +1,146 @@
+/* ============================================================
+🎁 ADMIN - CONFIGURAR PROMOCIONES — Royal Crumbs
+============================================================ */
+
+html, body {
+  background-color: #202020;
+  margin: 0;
+  padding: 0;
+  font-family: 'Timeless', 'Arial', sans-serif;
+  color: #fff;
+}
+
+/* ======== Contenedor ======== */
+.rc-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 16px 50px;
+  background-color: #202020;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ======== Encabezado ======== */
+.rc-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 18px 0;
+}
+
+.rc-back {
+  color: #fff;
+  font-size: 34px;
+  text-decoration: none;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.rc-back:hover {
+  color: #AB925C;
+}
+
+.rc-screen-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ======== Formulario ======== */
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.promo-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #fff;
+  color: #000;
+  font-size: 15px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.promo-form input:focus {
+  box-shadow: 0 0 6px #d8bb76;
+}
+
+/* ======== Botones ======== */
+.btn-gold {
+  background-color: #AB925C;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-gold:hover {
+  background-color: #c2a76f;
+}
+
+.btn-gold.secondary {
+  opacity: 0.85;
+}
+
+/* ======== Lista de Promociones ======== */
+.promo-list h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.promo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.promo-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.promo-subtitle {
+  font-size: 13px;
+  color: #cfcfcf;
+  margin: 3px 0 0;
+}
+
+.promo-status {
+  font-size: 13px;
+  color: #d8bb76;
+  font-weight: 600;
+}
+
+/* ======== Responsive ======== */
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 600px;
+    padding: 40px;
+  }
+
+  .rc-screen-title {
+    font-size: 26px;
+  }
+
+  .promo-title {
+    font-size: 16px;
+  }
+}
