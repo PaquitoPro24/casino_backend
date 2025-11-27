@@ -58,16 +58,32 @@
             body: JSON.stringify(data)
           });
 
-        } else {
-          window.location.href = "/home";
-        }
+          const result = await response.json();
 
-      } catch (error) {
-        console.error("Error de login:", error);
-        errorMessageDiv.textContent = error.message;
-        errorMessageDiv.style.display = "block";
-      }
-    });
+          if (!response.ok) {
+            throw new Error(result.error || "Error desconocido al iniciar sesión.");
+          }
+
+          // Guardar datos en localStorage con nombres consistentes
+          localStorage.setItem("user_id", result.id_usuario);
+          localStorage.setItem("id_rol", result.id_rol);
+          localStorage.setItem("user_role", result.rol);
+
+          // Redirigir según el rol del usuario
+          if (result.rol === 'Administrador' || result.rol === 'Auditor') {
+            window.location.href = "/admin";
+          } else if (result.rol === 'Agente de Soporte') {
+            window.location.href = "/agente";
+          } else {
+            window.location.href = "/home";
+          }
+
+        } catch (error) {
+          console.error("Error de login:", error);
+          errorMessageDiv.textContent = error.message;
+          errorMessageDiv.style.display = "block";
+        }
+      });
     });
   </script>
 </body>
