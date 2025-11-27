@@ -17,55 +17,58 @@
       background-color: #202020;
       color: #ffffff;
       min-height: 100vh;
-      padding-bottom: 70px;
+      padding-bottom: 80px;
     }
 
     .header {
       display: flex;
       align-items: center;
-      padding: 20px;
+      padding: 16px 20px;
       background-color: #202020;
+      border-bottom: 1px solid #2a2a2a;
     }
 
     .back-btn {
-      font-size: 28px;
+      font-size: 32px;
       color: #ffffff;
       text-decoration: none;
-      margin-right: 20px;
+      margin-right: 16px;
+      line-height: 1;
     }
 
     .header-title {
-      font-size: 24px;
+      font-size: clamp(20px, 5vw, 24px);
       font-weight: 600;
     }
 
     .container {
-      max-width: 600px;
+      width: 100%;
+      max-width: 100%;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 16px;
     }
 
     .subtitle {
       text-align: center;
-      font-size: 16px;
+      font-size: clamp(14px, 4vw, 16px);
       color: #999;
-      margin: 30px 0 20px;
+      margin: 24px 0 16px;
     }
 
     .profile-section {
       display: flex;
       justify-content: center;
-      margin: 30px 0;
+      margin: 24px 0;
     }
 
     .profile-upload {
-      width: 120px;
-      height: 120px;
+      width: clamp(100px, 25vw, 140px);
+      height: clamp(100px, 25vw, 140px);
     }
 
     .upload-box {
-      width: 120px;
-      height: 120px;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
       border-radius: 16px;
       display: flex;
@@ -91,17 +94,19 @@
     }
 
     .form {
-      margin-top: 30px;
+      width: 100%;
+      max-width: 600px;
+      margin: 24px auto 0;
     }
 
     .form input {
       width: 100%;
-      padding: 18px 20px;
-      margin-bottom: 16px;
+      padding: clamp(14px, 3.5vw, 18px) clamp(16px, 4vw, 20px);
+      margin-bottom: 12px;
       background-color: #ffffff;
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: clamp(14px, 3.5vw, 16px);
       color: #000000;
     }
 
@@ -116,14 +121,14 @@
 
     .btn {
       width: 100%;
-      padding: 18px;
+      padding: clamp(14px, 3.5vw, 18px);
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: clamp(14px, 3.5vw, 16px);
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .btn-save {
@@ -154,8 +159,9 @@
       background-color: #202020;
       display: flex;
       justify-content: space-around;
-      padding: 12px 0;
+      padding: 10px 0;
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      border-top: 1px solid #2a2a2a;
     }
 
     .nav-item {
@@ -165,6 +171,7 @@
       text-decoration: none;
       color: #888;
       transition: color 0.2s;
+      padding: 4px 8px;
     }
 
     .nav-item:hover,
@@ -173,8 +180,8 @@
     }
 
     .nav-item img {
-      width: 24px;
-      height: 24px;
+      width: clamp(20px, 5vw, 24px);
+      height: clamp(20px, 5vw, 24px);
       margin-bottom: 4px;
       filter: grayscale(1) brightness(0.6);
     }
@@ -185,28 +192,41 @@
     }
 
     .nav-item span {
-      font-size: 12px;
+      font-size: clamp(10px, 2.5vw, 12px);
     }
 
-    @media (max-width: 480px) {
+    @media (min-width: 640px) {
       .container {
-        padding: 0 16px;
+        padding: 0 32px;
       }
 
-      .header-title {
-        font-size: 20px;
-      }
-
-      .upload-box,
-      .profile-upload {
-        width: 100px;
-        height: 100px;
+      .form {
+        max-width: 500px;
       }
     }
 
     @media (min-width: 768px) {
       .container {
-        padding: 0 40px;
+        padding: 0 48px;
+      }
+
+      .form {
+        max-width: 550px;
+      }
+
+      body {
+        padding-bottom: 70px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 800px;
+        padding: 0 64px;
+      }
+
+      .form {
+        max-width: 600px;
       }
     }
   </style>
@@ -296,8 +316,6 @@
         if (!response.ok) throw new Error("Error al cargar datos");
 
         const data = await response.json();
-
-        // Llenar campos - Usuario ID es readonly
         document.getElementById("usuario").value = `ID: ${data.id_usuario || userId}`;
         document.getElementById("nombre").value = data.nombre || "";
         document.getElementById("apellido").value = data.apellido || "";
@@ -309,20 +327,14 @@
       document.getElementById("profile-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const nombre = document.getElementById("nombre").value;
-        const apellido = document.getElementById("apellido").value;
-        const email = document.getElementById("email").value;
-        const contrasena = document.getElementById("contrasena").value;
-        const comentario = document.getElementById("comentario").value;
+        const formData = new FormData();
+        formData.append("nombre", document.getElementById("nombre").value);
+        formData.append("apellido", document.getElementById("apellido").value);
+        formData.append("email", document.getElementById("email").value);
+        if (document.getElementById("contrasena").value) formData.append("contrasena", document.getElementById("contrasena").value);
+        if (document.getElementById("comentario").value) formData.append("comentario", document.getElementById("comentario").value);
 
         try {
-          const formData = new FormData();
-          formData.append("nombre", nombre);
-          formData.append("apellido", apellido);
-          formData.append("email", email);
-          if (contrasena) formData.append("contrasena", contrasena);
-          if (comentario) formData.append("comentario", comentario);
-
           const response = await fetch(`/api/user/update/${userId}`, {
             method: 'PUT',
             body: formData
@@ -331,7 +343,7 @@
           const result = await response.json();
           if (!response.ok) throw new Error(result.error || 'Error');
 
-          alert("✅ Perfil actualizado correctamente");
+          alert("✅ Perfil actualizado");
           document.getElementById("contrasena").value = "";
         } catch (error) {
           alert("Error: " + error.message);

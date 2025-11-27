@@ -2,12 +2,16 @@
    🎰 ROYAL CRUMBS - ESTILO PRINCIPAL (HOME + GAMES)
    ============================================================ */
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Timeless', 'Arial', sans-serif;
   background-color: #202020;
   color: #FFFFFF;
-  margin: 0;
-  padding: 0;
   overflow-x: hidden;
 }
 
@@ -16,36 +20,37 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 22px;
+  padding: clamp(12px, 3vw, 16px) clamp(16px, 4vw, 22px);
   background-color: #202020;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 header img {
-  height: 48px;
+  height: clamp(40px, 10vw, 48px);
 }
 
 header .profile {
   color: #fff;
-  font-size: 15px;
+  font-size: clamp(13px, 3vw, 15px);
   font-weight: 600;
   background-color: #1c1c1c;
-  padding: 6px 12px;
+  padding: clamp(5px, 1.5vw, 6px) clamp(10px, 2.5vw, 12px);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 header .profile:hover {
-  color: #d8bb76;
-  border-color: #d8bb76;
+  color: #ab925c;
+  border-color: #ab925c;
 }
 
 /* ======== HOME ======== */
 .home-container {
-  padding: 20px 18px 90px;
+  padding: clamp(16px, 4vw, 20px) clamp(14px, 3vw, 18px) 90px;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* ----- Bienvenida ----- */
@@ -76,31 +81,32 @@ header .profile:hover {
   text-align: center;
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
+  padding: 16px;
 }
 
 .welcome-overlay h1 {
-  font-size: 26px;
+  font-size: clamp(20px, 5vw, 34px);
   font-weight: 800;
   letter-spacing: 1px;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 .welcome-overlay p {
-  font-size: 15px;
+  font-size: clamp(13px, 3vw, 15px);
   margin-top: 6px;
 }
 
 /* ----- Bonos y promociones ----- */
 .bonus-section {
-  margin-top: 30px;
+  margin-top: clamp(24px, 5vw, 30px);
 }
 
 .bonus-section h2 {
   text-align: center;
-  font-size: 22px;
+  font-size: clamp(20px, 4.5vw, 26px);
   font-weight: 700;
-  color: #d8bb76;
-  margin-bottom: 18px;
+  color: #ab925c;
+  margin-bottom: clamp(14px, 3vw, 18px);
 }
 
 .bonus-card {
@@ -117,18 +123,18 @@ header .profile:hover {
 }
 
 .bonus-info {
-  padding: 16px;
+  padding: clamp(12px, 3vw, 16px);
   text-align: center;
 }
 
 .bonus-info h3 {
-  color: #d8bb76;
-  font-size: 18px;
+  color: #ab925c;
+  font-size: clamp(16px, 4vw, 20px);
   margin-bottom: 8px;
 }
 
 .bonus-info p {
-  font-size: 14px;
+  font-size: clamp(13px, 3vw, 15px);
   color: #ccc;
   margin-bottom: 12px;
 }
@@ -138,15 +144,19 @@ header .profile:hover {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 9px 22px;
-  font-size: 15px;
+  padding: clamp(8px, 2vw, 9px) clamp(18px, 4vw, 22px);
+  font-size: clamp(14px, 3vw, 15px);
   font-weight: 600;
   cursor: pointer;
   transition: 0.3s;
+  width: 100%;
+  max-width: 200px;
 }
 
 .btn:hover {
   background-color: #967F4A;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(171, 146, 92, 0.3);
 }
 
 /* ======== MENÚ INFERIOR ======== */
@@ -155,29 +165,31 @@ nav {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #111;
-  border-top: 1px solid #b59557;
+  background-color: #202020;
+  border-top: 1px solid #ab925c;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 8px 0;
+  padding: clamp(6px, 1.5vw, 8px) 0;
   z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
 }
 
 nav a {
   color: #AB925C;
   text-align: center;
   text-decoration: none;
-  font-size: 14px;
+  font-size: clamp(11px, 2.5vw, 14px);
   transition: color 0.3s, transform 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 4px 8px;
 }
 
 nav a img {
-  width: 26px;
-  height: 26px;
+  width: clamp(22px, 5vw, 26px);
+  height: clamp(22px, 5vw, 26px);
   margin-bottom: 4px;
   filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
 }
@@ -192,56 +204,25 @@ nav a.active {
 }
 
 /* ============================================================
-   📱 RESPONSIVE
+   📱 RESPONSIVE BREAKPOINTS
    ============================================================ */
 
-/* Móviles */
-@media (max-width: 600px) {
-  .welcome-overlay h1 {
-    font-size: 22px;
-  }
-
-  .bonus-info p {
-    font-size: 13px;
-  }
-
-  .btn {
-    font-size: 14px;
-  }
-}
-
 /* Tablets */
-@media (min-width: 601px) and (max-width: 1023px) {
+@media (min-width: 640px) {
   .home-container {
     max-width: 700px;
   }
 }
 
-/* Laptops / Escritorio */
+/* Desktop */
 @media (min-width: 1024px) {
   .home-container {
     max-width: 900px;
-    padding: 40px 0 120px;
+    padding-bottom: 120px;
   }
 
   .welcome-card img {
     max-height: 450px;
     object-fit: cover;
-  }
-
-  .welcome-overlay h1 {
-    font-size: 34px;
-  }
-
-  .bonus-section h2 {
-    font-size: 26px;
-  }
-
-  .bonus-info h3 {
-    font-size: 20px;
-  }
-
-  .bonus-info p {
-    font-size: 15px;
   }
 }
