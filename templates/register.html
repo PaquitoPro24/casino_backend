@@ -42,10 +42,16 @@
       
       // (Aquí puedes añadir más validaciones, como la longitud de la CURP)
 
+      // Eliminar confirmar_contrasena antes de enviar
+      delete data.confirmar_contrasena;
+
       try {
         const res = await fetch("/api/auth/register", {
           method: "POST",
-          body: formData 
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
         });
 
         const result = await res.json();
