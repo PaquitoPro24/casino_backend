@@ -50,55 +50,18 @@ app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 app.include_router(agente_router, tags=["Agente Soporte"])
 app.include_router(support_router, tags=["Support"])
 app.include_router(admin_router, tags=["Admin"])
-app.include_router(user_router_api, tags=["User"])
+app.include_router(user_router_api, prefix="/api/user", tags=["User"])
 app.include_router(wallet_router, tags=["Wallet"])
 app.include_router(bonos_router, tags=["Bonos"])
 
-# --- AÑADIDO: ENDPOINT PARA OBTENER DATOS DEL USUARIO ---
+# NOTA: El endpoint /api/user/{user_id} ahora se maneja por el router user_router_api
+# El endpoint duplicado de abajo se comenta para evitar conflictos
+"""
 @app.get("/api/user/{user_id}")
 async def get_user_data(user_id: int):
-    """
-    Esta ruta busca en la base de datos la información de un usuario
-    por su ID y también su saldo, y los devuelve en un JSON.
-    """
-    print(f"🔹 API: Solicitud de datos para el usuario ID: {user_id}")
-    conn = None
-    cursor = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None:
-            return JSONResponse({"error": "Error de conexión a la base de datos"}, status_code=500)
-        
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        # Consulta que une las tablas Usuario y Saldo para obtener todos los datos
-        cursor.execute(
-            """
-            SELECT u.nombre, u.apellido, u.email, s.saldo_actual
-            FROM Usuario u
-            JOIN Saldo s ON u.id_usuario = s.id_usuario
-            WHERE u.id_usuario = %s
-            """,
-            (user_id,)
-        )
-        user_data = cursor.fetchone()
-
-        if not user_data:
-            return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
-
-        # Devolvemos los datos en un formato JSON claro con decimal convertido
-        return JSONResponse({
-            "nombre": user_data['nombre'],
-            "apellido": user_data['apellido'],
-            "email": user_data['email'],
-            "saldo": float(user_data['saldo_actual'] or 0.0)
-        })
-
-    except Exception as e:
-        print(f"🚨 API ERROR (get_user_data): {e}")
-        return JSONResponse({"error": "Error interno del servidor"}, status_code=500)
-    finally:
-        if cursor: cursor.close()
-        if conn: conn.close()
+    # Este endpoint está comentado porque ahora se maneja por user_router_api
+    pass
+"""
 
 
 # =========================

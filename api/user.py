@@ -6,7 +6,7 @@ from psycopg2.extras import RealDictCursor
 
 router = APIRouter()
 
-@router.get("/api/user/{id_usuario}")
+@router.get("/{id_usuario}")
 async def api_get_user_info(id_usuario: int):
     """
     Ruta para OBTENER la info del usuario y rellenar el formulario
@@ -66,7 +66,7 @@ async def api_get_user_info(id_usuario: int):
 # ==========================================================
 #  RUTA PARA ACTUALIZAR EL PERFIL (GUARDAR CAMBIOS)
 # ==========================================================
-@router.put("/api/user/update/{id_usuario}")
+@router.put("/update/{id_usuario}")
 async def api_update_user_info(
     id_usuario: int,
     nombre: str = Form(),
