@@ -6,24 +6,534 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realizar Auditoría - Royal Crumbs</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/auditor.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Estilos específicos para el checklist */
+        .audit-form {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
+            color: #fff;
+            padding: clamp(12px, 2.5vw, 16px);
+            margin: clamp(20px, 4vw, 30px) 0 clamp(12px, 2.5vw, 16px);
+            border-radius: 8px;
+            font-size: clamp(18px, 4vw, 22px);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .question-block {
+            background-color: #181818;
+            border-radius: 10px;
+            padding: clamp(14px, 3vw, 18px);
+            margin-bottom: clamp(12px, 2.5vw, 16px);
+            border-left: 4px solid #ab925c;
+        }
+
+        .question-title {
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 600;
+            color: #ab925c;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: clamp(13px, 2.8vw, 15px);
+            color: #ccc;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(10px, 2vw, 12px);
+            margin-top: 12px;
+        }
+
+        .option-label {
+            display: inline-flex;
+            align-items: center;
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 14px);
+            background-color: #2a2a2a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #ccc;
+            border: 2px solid transparent;
+        }
+
+        .option-label:hover {
+            background-color: #353535;
+            border-color: #ab925c;
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 6px;
+            cursor: pointer;
+            accent-color: #ab925c;
+        }
+
+        .option-label input[type="radio"]:checked+span {
+            color: #ab925c;
+            font-weight: 600;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: clamp(24px, 4vw, 30px);
+            flex-wrap: wrap;
+        }
+
+        .btn-generate-pdf {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 24px);
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-generate-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(171, 146, 92, 0.4);
+        }
+
+        .btn-reset {
+            flex: 1;
+            min-width: 200px;
+            background-color: #3a3a3a;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 24px);
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-reset:hover {
+            background-color: #4a4a4a;
+        }
+
+        @media (max-width: 640px) {
+            .options-container {
+                flex-direction: column;
+            }
+
+            .option-label {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
+    <!-- ======== ENCABEZADO ======== -->
     <div class="rc-header">
         <a href="/auditor" class="rc-back">‹</a>
-        <h1 class="rc-screen-title">Realizar Auditoría</h1>
+        <h1 class="rc-screen-title">Auditoría ISO 14001</h1>
         <div></div>
     </div>
 
+    <!-- ======== CONTENEDOR ======== -->
     <div class="rc-container">
-        <p style="text-align: center; color: #ab925c; margin-top: 50px; font-size: 18px;">
-            ⚙️ Módulo en desarrollo
-        </p>
-        <p style="text-align: center; color: #ccc; margin-top: 20px;">
-            Aquí podrás realizar auditorías del sistema
-        </p>
+
+        <form id="audit-form" class="audit-form">
+            <div id="contenido"></div>
+
+            <div class="btn-container">
+                <button type="button" class="btn-generate-pdf" onclick="generarPDF()">
+                    📄 Generar PDF
+                </button>
+                <button type="button" class="btn-reset" onclick="resetForm()">
+                    🔄 Limpiar Formulario
+                </button>
+            </div>
+        </form>
+
     </div>
+
+    <script>
+        // Función para generar opciones de respuesta
+        function opciones(nombre) {
+            return `
+        <div class="options-container">
+          <label class="option-label">
+            <input type="radio" name="${nombre}" value="Cumple">
+            <span>✅ Cumple</span>
+          </label>
+          <label class="option-label">
+            <input type="radio" name="${nombre}" value="No Cumple">
+            <span>❌ No Cumple</span>
+          </label>
+          <label class="option-label">
+            <input type="radio" name="${nombre}" value="Cumple Parcialmente">
+            <span>⚠️ Cumple Parcialmente</span>
+          </label>
+          <label class="option-label">
+            <input type="radio" name="${nombre}" value="No Aplica">
+            <span>➖ No Aplica</span>
+          </label>
+        </div>
+      `;
+        }
+
+        // Datos de auditoría ISO 14001
+        var datosAuditoria = [
+            { type: "titulo", texto: "4. CONTEXTO DE LA ORGANIZACIÓN" },
+            {
+                type: "grid", titulo: "4.1 Comprensión de la organización y su contexto", filas: [
+                    "¿Se tienen identificadas las cuestiones internas y externas asociadas con las necesidades de la empresa?"
+                ]
+            },
+            {
+                type: "grid", titulo: "4.2 Comprensión de las necesidades y expectativas de las partes interesadas", filas: [
+                    "¿Se dispone de la correcta metodología para la identificación inicial de las partes interesadas?"
+                ]
+            },
+            {
+                type: "grid", titulo: "4.3 Determinación del alcance del SGA", filas: [
+                    "¿El alcance del SGA es acorde a las metas y objetivos propuestos?"
+                ]
+            },
+            {
+                type: "grid", titulo: "4.4 SGA", filas: [
+                    "¿El SGA inter-relaciona todos los procesos necesarios?"
+                ]
+            },
+
+            { type: "titulo", texto: "5. LIDERAZGO" },
+            {
+                type: "grid", titulo: "5.1 Liderazgo y compromiso", filas: [
+                    "¿La alta dirección está comprometida con el SGA?",
+                    "¿Los objetivos planteados son acordes a las necesidades?",
+                    "¿Facilita los recursos necesarios para implementar el SGA?",
+                    "¿Se dirige y apoya a los trabajadores para lograr mejora continua?"
+                ]
+            },
+            {
+                type: "grid", titulo: "5.2 Política Ambiental", filas: [
+                    "¿La empresa tiene establecida una política ambiental?",
+                    "¿La política tiene soporte teórico para los objetivos?",
+                    "¿La política genera compromisos en los empleados?"
+                ]
+            },
+            {
+                type: "grid", titulo: "5.3 Roles, responsabilidades y autoridades", filas: [
+                    "¿La alta dirección ha generado canales efectivos de comunicación?"
+                ]
+            },
+
+            { type: "titulo", texto: "6. PLANIFICACIÓN" },
+            {
+                type: "grid", titulo: "6.1.1 Requisitos Generales", filas: [
+                    "¿La empresa ha generado indicadores ambientales?",
+                    "¿Ha identificado riesgos y oportunidades?",
+                    "¿Cuenta con documentación organizada por procesos?",
+                    "¿Tiene identificadas situaciones de incidentes y accidentes?",
+                    "¿Cuenta con documentación del alcance del SGA?"
+                ]
+            },
+            {
+                type: "grid", titulo: "6.1.2 Aspectos Ambientales", filas: [
+                    "¿Cuenta con metodología para identificar aspectos ambientales?",
+                    "¿Ha implementado acciones preventivas y correctivas?",
+                    "¿La identificación de aspectos se comunicó en todos los niveles?",
+                    "¿La información documentada permite clasificar impactos?"
+                ]
+            },
+            {
+                type: "grid", titulo: "6.1.3 Requisitos legales y otros requisitos", filas: [
+                    "¿La organización ha identificado sus obligaciones ambientales?",
+                    "¿Cuenta con procedimientos para requisitos legales?",
+                    "¿La información está ordenada y clasificada?"
+                ]
+            },
+            {
+                type: "grid", titulo: "6.1.4 Planificación de acciones", filas: [
+                    "¿Cuenta con un plan de acción para cumplir metas ambientales?"
+                ]
+            },
+
+            { type: "titulo", texto: "7. APOYO" },
+            {
+                type: "grid", titulo: "7.1 Recursos", filas: [
+                    "¿La empresa facilita los recursos suficientes?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.2 Competencia", filas: [
+                    "¿Cuenta con personal competente?",
+                    "¿Existe información documentada de competencias?",
+                    "¿Se evalúa la eficacia de las competencias?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.3 Toma de conciencia", filas: [
+                    "¿Todo el personal conoce política, objetivos y su rol?",
+                    "¿Se identifican necesidades de formación?",
+                    "¿Existen procedimientos para generar conciencia ambiental?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.4.1 Comunicación general", filas: [
+                    "¿Los procesos de comunicación son efectivos?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.4.2 Comunicación interna", filas: [
+                    "¿Hay recepción, documentación y respuesta de comunicaciones externas?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.4.3 Comunicación externa", filas: [
+                    "¿Existen procedimientos de comunicación interna?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.5 Información Documentada", filas: [
+                    "¿Se describen los elementos del SGA y su interacción?",
+                    "¿Se describe el alcance del SGA?",
+                    "¿Los documentos están aprobados y revisados según la norma?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.5.2 Creación y actualización de documentos", filas: [
+                    "¿Se cuenta con documentos de control requeridos?"
+                ]
+            },
+            {
+                type: "grid", titulo: "7.5.3 Control de información documentada", filas: [
+                    "¿La información está disponible, protegida y almacenada adecuadamente?"
+                ]
+            },
+
+            { type: "titulo", texto: "8. OPERACIÓN" },
+            {
+                type: "grid", titulo: "8.1 Planificación y control operacional", filas: [
+                    "¿Hay control de requisitos ambientales del ciclo de vida?",
+                    "¿Existen procedimientos para controlar impactos ambientales?"
+                ]
+            },
+            {
+                type: "grid", titulo: "8.2 Preparación y respuesta a emergencias", filas: [
+                    "¿Se identifican situaciones potenciales de emergencia?",
+                    "¿Se revisan y modifican procedimientos?",
+                    "¿Se realizan pruebas periódicas?",
+                    "¿Existe evidencia documentada?"
+                ]
+            },
+
+            { type: "titulo", texto: "9. EVALUACIÓN DEL DESEMPEÑO" },
+            {
+                type: "grid", titulo: "9. Medición del desempeño", filas: [
+                    "¿Existen procedimientos para medir impactos ambientales?"
+                ]
+            },
+            {
+                type: "grid", titulo: "9.1.1 General", filas: [
+                    "¿Está identificado lo que se monitorea?",
+                    "¿Hay registros de calibración?",
+                    "¿Hay información documentada sobre mediciones?"
+                ]
+            },
+            {
+                type: "grid", titulo: "9.1.2 Evaluación de cumplimiento", filas: [
+                    "¿Se evalúa cumplimiento legal periódicamente?",
+                    "¿Hay registros de evaluaciones?",
+                    "¿La evaluación ayuda a tomar decisiones ambientales?"
+                ]
+            },
+            {
+                type: "grid", titulo: "9.2.2 Auditoría interna", filas: [
+                    "¿Se realizan auditorías internas periódicas?",
+                    "¿Hay programa de auditorías basado en importancia ambiental?"
+                ]
+            },
+            {
+                type: "grid", titulo: "9.3 Revisión por la dirección", filas: [
+                    "¿La revisión del SGA está planificada?",
+                    "¿La evaluación de auditorías es útil para la mejora continua?",
+                    "¿Existe evidencia documentada?"
+                ]
+            },
+
+            { type: "titulo", texto: "10. MEJORA" },
+            {
+                type: "grid", titulo: "10. Mejora", filas: [
+                    "¿Se han implementado acciones de mejora?",
+                    "¿Hay procedimientos para tratar no conformidades?",
+                    "¿La empresa mejora procesos según sus falencias?"
+                ]
+            }
+        ];
+
+        // Generar HTML del checklist
+        var cont = document.getElementById("contenido");
+        var index = 0;
+        var questions = []; // Para guardar las preguntas y respuestas
+
+        datosAuditoria.forEach(item => {
+            if (item.type === "titulo") {
+                cont.innerHTML += `<h2 class="section-title">${item.texto}</h2>`;
+            }
+
+            if (item.type === "grid") {
+                item.filas.forEach(fila => {
+                    index++;
+                    const questionId = "p" + index;
+
+                    // Guardar pregunta para el PDF
+                    questions.push({
+                        id: questionId,
+                        seccion: item.titulo,
+                        pregunta: fila
+                    });
+
+                    cont.innerHTML += `
+            <div class="question-block">
+              <div class="question-title">${item.titulo}</div>
+              <div class="question-text">${fila}</div>
+              ${opciones(questionId)}
+            </div>
+          `;
+                });
+            }
+        });
+
+        // Función para generar PDF
+        function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header del PDF
+            doc.setFontSize(18);
+            doc.setTextColor(171, 146, 92); // Dorado
+            doc.text("Auditoría ISO 14001", 105, 20, { align: "center" });
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text("Royal Crumbs Casino", 105, 28, { align: "center" });
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 105, 34, { align: "center" });
+
+            let y = 45;
+            let cumple = 0, noCumple = 0, parcial = 0, noAplica = 0, sinResponder = 0;
+
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+
+            questions.forEach((q, i) => {
+                // Verificar si necesitamos una nueva página
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                // Obtener respuesta seleccionada
+                const radios = document.getElementsByName(q.id);
+                let respuesta = "Sin responder";
+                radios.forEach(radio => {
+                    if (radio.checked) {
+                        respuesta = radio.value;
+                    }
+                });
+
+                // Contar respuestas
+                if (respuesta === "Cumple") cumple++;
+                else if (respuesta === "No Cumple") noCumple++;
+                else if (respuesta === "Cumple Parcialmente") parcial++;
+                else if (respuesta === "No Aplica") noAplica++;
+                else sinResponder++;
+
+                // Pregunta
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.text(`${i + 1}. ${q.seccion}`, 15, y);
+                y += 5;
+
+                doc.setFont(undefined, 'normal');
+                const splitText = doc.splitTextToSize(q.pregunta, 180);
+                doc.text(splitText, 15, y);
+                y += (splitText.length * 5);
+
+                // Respuesta
+                doc.setFont(undefined, 'bold');
+                if (respuesta === "Cumple") doc.setTextColor(0, 150, 0);
+                else if (respuesta === "No Cumple") doc.setTextColor(200, 0, 0);
+                else if (respuesta === "Cumple Parcialmente") doc.setTextColor(200, 150, 0);
+                else doc.setTextColor(100);
+
+                doc.text(`Respuesta: ${respuesta}`, 15, y);
+                doc.setTextColor(0);
+                y += 8;
+            });
+
+            // Agregar página de resumen
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.setTextColor(171, 146, 92);
+            doc.text("Resumen de Resultados", 105, 20, { align: "center" });
+
+            y = 40;
+            doc.setFontSize(12);
+            doc.setTextColor(0);
+
+            doc.setTextColor(0, 150, 0);
+            doc.text(`✓ Cumple: ${cumple}`, 40, y);
+            y += 10;
+
+            doc.setTextColor(200, 0, 0);
+            doc.text(`✗ No Cumple: ${noCumple}`, 40, y);
+            y += 10;
+
+            doc.setTextColor(200, 150, 0);
+            doc.text(`⚠ Cumple Parcialmente: ${parcial}`, 40, y);
+            y += 10;
+
+            doc.setTextColor(100);
+            doc.text(`− No Aplica: ${noAplica}`, 40, y);
+            y += 10;
+
+            doc.text(`? Sin Responder: ${sinResponder}`, 40, y);
+            y += 15;
+
+            // Porcentaje de cumplimiento
+            const totalRespondidas = cumple + noCumple + parcial;
+            const porcentajeCumplimiento = totalRespondidas > 0 ?
+                Math.round(((cumple + (parcial * 0.5)) / totalRespondidas) * 100) : 0;
+
+            doc.setFontSize(14);
+            doc.setTextColor(171, 146, 92);
+            doc.text(`Cumplimiento Total: ${porcentajeCumplimiento}%`, 40, y);
+
+            // Guardar PDF
+            const fecha = new Date().toISOString().split('T')[0];
+            doc.save(`Auditoria_ISO14001_${fecha}.pdf`);
+
+            alert("✅ PDF generado exitosamente");
+        }
+
+        // Función para limpiar formulario
+        function resetForm() {
+            if (confirm("¿Estás seguro de que deseas limpiar todas las respuestas?")) {
+                document.getElementById("audit-form").reset();
+                alert("✅ Formulario limpiado");
+            }
+        }
+    </script>
 
 </body>
 

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Juegos - Royal Crumbs</title>
-  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
   <style>
     /* ==== PERFIL Y MENÚ HAMBURGUESA ==== */
     .profile-btn {
@@ -61,8 +62,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-width: 768px) {
@@ -72,6 +80,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- ENCABEZADO -->
@@ -174,4 +183,5 @@
   </script>
 
 </body>
+
 </html>
