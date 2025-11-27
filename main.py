@@ -46,7 +46,7 @@ from app.middleware.auth_agente import verificar_rol_agente_redirect
 #  RUTAS DE LÓGICA / API
 # =========================
 # Montamos todos los routers de API
-app.include_router(auth_router, tags=["Auth"])
+app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 app.include_router(agente_router, tags=["Agente Soporte"])
 app.include_router(support_router, tags=["Support"])
 app.include_router(admin_router, tags=["Admin"])
