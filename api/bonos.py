@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-from app.db import db_connect
+from db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime

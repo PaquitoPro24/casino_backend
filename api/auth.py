@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, constr
-from app.db import db_connect  # <-- ¡CORRECCIÓN CLAVE!
+from db import db_connect  # <-- ¡CORRECCIÓN CLAVE!
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from passlib.context import CryptContext

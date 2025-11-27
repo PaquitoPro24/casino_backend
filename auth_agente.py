@@ -1,6 +1,6 @@
 from fastapi import Request, HTTPException, status
 from fastapi.responses import RedirectResponse, JSONResponse
-from app.db import db_connect
+from db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
