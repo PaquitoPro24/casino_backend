@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Balance - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-balance.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -28,7 +30,7 @@
 
     <!-- DISTRIBUCIÓN RESPONSIVA -->
     <div class="balance-layout">
-      
+
       <!-- IZQUIERDA: PRÉSTAMO -->
       <section class="prestamo-section">
         <h2 class="rc-subtitle">Préstamo</h2>
@@ -108,5 +110,61 @@
     </a>
   </nav>
 
+  <!-- SCRIPT PARA CARGAR SALDO DINÁMICAMENTE -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Obtener el ID del usuario desde localStorage
+      const userId = localStorage.getItem("user_id");
+
+      if (!userId) {
+        alert("No se ha iniciado sesión. Redirigiendo al login.");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        // Llamar al API para obtener datos del usuario
+        const response = await fetch(`/api/user/${userId}`);
+
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos del usuario");
+        }
+
+        const data = await response.json();
+
+        // Actualizar el saldo total en la página
+        const saldoTotalElement = document.querySelector(".saldo-total");
+        const saldoPrincipalElement = document.querySelector(".detail-row:nth-child(1) span:nth-child(2)");
+
+        if (saldoTotalElement) {
+          // Formatear el saldo con formato de moneda
+          const formattedBalance = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+          }).format(data.saldo || 0);
+
+          saldoTotalElement.textContent = formattedBalance;
+        }
+
+        if (saldoPrincipalElement) {
+          const formattedPrincipal = new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+          }).format(data.saldo || 0);
+
+          saldoPrincipalElement.textContent = formattedPrincipal;
+        }
+
+      } catch (error) {
+        console.error("Error al cargar saldo:", error);
+        const saldoTotalElement = document.querySelector(".saldo-total");
+        if (saldoTotalElement) {
+          saldoTotalElement.textContent = "$0.00";
+        }
+      }
+    });
+  </script>
+
 </body>
+
 </html>
