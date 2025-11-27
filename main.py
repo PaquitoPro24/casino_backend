@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from app.db import db_connect # <-- Importamos la conexión a la BD cambios
 import psycopg2              # <-- Importamos para manejar errores de BD
+from psycopg2.extras import RealDictCursor # <-- Para queries con diccionarios
 
 # =========================
 #  APP & STATIC / TEMPLATES
@@ -35,18 +36,23 @@ def render(tpl: str, request: Request) -> HTMLResponse:
 from api.auth import router as auth_router
 from api.agente_soporte import router as agente_router
 from api.support import router as support_router
+from api.admin import router as admin_router
+from api.user import router as user_router_api
+from api.wallet import router as wallet_router
+from api.bonos import router as bonos_router
 from app.middleware.auth_agente import verificar_rol_agente_redirect
 
 # =========================
 #  RUTAS DE LÓGICA / API
 # =========================
-# CORRECCIÓN FINAL: `app.include_router` espera el objeto APIRouter directamente.
-# Como `auth_router` ya es el router, eliminamos el `.router` extra.
-app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
+# Montamos todos los routers de API
+app.include_router(auth_router, tags=["Auth"])
 app.include_router(agente_router, tags=["Agente Soporte"])
 app.include_router(support_router, tags=["Support"])
-# app.include_router(user_router.router, prefix="/api/user", tags=["Usuarios"])
-# ... (Puedes descomentar las otras rutas una vez que el login funcione)
+app.include_router(admin_router, tags=["Admin"])
+app.include_router(user_router_api, tags=["User"])
+app.include_router(wallet_router, tags=["Wallet"])
+app.include_router(bonos_router, tags=["Bonos"])
 
 # --- AÑADIDO: ENDPOINT PARA OBTENER DATOS DEL USUARIO ---
 @app.get("/api/user/{user_id}")
@@ -63,7 +69,7 @@ async def get_user_data(user_id: int):
         if conn is None:
             return JSONResponse({"error": "Error de conexión a la base de datos"}, status_code=500)
         
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         # Consulta que une las tablas Usuario y Saldo para obtener todos los datos
         cursor.execute(
             """
@@ -79,8 +85,13 @@ async def get_user_data(user_id: int):
         if not user_data:
             return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
 
-        # Devolvemos los datos en un formato JSON claro
-        return {"nombre": user_data[0], "apellido": user_data[1], "email": user_data[2], "saldo": user_data[3]}
+        # Devolvemos los datos en un formato JSON claro con decimal convertido
+        return JSONResponse({
+            "nombre": user_data['nombre'],
+            "apellido": user_data['apellido'],
+            "email": user_data['email'],
+            "saldo": float(user_data['saldo_actual'] or 0.0)
+        })
 
     except Exception as e:
         print(f"🚨 API ERROR (get_user_data): {e}")
