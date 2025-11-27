@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depósitos - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-depositos.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account/cartera" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Depósitos</h1>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <section class="deposit-section">
+      <h2 class="rc-subtitle">Métodos de deposito</h2>
+
+      <!-- Opción: Tarjeta -->
+      <a href="/account/cartera/depositos/tarjeta" class="payment-option">
+        <img src="{{ url_for('static', path='img/tarjeta_icon.png') }}" alt="Tarjeta" class="payment-icon">
+        <div class="payment-info">
+          <h3>Tarjeta de Crédito/Débito</h3>
+          <p>Visa, MasterCard</p>
+        </div>
+      </a>
+
+      <!-- Opción: Transferencia -->
+      <a href="/account/cartera/depositos/transferencia" class="payment-option">
+        <img src="{{ url_for('static', path='img/banco_icon.png') }}" alt="Transferencia" class="payment-icon">
+        <div class="payment-info">
+          <h3>Transferencia</h3>
+          <p>Transferencia Bancaria</p>
+        </div>
+      </a>
+    </section>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/account/cartera" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Juegos — Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/admin-juegos.css') }}">
+</head>
+<body>
+  <div class="rc-container">
+
+    <!-- ===== ENCABEZADO ===== -->
+    <header class="rc-header">
+      <a href="/admin" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Gestión de juegos</h1>
+      <div></div>
+    </header>
+
+    <!-- ===== FORMULARIO DE JUEGO ===== -->
+    <form class="game-form">
+      <input type="text" placeholder="Nombre del juego" required>
+      <input type="text" placeholder="ID del juego" required>
+      <input type="text" placeholder="Tipo de juego" required>
+    </form>
+
+    <!-- ===== CONFIGURACIÓN DEL JUEGO ===== -->
+    <section class="game-config">
+      <h2>Configuración del Juego</h2>
+
+      <div class="bet-fields">
+        <input type="text" placeholder="Apuesta Mínima">
+        <input type="text" placeholder="Apuesta Máxima">
+      </div>
+
+      <div class="status-buttons">
+        <button class="status-btn active">Activar</button>
+        <button class="status-btn suspended">Desactivar</button>
+      </div>
+    </section>
+
+    <!-- ===== BOTONES ===== -->
+    <div class="action-buttons">
+      <button class="save-btn">Guardar Cambios</button>
+      <button class="delete-btn">Eliminar Juego</button>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depósito - Transferencia Bancaria | Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-deposito-transferencia.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account/cartera/depositos" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Depósitos</h1>
+    </div>
+
+    <!-- SECCIÓN TRANSFERENCIA -->
+    <section class="transfer-section">
+      <h2 class="rc-subtitle">Transferencia Bancaria</h2>
+
+      <div class="transfer-info">
+        <p><strong>Nombre de la cuenta</strong><br>RoyalCrumbs</p>
+        <p><strong>Número de referencia</strong><br>6956869432586458</p>
+      </div>
+
+      <input type="number" placeholder="Monto del Depósito" class="input-field">
+
+      <button class="btn-dorado">Generar Referencia</button>
+
+      <div class="instructions">
+        <h3>Instrucciones</h3>
+        <ol>
+          <li>Introduce el monto</li>
+          <li>Genera la referencia</li>
+          <li>Paga la referencia</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/wallet" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>

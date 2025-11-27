@@ -1,0 +1,142 @@
+/* ============================================================
+💬 CHAT EN VIVO - Agente Soporte
+============================================================ */
+
+html,
+body {
+    background-color: #202020;
+    color: #FFFFFF;
+    font-family: 'Timeless', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.rc-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rc-header {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+}
+
+.rc-back {
+    color: #FFFFFF;
+    font-size: 32px;
+    text-decoration: none;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+.rc-back:hover {
+    color: #AB925C;
+}
+
+.rc-screen-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ===== LISTA DE CHATS ===== */
+.chats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-card {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-card:hover {
+    border-color: #AB925C;
+    transform: translateX(4px);
+}
+
+.chat-info {
+    flex: 1;
+}
+
+.chat-info h3 {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    color: #FFFFFF;
+}
+
+.chat-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.chat-estado {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.estado-esperando {
+    background-color: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+}
+
+.estado-en-curso {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}
+
+.btn-tomar {
+    background-color: #AB925C;
+    color: #202020;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-tomar:hover {
+    background-color: #d8bb76;
+}
+
+.no-chats {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 600px) {
+    .chat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .btn-tomar {
+        width: 100%;
+    }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Transacciones - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial-transacciones.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account/cartera" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Historial de transacciones</h1>
+    </div>
+
+    <!-- BUSCADOR -->
+    <input type="text" class="search-bar" placeholder="Buscar transacciones">
+
+    <!-- LISTA DE TRANSACCIONES -->
+    <div class="transaction-list">
+      <div class="transaction-item">
+        <div>
+          <h3>15 mayo de 2024</h3>
+          <p>Depósito</p>
+        </div>
+        <span class="positivo">+ 500</span>
+      </div>
+
+      <div class="transaction-item">
+        <div>
+          <h3>15 mayo de 2024</h3>
+          <p>Retiro</p>
+        </div>
+        <span class="positivo">+ 2500</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      <span>Soporte</span>
+    </a>
+    <a href="/wallet" class="rc-nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bonos y Promociones - Activos</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos-activos.css') }}">
+</head>
+<body>
+
+  <div class="rc-container">
+
+    <!-- ENCABEZADO -->
+    <div class="rc-header">
+      <a href="/account/bonos" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Bonos y promociones</h1>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="rc-tabs">
+      <a href="/account/bonos" class="tab">Disponibles</a>
+      <a href="/account/bonos-activos" class="tab active">Activos</a>
+      <a href="/account/bonos-historial" class="tab">Historial</a>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="bonos-activos">
+      <div class="bono-item">
+        <p class="bono-titulo">Bono de bienvenida</p>
+        <p class="bono-fecha">Activado el 07/01/2022</p>
+      </div>
+
+      <div class="bono-item">
+        <p class="bono-titulo">Bono por Recomendación</p>
+        <p class="bono-fecha">Activado el 07/01/2022</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BARRA INFERIOR -->
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="">
+      <span>Inicio</span>
+    </a>
+    <a href="/games" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="">
+      <span>Juegos</span>
+    </a>
+    <a href="/support" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="">
+      <span>Soporte</span>
+    </a>
+    <a href="/wallet" class="rc-nav-item">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="">
+      <span>Cartera</span>
+    </a>
+  </nav>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionar perfil de Administrador — Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/admin-administrador-perfil.css') }}">
+</head>
+<body>
+  <div class="rc-container">
+    
+    <!-- ===== ENCABEZADO ===== -->
+    <header class="rc-header">
+      <a href="/admin/administradores" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Gestionar perfil de Administrador</h1>
+      <div></div>
+    </header>
+
+    <!-- ===== FORMULARIO ===== -->
+    <form class="admin-form">
+      <select required>
+        <option value="" disabled selected>Rol</option>
+        <option value="superadmin">Superadministrador</option>
+        <option value="moderador">Moderador</option>
+        <option value="analista">Analista</option>
+      </select>
+
+      <input type="text" placeholder="Nombre(s)" required>
+      <input type="text" placeholder="Apellido(s)" required>
+      <input type="email" placeholder="Correo" required>
+    </form>
+
+    <!-- ===== CONFIGURACIÓN DE CUENTA ===== -->
+    <section class="account-config">
+      <h2>Configuración de Cuenta</h2>
+      <div class="password-reset">
+        <p>Restablecer Contraseña</p>
+        <a href="#" class="rc-chevron"></a>
+      </div>
+
+      <div class="status-buttons">
+        <button class="status-btn active">Activa</button>
+        <button class="status-btn suspended">Suspendida</button>
+        <button class="status-btn blocked">Bloqueada</button>
+      </div>
+    </section>
+
+    <!-- ===== BOTONES ===== -->
+    <div class="action-buttons">
+      <button class="save-btn">Guardar Cambios</button>
+      <button class="delete-btn">Eliminar Cuenta</button>
+    </div>
+
+  </div>
+</body>
+</html>

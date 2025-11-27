@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cargando - Royal Crumbs</title>
+  <!-- 
+    CORRECCIÓN: 
+    Usar url_for (como en login.html) para que FastAPI maneje la ruta.
+  -->
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- 
+      CORRECCIÓN: 
+      Usar url_for aquí también.
+    -->
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
+    <h2>Cargando</h2>
+  </div>
+
+  <!-- 
+    AÑADIDO: 
+    Este script redirige al usuario después de 2 segundos.
+  -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Espera 2000 milisegundos (2 segundos) y luego redirige al login
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>

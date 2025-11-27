@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
+
+    <form id="login-form">
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+      </div>
+
+      <button type="submit" class="btn-primary">Iniciar Sesión</button>
+
+      <div class="links">
+        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+        <a href="/register">¿No tienes cuenta? Regístrate</a>
+      </div>
+    </form>
+
+    <div id="error-message" class="error-message" style="display: none;"></div>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("login-form");
+      const errorMessageDiv = document.getElementById("error-message");
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries());
+        data.correo = data.email;
+        data.contrasena = data.password;
+        delete data.email;
+        delete data.password;
+
+        errorMessageDiv.style.display = "none";
+
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || "Error desconocido al iniciar sesión.");
+          }
+
+          // Guardar datos en localStorage
+          localStorage.setItem("userId", result.id_usuario);
+          localStorage.setItem("idRol", result.id_rol);
+          localStorage.setItem("userRole", result.rol);
+
+          // Redirigir según el rol del usuario
+          if (result.rol === 'Administrador' || result.rol === 'Auditor') {
+            window.location.href = "/admin";
+          } else if (result.rol === 'Agente de Soporte') {
+            window.location.href = "/agente";
+          } else {
+            window.location.href = "/home";
+          }
+
+        } catch (error) {
+          console.error("Error de login:", error);
+          errorMessageDiv.textContent = error.message;
+          errorMessageDiv.style.display = "block";
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

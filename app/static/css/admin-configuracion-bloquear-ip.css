@@ -1,0 +1,119 @@
+/* ============================================================
+🚫 ADMIN - BLOQUEAR IP — Royal Crumbs
+============================================================ */
+
+html, body {
+  background-color: #202020;
+  margin: 0;
+  padding: 0;
+  font-family: 'Timeless', 'Arial', sans-serif;
+  color: #fff;
+}
+
+/* ======== Contenedor ======== */
+.rc-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 16px 50px;
+  background-color: #202020;
+  min-height: 100vh;
+}
+
+/* ======== Encabezado ======== */
+.rc-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 18px 0;
+}
+
+.rc-back {
+  color: #fff;
+  font-size: 34px;
+  text-decoration: none;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.rc-back:hover {
+  color: #AB925C;
+}
+
+.rc-screen-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ======== Formulario ======== */
+.ip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.ip-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #3b3224;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+}
+
+.btn-gold {
+  background-color: #AB925C;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-gold:hover {
+  background-color: #c2a76f;
+}
+
+/* ======== Lista de IP ======== */
+.ip-list {
+  margin-top: 25px;
+}
+
+.ip-list h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.ip-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ip-list li {
+  font-size: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ======== Responsive ======== */
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 600px;
+    padding: 40px;
+  }
+
+  .rc-screen-title {
+    font-size: 26px;
+  }
+
+  .ip-list li {
+    font-size: 16px;
+  }
+}

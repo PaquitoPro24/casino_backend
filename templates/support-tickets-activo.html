@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tickets Activos</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
+</head>
+
+<body>
+  <div class="rc-container">
+    <header class="rc-header">
+      <a href="/support" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Mis Tickets Activos</h1>
+      <div></div>
+    </header>
+
+    <section class="rc-content">
+      <div id="tickets-container">
+        <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+          Cargando tickets...
+        </p>
+      </div>
+
+      <a href="/support/tickets/new" class="rc-button"
+        style="display: block; margin-top: 20px; text-align: center; text-decoration: none;">
+        + Crear Nuevo Ticket
+      </a>
+    </section>
+  </div>
+
+  <script>
+    // Obtener ID del usuario desde localStorage
+    const userId = parseInt(localStorage.getItem('userId'));
+
+    if (!userId) {
+      alert('Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.');
+      window.location.href = '/login';
+    }
+
+    // Cargar tickets activos
+    async function cargarTickets() {
+      try {
+        const response = await fetch(`/api/support/tickets/active/${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Error al cargar tickets');
+        }
+
+        const data = await response.json();
+        mostrarTickets(data.tickets);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('tickets-container').innerHTML = `
+          <p style="text-align: center; color: #e74c3c; padding: 40px 20px;">
+            Error al cargar los tickets
+          </p>
+        `;
+      }
+    }
+
+    function mostrarTickets(tickets) {
+      const container = document.getElementById('tickets-container');
+
+      if (!tickets || tickets.length === 0) {
+        container.innerHTML = `
+          <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+            No tienes tickets activos.<br><br>
+            Crea uno nuevo si necesitas ayuda.
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = tickets.map(ticket => {
+        const fecha = new Date(ticket.fecha_creacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        // Color del estado
+        let estadoClass = 'estado-abierto';
+        if (ticket.estado === 'En Proceso') estadoClass = 'estado-en-proceso';
+
+        return `
+          <div class="ticket-item">
+            <div class="ticket-header">
+              <h3>Ticket #${ticket.id_ticket}</h3>
+              <span class="ticket-badge ${estadoClass}">${ticket.estado}</span>
+            </div>
+            <p class="ticket-subject">${ticket.asunto}</p>
+            <div class="ticket-footer">
+              <span class="ticket-date">📅 ${fechaFormateada}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Cargar al iniciar
+    cargarTickets();
+
+    // Actualizar cada 15 segundos
+    setInterval(cargarTickets, 15000);
+  </script>
+
+  <style>
+    .ticket-item {
+      background-color: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .ticket-item:hover {
+      border-color: #AB925C;
+      transform: translateX(4px);
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .ticket-header h3 {
+      font-size: 15px;
+      margin: 0;
+      color: #d8bb76;
+    }
+
+    .ticket-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .estado-abierto {
+      background-color: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+    }
+
+    .estado-en-proceso {
+      background-color: rgba(52, 152, 219, 0.2);
+      color: #3498db;
+    }
+
+    .ticket-subject {
+      font-size: 14px;
+      color: #FFFFFF;
+      margin: 8px 0;
+    }
+
+    .ticket-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .ticket-date {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rc-button {
+      background-color: #AB925C;
+      color: #202020;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .rc-button:hover {
+      background-color: #d8bb76;
+    }
+  </style>
+</body>
+
+</html>

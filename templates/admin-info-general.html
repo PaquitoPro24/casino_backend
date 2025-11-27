@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Información General — Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/admin-info-general.css') }}">
+</head>
+<body>
+  <div class="rc-container">
+    
+    <!-- ===== ENCABEZADO ===== -->
+    <header class="rc-header">
+      <a href="/admin" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Información General</h1>
+      <div></div>
+    </header>
+
+    <!-- ===== TARJETAS DE MÉTRICAS ===== -->
+    <section class="metrics-section">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h3>Usuarios Totales</h3>
+          <p class="value">12,345</p>
+          <span class="percent green">+5%</span>
+        </div>
+
+        <div class="metric-card">
+          <h3>Usuarios Activos</h3>
+          <p class="value">8,765</p>
+          <span class="percent red">-2%</span>
+        </div>
+
+        <div class="metric-card">
+          <h3>Depósitos Totales</h3>
+          <p class="value">$500,000.00</p>
+          <span class="percent green">+10%</span>
+        </div>
+
+        <div class="metric-card">
+          <h3>Retiros Totales</h3>
+          <p class="value">$300,000.00</p>
+          <span class="percent red">-8%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== JUEGOS POPULARES ===== -->
+    <section class="games-section">
+      <h2 class="section-title">Actividad de Juegos Populares</h2>
+      <div class="games-card">
+        <h3>Juegos Populares</h3>
+        <div class="game-row">
+          <span>Tragamonedas</span>
+          <div class="bar">
+            <div class="fill" style="width: 80%;"></div>
+          </div>
+        </div>
+        <div class="game-row">
+          <span>Ruleta</span>
+          <div class="bar">
+            <div class="fill" style="width: 60%;"></div>
+          </div>
+        </div>
+        <div class="game-row">
+          <span>Blackjack</span>
+          <div class="bar">
+            <div class="fill" style="width: 45%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

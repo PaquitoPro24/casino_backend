@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat en Vivo - Nuevo</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/support-chat.css') }}">
+</head>
+<body>
+  <div class="rc-container">
+    <header class="rc-header">
+      <a href="/support" class="rc-back">‹</a>
+      <h1 class="rc-screen-title">Chat en Vivo</h1>
+      <div></div>
+    </header>
+
+    <!-- 
+      FORMULARIO CORREGIDO
+      - Añadido id="chatForm"
+      - Añadidos name="asunto" y name="mensaje"
+    -->
+    <section class="chat-form">
+      <form id="chatForm">
+        <select name="asunto" required>
+          <option value="">Selecciona un tema</option>
+          <option value="Problema con el juego">Problema con el juego</option>
+          <option value="Problema con el pago">Problema con el pago</option>
+          <option value="Consulta general">Consulta general</option>
+        </select>
+        
+        <!-- El campo "Nombre" no está en tu BD (Soporte) -->
+        <textarea name="mensaje" placeholder="Mensaje" required></textarea>
+
+        <button type="submit">Iniciar Chat</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- 
+    ==================================================
+    SCRIPT DE CONEXIÓN (¡Añadido!)
+    ==================================================
+  -->
+  <script>
+    // 1. Verificar sesión
+    const userId = localStorage.getItem("usuario_id");
+    if (!userId) {
+      alert("No has iniciado sesión.");
+      window.location.href = "/login";
+    }
+
+    // 2. Capturar el formulario
+    const chatForm = document.getElementById("chatForm");
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(chatForm);
+      formData.append("id_usuario", userId);
+
+      try {
+        // 3. Llamar a la API de 'support' que YA EXISTE
+        const res = await fetch("/api/support/tickets/create", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.error) {
+          alert("Error: " + result.error);
+        } else if (result.success) {
+          alert("¡Ticket de chat enviado con éxito!");
+          // 4. Redirigir a la lista de "chats" activos
+          window.location.href = "/support/chat/active";
+        }
+
+      } catch (error) {
+        console.error("Error al crear chat:", error);
+        alert("Error de conexión al enviar el chat.");
+      }
+    });
+  </script>
+</body>
+</html>
