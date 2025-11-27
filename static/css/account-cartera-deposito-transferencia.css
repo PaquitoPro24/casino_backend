@@ -14,7 +14,7 @@ html, body {
 .rc-container {
   max-width: 420px;
   margin: 0 auto;
-  padding: 20px 16px 90px;
+  padding: clamp(16px, 3vw, 20px) 16px 90px;
   min-height: 100vh;
 }
 
@@ -24,12 +24,12 @@ html, body {
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   background-color: #111;
-  padding: 18px 0;
+  padding: clamp(14px, 3vw, 18px) 0;
 }
 
 .rc-back {
   color: #FFFFFF;
-  font-size: 34px;
+  font-size: clamp(28px, 6vw, 34px);
   text-decoration: none;
   text-align: center;
 }
@@ -47,14 +47,14 @@ html, body {
 }
 
 .rc-subtitle {
-  font-size: 18px;
+  font-size: clamp(16px, 3.5vw, 18px);
   font-weight: 700;
   margin-bottom: 22px;
 }
 
 /* ======== INFORMACIÓN DE CUENTA ======== */
 .transfer-info p {
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   color: #fff;
   margin: 8px 0;
 }
@@ -68,8 +68,8 @@ html, body {
   background-color: #3a3222;
   border: none;
   border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 15px;
+  padding: clamp(10px, 2vw, 12px) 14px;
+  font-size: clamp(13px, 2.8vw, 15px);
   color: #fff;
   width: 100%;
   margin: 14px 0;
@@ -87,8 +87,8 @@ html, body {
   font-weight: 700;
   border: none;
   border-radius: 10px;
-  padding: 14px;
-  font-size: 16px;
+  padding: clamp(11px, 2.3vw, 14px);
+  font-size: clamp(14px, 3vw, 16px);
   cursor: pointer;
   width: 100%;
   transition: background-color 0.3s, transform 0.2s;
@@ -105,7 +105,7 @@ html, body {
 }
 
 .instructions h3 {
-  font-size: 16px;
+  font-size: clamp(14px, 3vw, 16px);
   color: #fff;
   margin-bottom: 6px;
 }
@@ -114,7 +114,7 @@ html, body {
   margin: 0;
   padding-left: 18px;
   color: #bdbdbd;
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
 }
 
 /* ======== NAV INFERIOR ======== */
@@ -138,7 +138,7 @@ html, body {
   align-items: center;
   text-decoration: none;
   color: #b59557;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   transition: color 0.3s, transform 0.2s;
 }
 
@@ -157,4 +157,33 @@ html, body {
 .rc-nav-item:hover span {
   color: #d8bb76;
   transform: scale(1.05);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
 }

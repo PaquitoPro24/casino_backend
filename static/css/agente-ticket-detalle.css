@@ -29,7 +29,7 @@ body {
 
 .rc-back {
     color: #FFFFFF;
-    font-size: 32px;
+    font-size: clamp(26px, 5.5vw, 32px);
     text-decoration: none;
     text-align: center;
     transition: color 0.2s ease;
@@ -49,7 +49,7 @@ body {
 .ticket-info-card {
     background-color: #1a1a1a;
     border-radius: 8px;
-    padding: 20px;
+    padding: clamp(16px, 3vw, 20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -63,7 +63,7 @@ body {
 }
 
 .ticket-id {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     color: #d8bb76;
     font-weight: 600;
 }
@@ -92,7 +92,7 @@ body {
 }
 
 .ticket-subject {
-    font-size: 20px;
+    font-size: clamp(17px, 3.8vw, 20px);
     font-weight: 700;
     margin: 12px 0;
 }
@@ -101,7 +101,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 16px;
 }
@@ -109,8 +109,8 @@ body {
 .ticket-mensaje-inicial {
     background-color: #202020;
     border-radius: 6px;
-    padding: 14px;
-    font-size: 15px;
+    padding: clamp(11px, 2.3vw, 14px);
+    font-size: clamp(13px, 2.8vw, 15px);
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.9);
 }
@@ -123,10 +123,10 @@ body {
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: clamp(10px, 2vw, 12px) 24px;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -166,11 +166,11 @@ body {
 .responses-section {
     background-color: #1a1a1a;
     border-radius: 8px;
-    padding: 20px;
+    padding: clamp(16px, 3vw, 20px);
 }
 
 .section-title {
-    font-size: 18px;
+    font-size: clamp(16px, 3.5vw, 18px);
     font-weight: 700;
     margin-bottom: 16px;
     color: #d8bb76;
@@ -179,7 +179,7 @@ body {
 .response-item {
     background-color: #202020;
     border-radius: 6px;
-    padding: 14px;
+    padding: clamp(11px, 2.3vw, 14px);
     margin-bottom: 12px;
     border-left: 3px solid transparent;
 }
@@ -197,7 +197,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
-    font-size: 13px;
+    font-size: clamp(11px, 2.3vw, 13px);
 }
 
 .response-author {
@@ -210,14 +210,14 @@ body {
 }
 
 .response-text {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.9);
 }
 
 .no-responses {
     text-align: center;
-    padding: 20px;
+    padding: clamp(16px, 3vw, 20px);
     color: rgba(255, 255, 255, 0.5);
 }
 
@@ -225,7 +225,7 @@ body {
 .response-form {
     background-color: #1a1a1a;
     border-radius: 8px;
-    padding: 20px;
+    padding: clamp(16px, 3vw, 20px);
 }
 
 .form-group {
@@ -234,7 +234,7 @@ body {
 
 .form-group label {
     display: block;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     color: #d8bb76;
     margin-bottom: 8px;
     font-weight: 600;
@@ -246,8 +246,8 @@ body {
     color: #FFFFFF;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
-    padding: 12px;
-    font-size: 14px;
+    padding: clamp(10px, 2vw, 12px);
+    font-size: clamp(12px, 2.5vw, 14px);
     font-family: inherit;
     resize: vertical;
     min-height: 100px;
@@ -267,4 +267,33 @@ body {
     .btn {
         width: 100%;
     }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
 }

@@ -81,7 +81,7 @@ header .profile:hover {
   text-align: center;
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
-  padding: 16px;
+  padding: clamp(12px, 2.5vw, 16px);
 }
 
 .welcome-overlay h1 {

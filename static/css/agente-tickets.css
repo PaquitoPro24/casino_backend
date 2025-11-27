@@ -30,7 +30,7 @@ body {
 
 .rc-back {
     color: #FFFFFF;
-    font-size: 32px;
+    font-size: clamp(26px, 5.5vw, 32px);
     text-decoration: none;
     text-align: center;
     transition: color 0.2s ease;
@@ -50,7 +50,7 @@ body {
 .filters-section {
     background-color: #1a1a1a;
     border-radius: 8px;
-    padding: 16px 20px;
+    padding: clamp(12px, 2.5vw, 16px) 20px;
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -64,7 +64,7 @@ body {
 }
 
 .filter-group label {
-    font-size: 13px;
+    font-size: clamp(11px, 2.3vw, 13px);
     color: #d8bb76;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -76,7 +76,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
     padding: 8px 12px;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     font-family: inherit;
     cursor: pointer;
 }
@@ -92,7 +92,7 @@ body {
     border: none;
     border-radius: 6px;
     padding: 10px 20px;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -114,7 +114,7 @@ body {
     background-color: #1a1a1a;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    padding: 16px 20px;
+    padding: clamp(12px, 2.5vw, 16px) 20px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -161,13 +161,13 @@ body {
 }
 
 .ticket-info h3 {
-    font-size: 16px;
+    font-size: clamp(14px, 3vw, 16px);
     margin: 0 0 6px 0;
     color: #FFFFFF;
 }
 
 .ticket-meta {
-    font-size: 13px;
+    font-size: clamp(11px, 2.3vw, 13px);
     color: rgba(255, 255, 255, 0.6);
     display: flex;
     flex-wrap: wrap;
@@ -175,7 +175,7 @@ body {
 }
 
 .ticket-mensaje {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
     color: rgba(255, 255, 255, 0.8);
     margin-top: 10px;
     line-height: 1.4;
@@ -190,7 +190,7 @@ body {
     text-align: center;
     padding: 40px 20px;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 16px;
+    font-size: clamp(14px, 3vw, 16px);
 }
 
 /* ===== RESPONSIVO ===== */
@@ -209,4 +209,33 @@ body {
         flex-direction: column;
         gap: 8px;
     }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
 }

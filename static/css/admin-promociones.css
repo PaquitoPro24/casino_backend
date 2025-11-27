@@ -14,7 +14,7 @@ html, body {
 .rc-container {
   max-width: 420px;
   margin: 0 auto;
-  padding: 20px 16px 50px;
+  padding: clamp(16px, 3vw, 20px) 16px 50px;
   background-color: #202020;
   min-height: 100vh;
   display: flex;
@@ -27,12 +27,12 @@ html, body {
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  padding: 18px 0;
+  padding: clamp(14px, 3vw, 18px) 0;
 }
 
 .rc-back {
   color: #fff;
-  font-size: 34px;
+  font-size: clamp(28px, 6vw, 34px);
   text-decoration: none;
   text-align: center;
   transition: 0.2s;
@@ -44,7 +44,7 @@ html, body {
 
 .rc-screen-title {
   text-align: center;
-  font-size: 22px;
+  font-size: clamp(18px, 4vw, 22px);
   font-weight: 700;
 }
 
@@ -57,12 +57,12 @@ html, body {
 
 .promo-form input {
   width: 100%;
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   border-radius: 8px;
   border: none;
   background-color: #fff;
   color: #000;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   outline: none;
   transition: 0.2s;
 }
@@ -78,7 +78,7 @@ html, body {
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   cursor: pointer;
   transition: 0.3s;
 }
@@ -93,7 +93,7 @@ html, body {
 
 /* ======== Lista de Promociones ======== */
 .promo-list h2 {
-  font-size: 17px;
+  font-size: clamp(15px, 3.3vw, 17px);
   font-weight: 700;
   margin-top: 25px;
   margin-bottom: 10px;
@@ -105,26 +105,26 @@ html, body {
   align-items: center;
   background-color: #1a1a1a;
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: clamp(10px, 2vw, 12px) 16px;
   margin-bottom: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .promo-title {
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   font-weight: 700;
   color: #fff;
   margin: 0;
 }
 
 .promo-subtitle {
-  font-size: 13px;
+  font-size: clamp(11px, 2.3vw, 13px);
   color: #cfcfcf;
   margin: 3px 0 0;
 }
 
 .promo-status {
-  font-size: 13px;
+  font-size: clamp(11px, 2.3vw, 13px);
   color: #d8bb76;
   font-weight: 600;
 }
@@ -141,6 +141,35 @@ html, body {
   }
 
   .promo-title {
-    font-size: 16px;
+    font-size: clamp(14px, 3vw, 16px);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
   }
 }

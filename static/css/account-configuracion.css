@@ -24,12 +24,12 @@ html, body {
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
   background-color: #181818;
-  padding: 16px 0;
+  padding: clamp(12px, 2.5vw, 16px) 0;
 }
 
 .rc-back {
   color: #FFFFFF;
-  font-size: 34px;
+  font-size: clamp(28px, 6vw, 34px);
   text-decoration: none;
   text-align: center;
   transition: 0.2s;
@@ -47,7 +47,7 @@ html, body {
   text-align: center;
   background-color: #111;
   color: #FFFFFF;
-  font-size: 17px;
+  font-size: clamp(15px, 3.3vw, 17px);
   font-weight: 600;
   padding: 10px 0;
   margin-bottom: 20px;
@@ -99,8 +99,8 @@ html, body {
   background-color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  padding: 12px;
-  font-size: 15px;
+  padding: clamp(10px, 2vw, 12px);
+  font-size: clamp(13px, 2.8vw, 15px);
   color: #111;
 }
 
@@ -114,8 +114,8 @@ html, body {
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  padding: 12px;
-  font-size: 16px;
+  padding: clamp(10px, 2vw, 12px);
+  font-size: clamp(14px, 3vw, 16px);
   font-weight: 700;
   cursor: pointer;
   margin-top: 6px;
@@ -129,8 +129,8 @@ html, body {
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
-  padding: 12px;
-  font-size: 16px;
+  padding: clamp(10px, 2vw, 12px);
+  font-size: clamp(14px, 3vw, 16px);
   font-weight: 700;
   cursor: pointer;
   transition: 0.3s;
@@ -155,7 +155,7 @@ html, body {
   text-decoration: none;
   color: #AB925C;
   text-align: center;
-  font-size: 13px;
+  font-size: clamp(11px, 2.3vw, 13px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -179,8 +179,37 @@ html, body {
 
 /* ======== RESPONSIVO ======== */
 @media (min-width: 768px) {
-  .rc-container { max-width: 600px; padding: 20px 40px 120px; }
+  .rc-container { max-width: 600px; padding: clamp(16px, 3vw, 20px) 40px 120px; }
   .rc-screen-title { font-size: 30px; }
-  .rc-subtitle { font-size: 20px; }
-  .btn-save, .btn-delete { font-size: 18px; }
+  .rc-subtitle { font-size: clamp(17px, 3.8vw, 20px); }
+  .btn-save, .btn-delete { font-size: clamp(16px, 3.5vw, 18px); }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
 }

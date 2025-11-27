@@ -14,7 +14,7 @@ html, body {
 .rc-container {
   max-width: 420px;
   margin: 0 auto;
-  padding: 20px 16px 60px;
+  padding: clamp(16px, 3vw, 20px) 16px 60px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -24,7 +24,7 @@ html, body {
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  padding: 18px 0;
+  padding: clamp(14px, 3vw, 18px) 0;
 }
 
 .rc-back {
@@ -36,7 +36,7 @@ html, body {
 
 .rc-screen-title {
   text-align: center;
-  font-size: 22px;
+  font-size: clamp(18px, 4vw, 22px);
   font-weight: 700;
 }
 
@@ -45,22 +45,51 @@ html, body {
   color: #FFFFFF;
   text-align: center;
   font-weight: 700;
-  font-size: 18px;
-  padding: 12px 0;
+  font-size: clamp(16px, 3.5vw, 18px);
+  padding: clamp(10px, 2vw, 12px) 0;
 }
 
 .rc-content-box {
   background-color: #2E2E2E;
   border-radius: 12px;
-  padding: 18px;
+  padding: clamp(14px, 3vw, 18px);
   margin-top: 20px;
   text-align: justify;
   color: #CFCFCF;
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
   line-height: 1.6;
 }
 
 @media (max-width: 480px) {
-  .rc-screen-title { font-size: 20px; }
-  .rc-subtitle { font-size: 16px; }
+  .rc-screen-title { font-size: clamp(17px, 3.8vw, 20px); }
+  .rc-subtitle { font-size: clamp(14px, 3vw, 16px); }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .rc-container {
+    max-width: 600px;
+    padding-left: clamp(20px, 4vw, 32px);
+    padding-right: clamp(20px, 4vw, 32px);
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-container {
+    max-width: 700px;
+  }
+  
+  .rc-screen-title {
+    font-size: clamp(26px, 5.5vw, 32px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-container {
+    max-width: 800px;
+    padding-bottom: 100px;
+  }
 }
