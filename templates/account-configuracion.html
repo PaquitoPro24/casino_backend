@@ -45,16 +45,6 @@
       padding: 0 20px;
     }
 
-    .saldo-bar {
-      background-color: #0a0a0a;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 600;
-    }
-
     .subtitle {
       text-align: center;
       font-size: 16px;
@@ -230,7 +220,6 @@
   </div>
 
   <div class="container">
-    <div class="saldo-bar" id="user-balance">Saldo: Cargando...</div>
     <div class="subtitle">Configuracion</div>
 
     <div class="profile-section">
@@ -243,9 +232,13 @@
     </div>
 
     <form class="form" id="profile-form">
+      <input type="text" id="usuario" name="usuario" placeholder="Usuario" readonly
+        style="background-color: #f0f0f0; cursor: not-allowed;">
       <input type="text" id="nombre" name="nombre" placeholder="Nombre(s)" required>
       <input type="text" id="apellido" name="apellido" placeholder="Apellido(s)" required>
       <input type="email" id="email" name="email" placeholder="Correo" required>
+      <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña">
+      <input type="text" id="comentario" name="comentario" placeholder="Comentario(opcional)">
 
       <button type="submit" class="btn btn-save">Guardar Cambios</button>
       <button type="button" class="btn btn-delete">Eliminar Cuenta</button>
@@ -303,32 +296,43 @@
         if (!response.ok) throw new Error("Error al cargar datos");
 
         const data = await response.json();
+
+        // Llenar campos - Usuario ID es readonly
+        document.getElementById("usuario").value = `ID: ${data.id_usuario || userId}`;
         document.getElementById("nombre").value = data.nombre || "";
         document.getElementById("apellido").value = data.apellido || "";
         document.getElementById("email").value = data.email || "";
-
-        const formatted = new Intl.NumberFormat('es-MX', {
-          style: 'currency',
-          currency: 'MXN'
-        }).format(data.saldo || 0);
-
-        document.getElementById("user-balance").textContent = `Saldo: ${formatted}`;
       } catch (error) {
         console.error("Error:", error);
-        document.getElementById("user-balance").textContent = "Saldo: Error";
       }
 
       document.getElementById("profile-form").addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        const nombre = document.getElementById("nombre").value;
+        const apellido = document.getElementById("apellido").value;
+        const email = document.getElementById("email").value;
+        const contrasena = document.getElementById("contrasena").value;
+        const comentario = document.getElementById("comentario").value;
+
         try {
+          const formData = new FormData();
+          formData.append("nombre", nombre);
+          formData.append("apellido", apellido);
+          formData.append("email", email);
+          if (contrasena) formData.append("contrasena", contrasena);
+          if (comentario) formData.append("comentario", comentario);
+
           const response = await fetch(`/api/user/update/${userId}`, {
             method: 'PUT',
-            body: new FormData(e.target)
+            body: formData
           });
 
           const result = await response.json();
           if (!response.ok) throw new Error(result.error || 'Error');
-          alert("✅ Perfil actualizado");
+
+          alert("✅ Perfil actualizado correctamente");
+          document.getElementById("contrasena").value = "";
         } catch (error) {
           alert("Error: " + error.message);
         }
