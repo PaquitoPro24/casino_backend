@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from db import db_connect # <-- Importamos la conexión a la BD cambios
+from app.db import db_connect # <-- Importamos la conexión a la BD cambios
 import psycopg2              # <-- Importamos para manejar errores de BD
 
 # =========================
@@ -35,7 +35,7 @@ def render(tpl: str, request: Request) -> HTMLResponse:
 from api.auth import router as auth_router
 from api.agente_soporte import router as agente_router
 from api.support import router as support_router
-from auth_agente import verificar_rol_agente_redirect
+from app.middleware.auth_agente import verificar_rol_agente_redirect
 
 # =========================
 #  RUTAS DE LÓGICA / API

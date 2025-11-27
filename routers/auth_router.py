@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
-from db.db_connect import get_connection
+from app.db.db_connect import get_connection
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Form # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
 from fastapi.responses import JSONResponse
-from db import db_connect
+from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
