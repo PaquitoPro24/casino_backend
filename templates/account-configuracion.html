@@ -245,7 +245,7 @@
     <div class="profile-section">
       <div class="profile-upload">
         <label for="file-input" class="upload-box">
-          <img id="preview" src="{{ url_for('static', path='img/icons/profile-placeholder.png') }}" alt="Foto">
+          <img id="preview" src="{{ url_for('static', path='img/usuario_icon.png') }}" alt="Foto">
         </label>
         <input id="file-input" type="file" accept="image/*">
       </div>
@@ -267,19 +267,19 @@
 
   <nav class="nav">
     <a href="/home" class="nav-item">
-      <img src="{{ url_for('static', path='img/icons/nav-home.png') }}" alt="Home">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Home">
       <span>Inicio</span>
     </a>
     <a href="/games" class="nav-item">
-      <img src="{{ url_for('static', path='img/icons/nav-games.png') }}" alt="Juegos">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
       <span>Juegos</span>
     </a>
     <a href="/support" class="nav-item">
-      <img src="{{ url_for('static', path='img/icons/nav-support.png') }}" alt="Soporte">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/account" class="nav-item active">
-      <img src="{{ url_for('static', path='img/icons/nav-account-active.png') }}" alt="Cuenta">
+    <a href="/account/cartera" class="nav-item active">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
