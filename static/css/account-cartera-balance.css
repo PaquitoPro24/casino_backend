@@ -174,20 +174,6 @@ html, body {
   z-index: 100;
 }
 
-.rc-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #111;
-  border-top: 1px solid #b59557;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  z-index: 100;
-}
-
 .rc-nav-item {
   display: flex;
   flex-direction: column;
