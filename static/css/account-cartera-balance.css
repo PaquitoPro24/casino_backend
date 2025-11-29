@@ -180,7 +180,7 @@ html, body {
   align-items: center;
   text-decoration: none;
   color: #b59557;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   transition: color 0.3s, transform 0.2s;
 }
 
