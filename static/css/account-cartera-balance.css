@@ -174,14 +174,35 @@ html, body {
   z-index: 100;
 }
 
+.rc-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #111;
+  border-top: 1px solid #b59557;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  z-index: 100;
+}
+
 .rc-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
   color: #b59557;
-  font-size: 15px;
+  font-size: clamp(13px, 2.8vw, 15px);
   transition: color 0.3s, transform 0.2s;
+}
+
+.rc-nav-item img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 5px;
+  filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
 }
 
 .rc-nav-item:hover img {
