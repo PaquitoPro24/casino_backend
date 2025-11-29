@@ -151,44 +151,45 @@
       box-shadow: 0 6px 20px rgba(201, 42, 42, 0.4);
     }
 
-    .nav {
+    .rc-nav {
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-      background-color: #202020;
+      width: 100%;
+      background-color: #111;
+      border-top: 1px solid #b59557;
       display: flex;
       justify-content: space-around;
+      align-items: center;
       padding: 10px 0;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-      border-top: 1px solid #2a2a2a;
+      z-index: 100;
     }
 
-    .nav-item {
+    .rc-nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-decoration: none;
-      color: #888;
-      transition: color 0.2s;
-      padding: 4px 8px;
+      color: #b59557;
+      font-size: 15px;
+      transition: color 0.3s, transform 0.2s;
     }
 
-    .nav-item:hover,
-    .nav-item.active {
-      color: #ab925c;
+    .rc-nav-item img {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 5px;
+      filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
     }
 
-    .nav-item img {
-      width: clamp(20px, 5vw, 24px);
-      height: clamp(20px, 5vw, 24px);
-      margin-bottom: 4px;
-      filter: grayscale(1) brightness(0.6);
+    .rc-nav-item:hover img {
+      filter: brightness(1.3);
+      transform: scale(1.1);
     }
 
-    .nav-item:hover img,
-    .nav-item.active img {
-      filter: grayscale(0) brightness(1);
+    .rc-nav-item:hover span {
+      color: #d8bb76;
+      transform: scale(1.05);
     }
 
     @media (min-width: 640px) {
@@ -261,20 +262,20 @@
     </form>
   </div>
 
-  <nav class="nav">
-    <a href="/home" class="nav-item">
+  <nav class="rc-nav">
+    <a href="/home" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Home">
       <span>Inicio</span>
     </a>
-    <a href="/games" class="nav-item">
+    <a href="/games" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
       <span>Juegos</span>
     </a>
-    <a href="/support" class="nav-item">
+    <a href="/support" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/account/cartera" class="nav-item active">
+    <a href="/account/cartera" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
