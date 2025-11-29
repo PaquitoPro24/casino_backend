@@ -107,14 +107,13 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #202020;
-  border-top: 1px solid #ab925c;
+  background-color: #111;
+  border-top: 1px solid #b59557;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: clamp(8px, 2vw, 10px) 0;
+  padding: 10px 0;
   z-index: 100;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .rc-nav-item {
@@ -122,18 +121,16 @@ body {
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  color: #ab925c;
-  font-size: clamp(12px, 2.5vw, 15px);
-  padding: 4px 8px;
-  transition: all 0.3s ease;
+  color: #b59557;
+  font-size: 15px;
+  transition: color 0.3s, transform 0.2s;
 }
 
 .rc-nav-item img {
-  width: clamp(26px, 6vw, 32px);
-  height: clamp(26px, 6vw, 32px);
+  width: 28px;
+  height: 28px;
   margin-bottom: 5px;
   filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
-  transition: all 0.3s ease;
 }
 
 .rc-nav-item:hover img {
@@ -142,7 +139,7 @@ body {
 }
 
 .rc-nav-item:hover span {
-  color: #FFFFFF;
+  color: #d8bb76;
   transform: scale(1.05);
 }
 
