@@ -104,7 +104,7 @@ html, body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 5px 0;
+  padding: 10px 0;
   z-index: 100;
 }
 
@@ -133,12 +133,6 @@ html, body {
 .rc-nav-item:hover span {
   color: #d8bb76;
   transform: scale(1.05);
-}
-
-.transaction-item .negativo {
-  color: #ff5757;
-  font-weight: 600;
-  font-size: clamp(13px, 2.8vw, 15px);
 }
 
 /* ============================================================
