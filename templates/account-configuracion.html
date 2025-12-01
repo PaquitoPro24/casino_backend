@@ -175,35 +175,21 @@
   transition: color 0.3s, transform 0.2s;
 }
 
-/* ÍCONO */
 .rc-nav-item img {
   width: 28px;
   height: 28px;
   margin-bottom: 5px;
   filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
-  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-/* Hover del ícono */
 .rc-nav-item:hover img {
   filter: brightness(1.3);
   transform: scale(1.1);
 }
 
-/* Hover del texto */
 .rc-nav-item:hover span {
   color: #d8bb76;
   transform: scale(1.05);
-}
-
-/* Estado activo (lo que NO estaba en la referencia pero necesitas) */
-.rc-nav-item.active img {
-  filter: brightness(1.4);
-}
-
-.rc-nav-item.active span {
-  color: #d8bb76;
-  font-weight: 600;
 }
 
     @media (min-width: 640px) {
