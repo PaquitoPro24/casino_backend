@@ -160,47 +160,45 @@ header .profile:hover {
 }
 
 /* ======== MENÚ INFERIOR ======== */
-nav {
+.rc-nav {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #202020;
-  border-top: 1px solid #ab925c;
+  background-color: #111;
+  border-top: 1px solid #b59557;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: clamp(6px, 1.5vw, 8px) 0;
+  padding: 10px 0;
   z-index: 100;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
 }
 
-nav a {
-  color: #AB925C;
-  text-align: center;
-  text-decoration: none;
-  font-size: clamp(11px, 2.5vw, 14px);
-  transition: color 0.3s, transform 0.3s;
+.rc-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 8px;
+  text-decoration: none;
+  color: #b59557;
+  font-size: clamp(13px, 2.8vw, 15px);
+  transition: color 0.3s, transform 0.2s;
 }
 
-nav a img {
-  width: clamp(22px, 5vw, 26px);
-  height: clamp(22px, 5vw, 26px);
-  margin-bottom: 4px;
+.rc-nav-item img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 5px;
   filter: brightness(0) saturate(100%) invert(77%) sepia(49%) saturate(296%) hue-rotate(5deg) brightness(92%) contrast(91%);
 }
 
-nav a:hover {
-  color: #FFFFFF;
-  transform: scale(1.07);
+.rc-nav-item:hover img {
+  filter: brightness(1.3);
+  transform: scale(1.1);
 }
 
-nav a.active {
-  color: #FFFFFF;
+.rc-nav-item:hover span {
+  color: #d8bb76;
+  transform: scale(1.05);
 }
 
 /* ============================================================
