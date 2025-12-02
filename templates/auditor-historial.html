@@ -2,28 +2,131 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Auditorías - Royal Crumbs</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='css/auditor.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Auditorías - Royal Crumbs</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auditor.css') }}">
+  <style>
+    .history-list {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .history-card {
+      background-color: #181818;
+      border-radius: 10px;
+      padding: 18px;
+      border-left: 4px solid #ab925c;
+      transition: all 0.3s;
+    }
+
+    .history-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .card-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #ab925c;
+    }
+
+    .card-header .date {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .card-body span {
+      color: #ccc;
+    }
+
+    .card-footer {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #333;
+      text-align: right;
+    }
+
+    .card-footer .compliance {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ab925c;
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="rc-header">
-        <a href="/auditor" class="rc-back">‹</a>
-        <h1 class="rc-screen-title">Historial</h1>
-        <div></div>
-    </div>
+  <div class="rc-header">
+    <a href="/auditor" class="rc-back">‹</a>
+    <h1 class="rc-screen-title">Historial de Auditorías</h1>
+    <div></div>
+  </div>
 
-    <div class="rc-container">
-        <p style="text-align: center; color: #ab925c; margin-top: 50px; font-size: 18px;">
-            📊 Módulo en desarrollo
-        </p>
-        <p style="text-align: center; color: #ccc; margin-top: 20px;">
-            Aquí podrás revisar el historial de auditorías realizadas
-        </p>
-    </div>
+  <div class="rc-container">
+    <section class="history-list" id="history-container">
+      <p style="text-align: center; color: #ccc; padding: 40px 0;">Cargando historial...</p>
+    </section>
+  </div>
+
+  <script>
+    async function cargarHistorial() {
+      const container = document.getElementById('history-container');
+      try {
+        // Este es el endpoint que debes crear para obtener los datos
+        const response = await fetch('/api/auditor/historial');
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error || 'Error al cargar el historial');
+
+        if (!data.historial || data.historial.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: #ccc; padding: 40px 0;">No hay auditorías registradas.</p>';
+          return;
+        }
+
+        container.innerHTML = data.historial.map(audit => `
+          <div class="history-card">
+            <div class="card-header">
+              <h3>Auditoría #${audit.id_auditoria}</h3>
+              <span class="date">${new Date(audit.fecha).toLocaleString('es-ES')}</span>
+            </div>
+            <div class="card-body">
+              <span>✅ Cumple: ${audit.cumple}</span>
+              <span>❌ No Cumple: ${audit.no_cumple}</span>
+              <span>⚠️ Parcial: ${audit.parcial}</span>
+              <span>➖ No Aplica: ${audit.no_aplica}</span>
+            </div>
+            <div class="card-footer">
+              <span class="compliance">Cumplimiento: ${audit.porcentaje_cumplimiento}%</span>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 40px 0;">Error al cargar el historial.</p>';
+      }
+    }
+
+    // Cargar el historial cuando la página se abra
+    document.addEventListener('DOMContentLoaded', cargarHistorial);
+  </script>
 
 </body>
 

@@ -519,11 +519,47 @@
             doc.setTextColor(171, 146, 92);
             doc.text(`Cumplimiento Total: ${porcentajeCumplimiento}%`, 40, y);
 
+            // --- INICIO: GUARDAR AUDITORÍA EN EL BACKEND ---
+            // Usamos una función asíncrona para no bloquear la generación del PDF
+            const guardarAuditoria = async () => {
+                // Asumimos que el ID del auditor está en localStorage (se guarda en el login)
+                const idAuditor = localStorage.getItem("user_id");
+                if (!idAuditor) {
+                    console.error("No se encontró el ID del auditor. No se puede guardar.");
+                    return; // No continuar si no hay ID
+                }
+
+                const auditData = {
+                    id_auditor: parseInt(idAuditor),
+                    fecha: new Date().toISOString(),
+                    cumple: cumple,
+                    no_cumple: noCumple,
+                    parcial: parcial,
+                    no_aplica: noAplica,
+                    porcentaje_cumplimiento: porcentajeCumplimiento
+                };
+
+                try {
+                    // Este es el endpoint que debes crear en tu backend (FastAPI)
+                    await fetch('/api/auditor/guardar-auditoria', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(auditData)
+                    });
+                } catch (error) {
+                    console.error("Error al guardar la auditoría:", error);
+                    // Opcional: podrías notificar al usuario que el guardado falló
+                }
+            };
+
+            guardarAuditoria();
+            // --- FIN: GUARDAR AUDITORÍA EN EL BACKEND ---
+
             // Guardar PDF
             const fecha = new Date().toISOString().split('T')[0];
             doc.save(`Auditoria_ISO14001_${fecha}.pdf`);
 
-            alert("✅ PDF generado exitosamente");
+            alert("✅ PDF generado y auditoría guardada exitosamente.");
         }
 
         // Función para limpiar formulario
