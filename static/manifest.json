@@ -3,7 +3,7 @@
     "short_name": "Royal Crumbs",
     "id": "/",
     "description": "La mejor experiencia de casino en línea con tragamonedas, ruleta y blackjack.",
-    "start_url": "/home",
+    "start_url": "/login",
     "scope": "/",
     "display": "standalone",
     "display_override": [
