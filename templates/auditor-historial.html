@@ -103,17 +103,17 @@
         container.innerHTML = data.historial.map(audit => `
           <div class="history-card">
             <div class="card-header">
-              <h3>Auditoría #${audit.id_auditoria}</h3>
-              <span class="date">${new Date(audit.fecha).toLocaleString('es-ES')}</span>
+              <h3>${audit.resumen || `Auditoría #${audit.id_auditoria}`}</h3>
+              <span class="date">${new Date(audit.fecha_auditoria).toLocaleString('es-ES')}</span>
             </div>
             <div class="card-body">
-              <span>✅ Cumple: ${audit.cumple}</span>
-              <span>❌ No Cumple: ${audit.no_cumple}</span>
-              <span>⚠️ Parcial: ${audit.parcial}</span>
-              <span>➖ No Aplica: ${audit.no_aplica}</span>
+              <span>✅ Cumple: ${audit.datos_auditoria.cumple}</span>
+              <span>❌ No Cumple: ${audit.datos_auditoria.no_cumple}</span>
+              <span>⚠️ Parcial: ${audit.datos_auditoria.parcial}</span>
+              <span>➖ No Aplica: ${audit.datos_auditoria.no_aplica}</span>
             </div>
             <div class="card-footer">
-              <span class="compliance">Cumplimiento: ${audit.porcentaje_cumplimiento}%</span>
+              <span class="compliance">Cumplimiento: ${audit.datos_auditoria.porcentaje_cumplimiento}%</span>
             </div>
           </div>
         `).join('');

@@ -529,14 +529,18 @@
                     return; // No continuar si no hay ID
                 }
 
+                // Ajustamos el objeto para que coincida con la estructura de tu tabla
                 const auditData = {
-                    id_auditor: parseInt(idAuditor),
-                    fecha: new Date().toISOString(),
-                    cumple: cumple,
-                    no_cumple: noCumple,
-                    parcial: parcial,
-                    no_aplica: noAplica,
-                    porcentaje_cumplimiento: porcentajeCumplimiento
+                    id_usuario: parseInt(idAuditor),
+                    fecha_auditoria: new Date().toISOString(),
+                    resumen: `Auditoría ISO 14001 - Cumplimiento: ${porcentajeCumplimiento}%`,
+                    datos_auditoria: { // Este objeto se guardará en el campo JSONB
+                        cumple: cumple,
+                        no_cumple: noCumple,
+                        parcial: parcial,
+                        no_aplica: noAplica,
+                        porcentaje_cumplimiento: porcentajeCumplimiento
+                    }
                 };
 
                 try {
