@@ -9,18 +9,37 @@
     "background_color": "#121212",
     "theme_color": "#d8bb76",
     "orientation": "portrait",
+    "categories": [
+        "games",
+        "entertainment"
+    ],
+    "prefer_related_applications": false,
     "icons": [
         {
-            "src": "/static/img/logo.png",
+            "src": "/static/img/logo-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/static/img/logo.png",
+            "src": "/static/img/logo-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/static/img/screenshot-blackjack.jpg",
+            "sizes": "1280x720",
+            "type": "image/jpeg",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/static/img/screenshot-ruleta.jpg",
+            "sizes": "1280x720",
+            "type": "image/jpeg",
+            "form_factor": "wide"
         }
     ]
 }
