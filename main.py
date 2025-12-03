@@ -26,6 +26,21 @@ print("✅✅✅ INICIANDO APLICACIÓN - VERSIÓN MÁS RECIENTE ✅✅✅")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# --- SERVIR SERVICE WORKER DESDE LA RAÍZ ---
+# Esto es necesario para que el SW tenga alcance (scope) sobre toda la app, no solo /static/
+from fastapi.responses import FileResponse
+@app.api_route("/sw.js", methods=["GET", "HEAD"], include_in_schema=False)
+async def service_worker():
+    return FileResponse("static/sw.js", media_type="application/javascript")
+
+@app.api_route("/manifest.json", methods=["GET", "HEAD"], include_in_schema=False)
+async def manifest():
+    return FileResponse("static/manifest.json", media_type="application/manifest+json")
+
+@app.api_route("/.well-known/assetlinks.json", methods=["GET", "HEAD"], include_in_schema=False)
+async def assetlinks():
+    return FileResponse("static/assetlinks.json", media_type="application/json")
+
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
     return templates.TemplateResponse(tpl, {"request": request})
@@ -106,7 +121,7 @@ def obtener_historial_auditorias():
     """
     conn = None
     try:
-        conn = db_connect()
+        conn = db_connect.get_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("SELECT * FROM Auditoria ORDER BY fecha_auditoria DESC;")
         historial = cur.fetchall()
@@ -138,9 +153,13 @@ async def get_user_data(user_id: int):
 # =========================
 #  PÚBLICO / AUTH
 # =========================
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def root(request: Request):                  # pantalla de carga
     return render("loading.html", request)
+
+@app.get("/offline", response_class=HTMLResponse)
+async def offline(request: Request):
+    return render("offline.html", request)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
