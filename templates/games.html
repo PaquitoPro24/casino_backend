@@ -6,6 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Juegos - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+  <link rel="manifest" href="{{ url_for('static', path='manifest.json') }}">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register("{{ url_for('static', path='sw.js') }}").then(function (registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
   <style>
     /* ==== PERFIL Y MENÚ HAMBURGUESA ==== */
     .profile-btn {
@@ -67,16 +79,111 @@
         transform: translateY(-5px);
       }
 
-      < !-- ENCABEZADO --><header><img src="/static/img/logo.png" alt="Royal Crumbs Logo">< !-- BOTÓN PERFIL CON MENÚ --><div class="profile-container"><button class="profile-btn" id="profileBtn"><img src="/static/img/usuario_icon.png" alt="Perfil"></button><div class="dropdown-menu" id="dropdownMenu"><a href="/account">Mi Cuenta</a><a href="/account/configuracion">Configuración</a><a href="/account/metodos">Métodos de Pago</a><a href="/account/bonos">Bonos</a><a href="/login">Cerrar Sesión</a></div></div></header>< !-- CONTENIDO PRINCIPAL --><main class="home-container"><section class="welcome-section"><div class="welcome-card"><div class="welcome-overlay"></div></div></section><section class="bonus-section"><h2>JUEGOS POPULARES</h2><div class="bonus-card"><img src="/static/img/tragamonedas.jpg" alt="Tragamonedas"><div class="bonus-info"><h3>Tragamonedas</h3><p>Prueba tu suerte con nuestros mejores slots de lujo.</p><a href="https://tragamonedas-web.onrender.com" target="_blank" class="btn">Jugar</a></div></div><div class="bonus-card"><img src="/static/img/ruleta.jpg" alt="Ruleta"><div class="bonus-info"><h3>Ruleta</h3><p>Disfruta la emoción del casino clásico con grandes premios.</p><a href="https://ruleta-web.onrender.com" target="_blank" class="btn">Jugar</a></div></div><div class="bonus-card"><img src="/static/img/blackjack.jpg" alt="Blackjack"><div class="bonus-info"><h3>Blackjack</h3><p>Demuestra tu estrategia y vence al crupier en el 21.</p><a href="https://blackjack-web-z4fm.onrender.com" target="_blank" class="btn">Jugar</a></div></div></section></main>< !-- MENÚ INFERIOR --><nav><a href="/home"><img src="/static/img/home_icon.png" alt="Inicio">Inicio </a><a href="/games" class="active"><img src="/static/img/games_icon.png" alt="Juegos">Juegos </a><a href="/support"><img src="/static/img/support_icon.png" alt="Soporte">Soporte </a><a href="/account/cartera"><img src="/static/img/wallet_icon.png" alt="Cartera">Cartera </a></nav>< !-- SCRIPT PERFIL --><script>const profileBtn=document.getElementById('profileBtn');
-      const dropdownMenu=document.getElementById('dropdownMenu');
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
 
-      profileBtn.addEventListener('click', ()=> {
-          dropdownMenu.classList.toggle('dropdown-active');
-        });
+<body>
 
-      document.addEventListener('click', (e)=> {
-          if ( !profileBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('dropdown-active');
-          }
-        });
-      </script></body></html>
+  <!-- ENCABEZADO -->
+  <header>
+    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo">
+
+    <!-- BOTÓN PERFIL CON MENÚ -->
+    <div class="profile-container">
+      <button class="profile-btn" id="profileBtn">
+        <img src="{{ url_for('static', path='img/usuario_icon.png') }}" alt="Perfil">
+      </button>
+
+      <!-- MENÚ DESPLEGABLE -->
+      <div class="dropdown-menu" id="dropdownMenu">
+        <a href="/account">Mi Cuenta</a>
+        <a href="/account/configuracion">Configuración</a>
+        <a href="/account/metodos">Métodos de Pago</a>
+        <a href="/account/bonos">Bonos</a>
+        <a href="/login">Cerrar Sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="home-container">
+
+    <section class="welcome-section">
+      <div class="welcome-card">
+        <div class="welcome-overlay"></div>
+      </div>
+    </section>
+
+    <section class="bonus-section">
+      <h2>JUEGOS POPULARES</h2>
+      <div class="bonus-card">
+        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Tragamonedas">
+        <div class="bonus-info">
+          <h3>Tragamonedas</h3>
+          <p>Prueba tu suerte con nuestros mejores slots de lujo.</p>
+          <a href="https://tragamonedas-web.onrender.com" target="_blank" class="btn">Jugar</a>
+        </div>
+      </div>
+      <div class="bonus-card">
+        <img src="{{ url_for('static', path='img/ruleta.jpg') }}" alt="Ruleta">
+        <div class="bonus-info">
+          <h3>Ruleta</h3>
+          <p>Disfruta la emoción del casino clásico con grandes premios.</p>
+          <a href="https://ruleta-web.onrender.com" target="_blank" class="btn">Jugar</a>
+        </div>
+      </div>
+      <div class="bonus-card">
+        <img src="{{ url_for('static', path='img/blackjack.jpg') }}" alt="Blackjack">
+        <div class="bonus-info">
+          <h3>Blackjack</h3>
+          <p>Demuestra tu estrategia y vence al crupier en el 21.</p>
+          <a href="https://blackjack-web-z4fm.onrender.com" target="_blank" class="btn">Jugar</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MENÚ INFERIOR -->
+  <nav>
+    <a href="/home">
+      <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
+      Inicio
+    </a>
+    <a href="/games" class="active">
+      <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
+      Juegos
+    </a>
+    <a href="/support">
+      <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
+      Soporte
+    </a>
+    <a href="/account/cartera">
+      <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
+      Cartera
+    </a>
+  </nav>
+
+  <!-- SCRIPT PERFIL -->
+  <script>
+    const profileBtn = document.getElementById('profileBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    profileBtn.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('dropdown-active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('dropdown-active');
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,11 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inicio - Royal Crumbs</title>
-  <!-- CORRECCIÓN: Usar url_for para generar la ruta al CSS -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+  <link rel="manifest" href="{{ url_for('static', path='manifest.json') }}">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register("{{ url_for('static', path='sw.js') }}").then(function (registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
   <style>
     /* ==== PERFIL Y MENÚ HAMBURGUESA ==== */
     .profile-btn {
@@ -63,12 +75,19 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
 
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <!-- ENCABEZADO -->
@@ -112,7 +131,7 @@
         <div class="bonus-info">
           <h3>Bono de Bienvenida</h3>
           <p>¡Duplicamos tu primer depósito hasta $2000 MXN!<br>
-             Únete a la realeza y empieza a ganar a lo grande.</p>
+            Únete a la realeza y empieza a ganar a lo grande.</p>
           <button class="btn">Ver detalles</button>
         </div>
       </div>
@@ -157,4 +176,5 @@
     });
   </script>
 </body>
+
 </html>

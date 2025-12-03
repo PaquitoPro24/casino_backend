@@ -1,0 +1,20 @@
+{
+    "name": "Royal Crumbs Casino",
+    "short_name": "Royal Crumbs",
+    "start_url": "/home",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#d8bb76",
+    "icons": [
+        {
+            "src": "/static/img/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/img/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

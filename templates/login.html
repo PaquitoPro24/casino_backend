@@ -1,107 +1,94 @@
 <!DOCTYPE html>
-<html lang="es">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión - Royal Crumbs</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
-</head>
-
-<body>
-  <div class="container">
-    <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-
-    <form id="login-form">
-      <div class="input-group">
-        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
-      </div>
-      <div class="input-group">
-        <input type="password" id="password" name="password" placeholder="Contraseña" required>
-      </div>
-
-      <button type="submit" class="btn-primary">Iniciar Sesión</button>
-
-      <div class="links">
-        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
-        <a href="/register">¿No tienes cuenta? Regístrate</a>
-      </div>
-    </form>
-
-    <div id="error-message" class="error-message" style="display: none;"></div>
-
+<form id="login-form">
+  <div class="input-group">
+    <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
+  </div>
+  <div class="input-group">
+    <input type="password" id="password" name="password" placeholder="Contraseña" required>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const loginForm = document.getElementById("login-form");
-      const errorMessageDiv = document.getElementById("error-message");
+  <button type="submit" class="btn-primary">Iniciar Sesión</button>
 
-      loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+  <div class="links">
+    <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+    <a href="/register">¿No tienes cuenta? Regístrate</a>
+  </div>
+</form>
 
-        const formData = new FormData(loginForm);
-        const data = Object.fromEntries(formData.entries());
-        data.correo = data.email;
-        data.contrasena = data.password;
-        delete data.email;
-        delete data.password;
+<div id="error-message" class="error-message" style="display: none;"></div>
 
-        errorMessageDiv.style.display = "none";
+</div>
 
-        try {
-          const response = await fetch("/api/auth/login", {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          });
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("login-form");
+    const errorMessageDiv = document.getElementById("error-message");
 
-          const result = await response.json();
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-          if (!response.ok) {
-            throw new Error(result.error || "Error desconocido al iniciar sesión.");
-          }
+      const formData = new FormData(loginForm);
+      const data = Object.fromEntries(formData.entries());
+      data.correo = data.email;
+      data.contrasena = data.password;
+      delete data.email;
+      delete data.password;
 
-          // Guardar datos en localStorage con nombres consistentes
-          localStorage.setItem("user_id", result.id_usuario);
-          localStorage.setItem("id_rol", result.id_rol);
-          localStorage.setItem("user_role", result.rol);
+      errorMessageDiv.style.display = "none";
 
-          // Debugging - verificar qué está llegando
-          console.log("🔍 Datos de login recibidos:", result);
-          console.log("🔍 id_rol:", result.id_rol, "tipo:", typeof result.id_rol);
-          console.log("🔍 rol:", result.rol);
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
 
-          // Redirigir según el id_rol del usuario
-          // 1 = Jugador, 2 = Administrador, 3 = Auditor, 4 = Agente de Soporte
-          // Usando == en lugar de === para comparar números y strings
-          if (result.id_rol == 1) {
-            console.log("✅ Redirigiendo a /home (Jugador)");
-            window.location.href = "/home";
-          } else if (result.id_rol == 2) {
-            console.log("✅ Redirigiendo a /admin (Administrador)");
-            window.location.href = "/admin";
-          } else if (result.id_rol == 3) {
-            console.log("✅ Redirigiendo a /auditor (Auditor)");
-            window.location.href = "/auditor";
-          } else if (result.id_rol == 4) {
-            console.log("✅ Redirigiendo a /agente (Agente de Soporte)");
-            window.location.href = "/agente";
-          } else {
-            console.log("⚠️ id_rol no reconocido, redirigiendo a /home por defecto");
-            window.location.href = "/home"; // Fallback
-          }
+        const result = await response.json();
 
-        } catch (error) {
-          console.error("Error de login:", error);
-          errorMessageDiv.textContent = error.message;
-          errorMessageDiv.style.display = "block";
+        if (!response.ok) {
+          throw new Error(result.error || "Error desconocido al iniciar sesión.");
         }
-      });
+
+        // Guardar datos en localStorage con nombres consistentes
+        localStorage.setItem("user_id", result.id_usuario);
+        localStorage.setItem("id_rol", result.id_rol);
+        localStorage.setItem("user_role", result.rol);
+
+        // Debugging - verificar qué está llegando
+        console.log("🔍 Datos de login recibidos:", result);
+        console.log("🔍 id_rol:", result.id_rol, "tipo:", typeof result.id_rol);
+        console.log("🔍 rol:", result.rol);
+
+        // Redirigir según el id_rol del usuario
+        // 1 = Jugador, 2 = Administrador, 3 = Auditor, 4 = Agente de Soporte
+        // Usando == en lugar de === para comparar números y strings
+        if (result.id_rol == 1) {
+          console.log("✅ Redirigiendo a /home (Jugador)");
+          window.location.href = "/home";
+        } else if (result.id_rol == 2) {
+          console.log("✅ Redirigiendo a /admin (Administrador)");
+          window.location.href = "/admin";
+        } else if (result.id_rol == 3) {
+          console.log("✅ Redirigiendo a /auditor (Auditor)");
+          window.location.href = "/auditor";
+        } else if (result.id_rol == 4) {
+          console.log("✅ Redirigiendo a /agente (Agente de Soporte)");
+          window.location.href = "/agente";
+        } else {
+          console.log("⚠️ id_rol no reconocido, redirigiendo a /home por defecto");
+          window.location.href = "/home"; // Fallback
+        }
+
+      } catch (error) {
+        console.error("Error de login:", error);
+        errorMessageDiv.textContent = error.message;
+        errorMessageDiv.style.display = "block";
+      }
     });
-  </script>
+  });
+</script>
 </body>
 
 </html>
