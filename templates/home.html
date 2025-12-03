@@ -13,7 +13,7 @@
         navigator.serviceWorker.register("/sw.js", { scope: '/' })
           .then(function (registration) {
             console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            
+
             // Check for updates
             registration.onupdatefound = () => {
               const installingWorker = registration.installing;
@@ -31,6 +31,13 @@
             console.log('ServiceWorker registration failed: ', err);
           });
       });
+    }
+  </script>
+  <script>
+    // === VERIFICACIÓN DE AUTENTICACIÓN ===
+    // Si no hay usuario en localStorage, redirigir al login inmediatamente
+    if (!localStorage.getItem('user_id')) {
+      window.location.href = '/login';
     }
   </script>
   <style>
@@ -121,7 +128,7 @@
         <a href="/account/configuracion">Configuración</a>
         <a href="/account/metodos">Métodos de Pago</a>
         <a href="/account/bonos">Bonos</a>
-        <a href="/login">Cerrar Sesión</a>
+        <a href="#" id="logoutBtn">Cerrar Sesión</a>
       </div>
     </div>
   </header>
