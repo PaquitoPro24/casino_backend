@@ -75,13 +75,25 @@ async def api_save_bank_method(
         id_metodo_pago = metodo['id_metodo']
 
         # Guardamos la CLABE como token
+        # Verificamos si ya existe
         cursor.execute(
-            """
-            INSERT INTO Usuario_Metodo_Pago (id_usuario, id_metodo, token_externo) VALUES (%s, %s, %s)
-            ON CONFLICT (id_usuario, id_metodo) DO UPDATE SET token_externo = EXCLUDED.token_externo
-            """,
-            (id_usuario, id_metodo_pago, clabe)
+            "SELECT id_metodo_usuario FROM Usuario_Metodo_Pago WHERE id_usuario = %s AND id_metodo = %s",
+            (id_usuario, id_metodo_pago)
         )
+        existing = cursor.fetchone()
+
+        if existing:
+            # Update
+            cursor.execute(
+                "UPDATE Usuario_Metodo_Pago SET token_externo = %s WHERE id_metodo_usuario = %s",
+                (clabe, existing['id_metodo_usuario'])
+            )
+        else:
+            # Insert
+            cursor.execute(
+                "INSERT INTO Usuario_Metodo_Pago (id_usuario, id_metodo, token_externo) VALUES (%s, %s, %s)",
+                (id_usuario, id_metodo_pago, clabe)
+            )
         conn.commit()
         cursor.close()
         return JSONResponse({"success": True, "message": "Método de pago (CLABE) guardado con éxito."})
@@ -164,16 +176,32 @@ async def api_save_card_method(
         token_simulado = f"XXXX-XXXX-XXXX-{numero_tarjeta[-4:]}"
 
         # 3. Usamos 'UPSERT' (UPDATE o INSERT)
+        # 3. Manual UPSERT
         cursor.execute(
-            """
-            INSERT INTO Usuario_Metodo_Pago (id_usuario, id_metodo, token_externo, fecha_registro)
-            VALUES (%s, %s, %s, %s)
-            ON CONFLICT (id_usuario, id_metodo) -- Si ya tiene una tarjeta registrada
-            DO UPDATE SET token_externo = EXCLUDED.token_externo,
-                          fecha_registro = EXCLUDED.fecha_registro
-            """,
-            (id_usuario, id_metodo_pago, token_simulado, datetime.now())
+            "SELECT id_metodo_usuario FROM Usuario_Metodo_Pago WHERE id_usuario = %s AND id_metodo = %s",
+            (id_usuario, id_metodo_pago)
         )
+        existing = cursor.fetchone()
+
+        if existing:
+            # Update
+            cursor.execute(
+                """
+                UPDATE Usuario_Metodo_Pago 
+                SET token_externo = %s, fecha_registro = %s 
+                WHERE id_metodo_usuario = %s
+                """,
+                (token_simulado, datetime.now(), existing['id_metodo_usuario'])
+            )
+        else:
+            # Insert
+            cursor.execute(
+                """
+                INSERT INTO Usuario_Metodo_Pago (id_usuario, id_metodo, token_externo, fecha_registro)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (id_usuario, id_metodo_pago, token_simulado, datetime.now())
+            )
         
         conn.commit()
         
