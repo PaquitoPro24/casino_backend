@@ -26,6 +26,17 @@ print("✅✅✅ INICIANDO APLICACIÓN - VERSIÓN MÁS RECIENTE ✅✅✅")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# --- SERVIR SERVICE WORKER DESDE LA RAÍZ ---
+# Esto es necesario para que el SW tenga alcance (scope) sobre toda la app, no solo /static/
+from fastapi.responses import FileResponse
+@app.get("/sw.js", include_in_schema=False)
+async def service_worker():
+    return FileResponse("static/sw.js", media_type="application/javascript")
+
+@app.get("/manifest.json", include_in_schema=False)
+async def manifest():
+    return FileResponse("static/manifest.json", media_type="application/json")
+
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
     return templates.TemplateResponse(tpl, {"request": request})
@@ -138,7 +149,7 @@ async def get_user_data(user_id: int):
 # =========================
 #  PÚBLICO / AUTH
 # =========================
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 async def root(request: Request):                  # pantalla de carga
     return render("loading.html", request)
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,20 @@
     Usar url_for (como en login.html) para que FastAPI maneje la ruta.
   -->
   <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register("/sw.js").then(function (registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </head>
+
 <body>
   <div class="container">
     <!-- 
@@ -34,4 +48,5 @@
   </script>
 
 </body>
+
 </html>
