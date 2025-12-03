@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.onrender.casino_backend_qeyb.twa",
+            "sha256_cert_fingerprints": [
+                "62:84:02:E2:15:4D:4C:E7:CA:F2:58:B8:2A:C0:C4:31:42:29:A8:8C:18:05:F9:CE:8D:5D:2F:26:66:C5:25:FC"
+            ]
+        }
+    }
+]

@@ -37,6 +37,10 @@ async def service_worker():
 async def manifest():
     return FileResponse("static/manifest.json", media_type="application/manifest+json")
 
+@app.api_route("/.well-known/assetlinks.json", methods=["GET", "HEAD"], include_in_schema=False)
+async def assetlinks():
+    return FileResponse("static/assetlinks.json", media_type="application/json")
+
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
     return templates.TemplateResponse(tpl, {"request": request})
