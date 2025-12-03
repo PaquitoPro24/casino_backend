@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from app.db import db_connect # <-- Importamos la conexión a la BD cambios
 import psycopg2              # <-- Importamos para manejar errores de BD
 from psycopg2.extras import RealDictCursor # <-- Para queries con diccionarios
+
+# --- NUEVOS IMPORTS PARA AUDITOR ---
+from pydantic import BaseModel
+from typing import Dict, Any, List
 
 # =========================
 #  APP & STATIC / TEMPLATES
@@ -40,6 +44,25 @@ from api.admin import router as admin_router
 from api.user import router as user_router_api
 from api.wallet import router as wallet_router
 from api.bonos import router as bonos_router
+
+# --- NUEVOS MODELOS Y ROUTER PARA AUDITOR ---
+class AuditoriaCreate(BaseModel):
+    id_usuario: int
+    resumen: str
+    datos_auditoria: Dict[str, Any]
+
+class AuditoriaHistorial(AuditoriaCreate):
+    id_auditoria: int
+    fecha_auditoria: str
+
+class HistorialResponse(BaseModel):
+    historial: List[AuditoriaHistorial]
+
+router_auditor_api = APIRouter(
+    prefix="/api/auditor",
+    tags=["Auditor API"]
+)
+
 from app.middleware.auth_agente import verificar_rol_agente_redirect
 
 # =========================
@@ -53,6 +76,7 @@ app.include_router(admin_router, tags=["Admin"])
 app.include_router(user_router_api, prefix="/api/user", tags=["User"])
 app.include_router(wallet_router, tags=["Wallet"])
 app.include_router(bonos_router, tags=["Bonos"])
+app.include_router(router_auditor_api) # <-- AÑADIMOS EL NUEVO ROUTER
 
 # NOTA: El endpoint /api/user/{user_id} ahora se maneja por el router user_router_api
 # El endpoint duplicado de abajo se comenta para evitar conflictos
@@ -63,6 +87,53 @@ async def get_user_data(user_id: int):
     pass
 """
 
+# =========================
+#  API DE AUDITOR (¡NUEVO!)
+# =========================
+@router_auditor_api.post("/guardar-auditoria", status_code=201)
+def guardar_auditoria(audit_data: AuditoriaCreate):
+    """
+    Endpoint para guardar el resultado de una auditoría en la base de datos.
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        cur = conn.cursor()
+        
+        # La columna 'datos_auditoria' es JSONB, por lo que el objeto se pasa directamente
+        cur.execute(
+            """
+            INSERT INTO Auditoria (id_usuario, resumen, datos_auditoria)
+            VALUES (%s, %s, %s)
+            RETURNING id_auditoria;
+            """,
+            (audit_data.id_usuario, audit_data.resumen, psycopg2.extras.Json(audit_data.datos_auditoria))
+        )
+        new_id = cur.fetchone()[0]
+        conn.commit()
+        cur.close()
+        return {"success": True, "id_auditoria": new_id}
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"Error al guardar auditoría: {e}")
+        raise HTTPException(status_code=500, detail="Error interno al guardar la auditoría.")
+    finally:
+        if conn: conn.close()
+
+@router_auditor_api.get("/historial", response_model=HistorialResponse)
+def obtener_historial_auditorias():
+    """
+    Endpoint para obtener todo el historial de auditorías.
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM Auditoria ORDER BY fecha_auditoria DESC;")
+        historial = cur.fetchall()
+        return {"historial": historial}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al obtener el historial.")
 
 # =========================
 #  PÚBLICO / AUTH
