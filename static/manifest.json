@@ -6,14 +6,21 @@
     "start_url": "/home",
     "scope": "/",
     "display": "standalone",
+    "display_override": [
+        "window-controls-overlay",
+        "minimal-ui"
+    ],
     "background_color": "#121212",
     "theme_color": "#d8bb76",
     "orientation": "portrait",
+    "dir": "ltr",
+    "iarc_rating_id": "",
     "categories": [
         "games",
         "entertainment"
     ],
     "prefer_related_applications": false,
+    "related_applications": [],
     "icons": [
         {
             "src": "/static/img/logo-192.png",
@@ -40,6 +47,12 @@
             "sizes": "1280x720",
             "type": "image/jpeg",
             "form_factor": "wide"
+        },
+        {
+            "src": "/static/img/screenshot-blackjack.jpg",
+            "sizes": "1280x720",
+            "type": "image/jpeg",
+            "form_factor": "narrow"
         }
     ]
 }
