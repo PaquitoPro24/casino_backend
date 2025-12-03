@@ -67,6 +67,53 @@ router_auditor_api = APIRouter(
 from app.middleware.auth_agente import verificar_rol_agente_redirect
 
 # =========================
+#  API DE AUDITOR (¡NUEVO!)
+# =========================
+@router_auditor_api.post("/guardar-auditoria", status_code=201)
+def guardar_auditoria(audit_data: AuditoriaCreate):
+    """
+    Endpoint para guardar el resultado de una auditoría en la base de datos.
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        cur = conn.cursor()
+        
+        # La columna 'datos_auditoria' es JSONB, por lo que el objeto se pasa directamente
+        cur.execute(
+            """
+            INSERT INTO Auditoria (id_usuario, resumen, datos_auditoria)
+            VALUES (%s, %s, %s)
+            RETURNING id_auditoria;
+            """,
+            (audit_data.id_usuario, audit_data.resumen, psycopg2.extras.Json(audit_data.datos_auditoria))
+        )
+        new_id = cur.fetchone()[0]
+        conn.commit()
+        cur.close()
+        return {"success": True, "id_auditoria": new_id}
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"Error al guardar auditoría: {e}")
+        raise HTTPException(status_code=500, detail="Error interno al guardar la auditoría.")
+    finally:
+        if conn: conn.close()
+
+@router_auditor_api.get("/historial", response_model=HistorialResponse)
+def obtener_historial_auditorias():
+    """
+    Endpoint para obtener todo el historial de auditorías.
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM Auditoria ORDER BY fecha_auditoria DESC;")
+        historial = cur.fetchall()
+        return {"historial": historial}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al obtener el historial.")
+# =========================
 #  RUTAS DE LÓGICA / API
 # =========================
 # Montamos todos los routers de API
