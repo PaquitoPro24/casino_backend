@@ -9,6 +9,7 @@ from psycopg2.extras import RealDictCursor # <-- Para queries con diccionarios
 # --- NUEVOS IMPORTS PARA AUDITOR ---
 from pydantic import BaseModel
 from typing import Dict, Any, List
+import datetime # <-- ¡AÑADIMOS ESTE IMPORT!
 
 # =========================
 #  APP & STATIC / TEMPLATES
@@ -53,7 +54,7 @@ class AuditoriaCreate(BaseModel):
 
 class AuditoriaHistorial(AuditoriaCreate):
     id_auditoria: int
-    fecha_auditoria: str
+    fecha_auditoria: datetime.datetime # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
 
 class HistorialResponse(BaseModel):
     historial: List[AuditoriaHistorial]
