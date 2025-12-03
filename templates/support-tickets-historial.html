@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historial de Tickets</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-tickets.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -15,30 +17,80 @@
     </header>
 
     <section class="rc-content">
-      <div class="ticket-item">
-        <div>
-          <h3>Ticket #1234</h3>
-          <p>Problema con el juego</p>
-        </div>
-        <span class="ticket-date">06/05/2025</span>
-      </div>
-
-      <div class="ticket-item">
-        <div>
-          <h3>Ticket #4567</h3>
-          <p>Transacción</p>
-        </div>
-        <span class="ticket-date">12/03/2024</span>
-      </div>
-
-      <div class="ticket-item">
-        <div>
-          <h3>Ticket #8910</h3>
-          <p>Problema con el pago</p>
-        </div>
-        <span class="ticket-date">07/01/2022</span>
+      <div id="tickets-container">
+        <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+          Cargando historial...
+        </p>
       </div>
     </section>
   </div>
+
+  <script>
+    // 1. Verificar sesión
+    const userId = parseInt(localStorage.getItem('user_id'));
+
+    if (!userId) {
+      alert('Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.');
+      window.location.href = '/login';
+    }
+
+    // 2. Cargar historial
+    async function cargarHistorial() {
+      try {
+        const response = await fetch(`/api/support/tickets/history/${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Error al cargar historial');
+        }
+
+        const data = await response.json();
+        mostrarTickets(data.tickets);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('tickets-container').innerHTML = `
+          <p style="text-align: center; color: #e74c3c; padding: 40px 20px;">
+            Error al cargar el historial
+          </p>
+        `;
+      }
+    }
+
+    function mostrarTickets(tickets) {
+      const container = document.getElementById('tickets-container');
+
+      if (!tickets || tickets.length === 0) {
+        container.innerHTML = `
+          <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+            No tienes tickets cerrados en tu historial.
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = tickets.map(ticket => {
+        const fecha = new Date(ticket.fecha_creacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        return `
+          <div class="ticket-item">
+            <div>
+              <h3>Ticket #${ticket.id_ticket}</h3>
+              <p>${ticket.asunto}</p>
+            </div>
+            <span class="ticket-date">${fechaFormateada}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    cargarHistorial();
+  </script>
+  </div>
 </body>
+
 </html>

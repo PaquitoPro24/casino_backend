@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat en Vivo - Historial</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-chat.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -15,30 +17,80 @@
     </header>
 
     <section class="chat-list">
-      <div class="chat-item">
-        <div class="chat-info">
-          <span class="chat-title">Chat #1234</span>
-          <span class="chat-date">06/05/2025</span>
-        </div>
-        <p class="chat-desc">Problema con el juego</p>
-      </div>
-
-      <div class="chat-item">
-        <div class="chat-info">
-          <span class="chat-title">Chat #4567</span>
-          <span class="chat-date">12/03/2024</span>
-        </div>
-        <p class="chat-desc">Transacción</p>
-      </div>
-
-      <div class="chat-item">
-        <div class="chat-info">
-          <span class="chat-title">Chat #8910</span>
-          <span class="chat-date">07/01/2022</span>
-        </div>
-        <p class="chat-desc">Problema con el pago</p>
+      <div id="chats-container">
+        <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+          Cargando historial...
+        </p>
       </div>
     </section>
   </div>
+
+  <script>
+    // 1. Verificar sesión
+    const userId = parseInt(localStorage.getItem('user_id'));
+
+    if (!userId) {
+      alert('Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.');
+      window.location.href = '/login';
+    }
+
+    // 2. Cargar historial
+    async function cargarHistorial() {
+      try {
+        const response = await fetch(`/api/support/tickets/history/${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Error al cargar historial');
+        }
+
+        const data = await response.json();
+        mostrarChats(data.tickets);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('chats-container').innerHTML = `
+          <p style="text-align: center; color: #e74c3c; padding: 40px 20px;">
+            Error al cargar el historial
+          </p>
+        `;
+      }
+    }
+
+    function mostrarChats(tickets) {
+      const container = document.getElementById('chats-container');
+
+      if (!tickets || tickets.length === 0) {
+        container.innerHTML = `
+          <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+            No tienes chats cerrados en tu historial.
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = tickets.map(ticket => {
+        const fecha = new Date(ticket.fecha_creacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        return `
+          <div class="chat-item">
+            <div class="chat-info">
+              <span class="chat-title">Chat #${ticket.id_ticket}</span>
+              <span class="chat-date">${fechaFormateada}</span>
+            </div>
+            <p class="chat-desc">${ticket.asunto}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    cargarHistorial();
+  </script>
+  </div>
 </body>
+
 </html>
