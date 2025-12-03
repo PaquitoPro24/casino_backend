@@ -153,6 +153,10 @@ async def get_user_data(user_id: int):
 async def root(request: Request):                  # pantalla de carga
     return render("loading.html", request)
 
+@app.get("/offline", response_class=HTMLResponse)
+async def offline(request: Request):
+    return render("offline.html", request)
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     return render("login.html", request)

@@ -17,7 +17,8 @@ const urlsToCache = [
     '/static/img/wallet_icon.png',
     '/static/img/usuario_icon.png',
     '/static/img/casino.jpg',
-    '/static/img/bonos.jpg'
+    '/static/img/bonos.jpg',
+    '/offline'
 ];
 
 self.addEventListener('install', event => {
@@ -57,8 +58,8 @@ self.addEventListener('fetch', event => {
                             if (response) {
                                 return response;
                             }
-                            // Fallback to home or login if not found in cache
-                            return caches.match('/home');
+                            // Fallback to offline page
+                            return caches.match('/offline');
                         });
                 })
         );
