@@ -68,7 +68,7 @@
       formData.append("id_usuario", userId);
 
       try {
-        const res = await fetch("/api/transacciones/retirar", {
+        const res = await fetch("/api/wallet/withdraw-bank", {
           method: "POST",
           body: formData
         });

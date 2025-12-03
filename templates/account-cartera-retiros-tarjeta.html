@@ -72,7 +72,7 @@
       // pero se podrían enviar si se actualiza la API.
 
       try {
-        const res = await fetch("/api/transacciones/retirar", {
+        const res = await fetch("/api/wallet/withdraw-card", {
           method: "POST",
           body: formData
         });
