@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat en Vivo - Activo</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/support-chat.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
     <header class="rc-header">
@@ -15,14 +17,108 @@
     </header>
 
     <section class="chat-list">
-      <div class="chat-item">
-        <div class="chat-info">
-          <span class="chat-title">Chat #1234</span>
-          <span class="chat-date">06/05/2025</span>
-        </div>
-        <p class="chat-desc">Problema con el juego</p>
+      <div id="chats-container">
+        <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+          Cargando chats...
+        </p>
       </div>
+
+      <a href="/support/chat/new" class="rc-button"
+        style="display: block; margin-top: 20px; text-align: center; text-decoration: none;">
+        + Iniciar Nuevo Chat
+      </a>
     </section>
   </div>
+
+  <script>
+    // 1. Verificar sesión
+    const userId = parseInt(localStorage.getItem('user_id'));
+
+    if (!userId) {
+      alert('Error: No se pudo identificar al usuario. Por favor, inicie sesión nuevamente.');
+      window.location.href = '/login';
+    }
+
+    // 2. Cargar chats (usando la API de tickets por ahora)
+    async function cargarChats() {
+      try {
+        const response = await fetch(`/api/support/tickets/active/${userId}`);
+
+        if (!response.ok) {
+          throw new Error('Error al cargar chats');
+        }
+
+        const data = await response.json();
+        mostrarChats(data.tickets);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('chats-container').innerHTML = `
+          <p style="text-align: center; color: #e74c3c; padding: 40px 20px;">
+            Error al cargar los chats
+          </p>
+        `;
+      }
+    }
+
+    function mostrarChats(tickets) {
+      const container = document.getElementById('chats-container');
+
+      if (!tickets || tickets.length === 0) {
+        container.innerHTML = `
+          <p style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 20px;">
+            No tienes chats activos.<br><br>
+            Inicia uno nuevo si necesitas ayuda.
+          </p>
+        `;
+        return;
+      }
+
+      container.innerHTML = tickets.map(ticket => {
+        const fecha = new Date(ticket.fecha_creacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+
+        return `
+          <div class="chat-item">
+            <div class="chat-info">
+              <span class="chat-title">Chat #${ticket.id_ticket}</span>
+              <span class="chat-date">${fechaFormateada}</span>
+            </div>
+            <p class="chat-desc">${ticket.asunto}</p>
+            <div style="margin-top: 5px;">
+                <span style="font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(46, 204, 113, 0.2); color: #2ecc71;">${ticket.estado}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    cargarChats();
+    setInterval(cargarChats, 15000);
+  </script>
+
+  <style>
+    .rc-button {
+      background-color: #AB925C;
+      color: #202020;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .rc-button:hover {
+      background-color: #d8bb76;
+    }
+  </style>
 </body>
+
 </html>

@@ -6,11 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar Sesión - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+  <link rel="manifest" href="/manifest.json?v=2">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register("/sw.js", { scope: '/' })
+          .then(function (registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+            // Check for updates
+            registration.onupdatefound = () => {
+              const installingWorker = registration.installing;
+              installingWorker.onstatechange = () => {
+                if (installingWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    console.log('New content is available; please refresh.');
+                  } else {
+                    console.log('Content is cached for offline use.');
+                  }
+                }
+              };
+            };
+          }, function (err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
 </head>
 
 <body>
   <div class="container">
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
+    <h2>Iniciar Sesión</h2>
 
     <form id="login-form">
       <div class="input-group">
@@ -29,7 +57,6 @@
     </form>
 
     <div id="error-message" class="error-message" style="display: none;"></div>
-
   </div>
 
   <script>
@@ -75,8 +102,6 @@
           console.log("🔍 rol:", result.rol);
 
           // Redirigir según el id_rol del usuario
-          // 1 = Jugador, 2 = Administrador, 3 = Auditor, 4 = Agente de Soporte
-          // Usando == en lugar de === para comparar números y strings
           if (result.id_rol == 1) {
             console.log("✅ Redirigiendo a /home (Jugador)");
             window.location.href = "/home";
@@ -91,7 +116,7 @@
             window.location.href = "/agente";
           } else {
             console.log("⚠️ id_rol no reconocido, redirigiendo a /home por defecto");
-            window.location.href = "/home"; // Fallback
+            window.location.href = "/home";
           }
 
         } catch (error) {

@@ -323,8 +323,8 @@ async def api_create_bono(
 
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO Bono (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (nombre_bono, tipo, descripcion, valor, requisito_apuesta, fecha_exp, activo)
+            "INSERT INTO Bono (nombre_bono, tipo, descripcion, fecha_expiracion, activo) VALUES (%s, %s, %s, %s, %s)",
+            (nombre_bono, tipo, descripcion, fecha_exp, activo)
         )
         conn.commit()
         cursor.close()

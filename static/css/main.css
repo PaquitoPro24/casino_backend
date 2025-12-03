@@ -171,8 +171,9 @@ nav {
   justify-content: space-around;
   align-items: center;
   padding: clamp(6px, 1.5vw, 8px) 0;
-  z-index: 100;
+  z-index: 1000;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateZ(0);
 }
 
 nav a {

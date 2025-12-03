@@ -21,7 +21,7 @@ class UserLogin(BaseModel):
 # Modelo Pydantic para validar los datos de entrada del registro
 class UserRegister(BaseModel):
     correo: EmailStr
-    curp: constr(min_length=18, max_length=18) # Valida que la CURP tenga 18 caracteres
+    curp: str # constr(min_length=18, max_length=18) - Relaxed for debugging
     nombre: str
     apellido: str
     contrasena: str
@@ -29,6 +29,11 @@ class UserRegister(BaseModel):
 # Modelo Pydantic para la recuperación de contraseña
 class ForgotPasswordRequest(BaseModel):
     correo: EmailStr
+
+# Modelo Pydantic para el cambio directo de contraseña
+class ResetPasswordRequest(BaseModel):
+    correo: EmailStr
+    nueva_contrasena: str
 
 
 @router.post("/login")
@@ -76,12 +81,16 @@ async def api_login(user_data: UserLogin):
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
         # 4. ¡Éxito!
+        # 4. ¡Éxito!
         print(f"✅ API: Login exitoso para {usuario[0]} con rol {usuario[2]}")
-        return JSONResponse({
+        response = JSONResponse({
             "id_usuario": usuario[0],  # Índice 0 para id_usuario
             "id_rol": usuario[1],       # Índice 1 para id_rol
             "rol": usuario[2]           # Índice 2 para rol_nombre
         })
+        # Set cookie for middleware
+        response.set_cookie(key="userId", value=str(usuario[0]), httponly=False) # httponly=False so frontend can read if needed, though middleware reads it from request
+        return response
 
     except Exception as e:
         print(f"🚨 API ERROR (Login): {e}")
@@ -200,6 +209,58 @@ async def api_forgot_password(request_data: ForgotPasswordRequest):
     except Exception as e:
         print(f"🚨 API ERROR (Forgot Password): {e}")
         return JSONResponse({"error": "Error interno del servidor."}, status_code=500)
+    
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+
+# ==========================================================
+#  RUTA: CAMBIO DE CONTRASEÑA DIRECTO (SIN EMAIL)
+# ==========================================================
+@router.post("/reset-password")
+async def api_reset_password(request_data: ResetPasswordRequest):
+    """
+    Ruta para cambiar la contraseña directamente dado un correo.
+    ADVERTENCIA: Esto permite cambiar la contraseña de cualquiera si se conoce el correo.
+    """
+    print(f"🔹 API: Solicitud de cambio de contraseña directo para: {request_data.correo}")
+    
+    conn = None
+    cursor = None
+    
+    try:
+        conn = db_connect.get_connection()
+        if conn is None:
+            return JSONResponse({"error": "Error interno del servidor."}, status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # 1. Verificar si el usuario existe y está activo
+        cursor.execute("SELECT id_usuario FROM Usuario WHERE email = %s AND activo = true", (request_data.correo,))
+        usuario = cursor.fetchone()
+        
+        if not usuario:
+            print(f"❌ API: Intento de cambio de contraseña para usuario no encontrado: {request_data.correo}")
+            return JSONResponse({"error": "Usuario no encontrado o inactivo."}, status_code=404)
+        
+        # 2. Hashear la nueva contraseña
+        hashed_password = pwd_context.hash(request_data.nueva_contrasena)
+        
+        # 3. Actualizar la contraseña en la base de datos
+        cursor.execute(
+            "UPDATE Usuario SET password_hash = %s WHERE email = %s",
+            (hashed_password, request_data.correo)
+        )
+        conn.commit()
+        
+        print(f"✅ API: Contraseña actualizada exitosamente para {request_data.correo}")
+        return JSONResponse({"success": True, "message": "Contraseña actualizada correctamente."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Reset Password): {e}")
+        return JSONResponse({"error": "Error interno del servidor al cambiar la contraseña."}, status_code=500)
     
     finally:
         if cursor: cursor.close()

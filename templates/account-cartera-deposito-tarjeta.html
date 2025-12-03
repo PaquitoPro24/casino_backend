@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Depósito con Tarjeta - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-deposito-tarjeta.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -68,7 +70,7 @@
   -->
   <script>
     // 1. Verificar sesión
-    const userId = localStorage.getItem("usuario_id");
+    const userId = localStorage.getItem("user_id");
     if (!userId) {
       alert("No has iniciado sesión.");
       window.location.href = "/login";
@@ -81,10 +83,10 @@
       e.preventDefault();
 
       const formData = new FormData(depositForm);
-      
+
       // Añadimos el id_usuario al formulario antes de enviarlo
       formData.append("id_usuario", userId);
-      
+
       try {
         // 3. Llamar a la NUEVA ruta de API
         const res = await fetch("/api/wallet/deposit-card", {
@@ -110,4 +112,5 @@
   </script>
 
 </body>
+
 </html>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retiros - Tarjeta de Crédito/Débito | Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-retiros-tarjeta.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -19,9 +21,9 @@
     <section class="withdraw-card-section">
       <h2 class="rc-subtitle">Tarjeta de Crédito/Débito</h2>
 
-      <form action="#" method="POST" class="withdraw-form">
-        <input type="text" placeholder="Número de Tarjeta" class="input-field" required>
-        <input type="number" placeholder="Monto del Retiro" class="input-field" required>
+      <form id="withdrawForm" class="withdraw-form">
+        <input type="text" name="numero_tarjeta" placeholder="Número de Tarjeta" class="input-field" required>
+        <input type="number" name="monto" placeholder="Monto del Retiro" class="input-field" required>
 
         <button type="submit" class="btn-dorado">Retirar</button>
       </form>
@@ -48,5 +50,49 @@
     </a>
   </nav>
 
+  <script>
+    // 1. Verificar sesión
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      alert("No has iniciado sesión.");
+      window.location.href = "/login";
+    }
+
+    // 2. Capturar el formulario
+    const withdrawForm = document.getElementById("withdrawForm");
+
+    withdrawForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(withdrawForm);
+      formData.append("id_usuario", userId);
+
+      // El endpoint actual solo recibe id_usuario y monto
+      // Los datos de la tarjeta no se procesan en el backend por ahora, 
+      // pero se podrían enviar si se actualiza la API.
+
+      try {
+        const res = await fetch("/api/wallet/withdraw-card", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.error) {
+          alert("Error: " + result.error);
+        } else if (result.success) {
+          alert("¡Retiro realizado con éxito!");
+          window.location.href = "/account/cartera";
+        }
+
+      } catch (error) {
+        console.error("Error al retirar:", error);
+        alert("Error de conexión al procesar el retiro.");
+      }
+    });
+  </script>
+
 </body>
+
 </html>
