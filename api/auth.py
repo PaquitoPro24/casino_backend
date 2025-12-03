@@ -21,7 +21,7 @@ class UserLogin(BaseModel):
 # Modelo Pydantic para validar los datos de entrada del registro
 class UserRegister(BaseModel):
     correo: EmailStr
-    curp: constr(min_length=18, max_length=18) # Valida que la CURP tenga 18 caracteres
+    curp: str # constr(min_length=18, max_length=18) - Relaxed for debugging
     nombre: str
     apellido: str
     contrasena: str
