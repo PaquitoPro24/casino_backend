@@ -106,7 +106,7 @@ def obtener_historial_auditorias():
     """
     conn = None
     try:
-        conn = db_connect()
+        conn = db_connect.get_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("SELECT * FROM Auditoria ORDER BY fecha_auditoria DESC;")
         historial = cur.fetchall()
