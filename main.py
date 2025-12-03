@@ -35,7 +35,7 @@ async def service_worker():
 
 @app.get("/manifest.json", include_in_schema=False)
 async def manifest():
-    return FileResponse("static/manifest.json", media_type="application/json")
+    return FileResponse("static/manifest.json", media_type="application/manifest+json")
 
 # Helper para ahorrar líneas
 def render(tpl: str, request: Request) -> HTMLResponse:
