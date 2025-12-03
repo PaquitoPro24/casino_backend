@@ -76,12 +76,16 @@ async def api_login(user_data: UserLogin):
             return JSONResponse({"error": "Esta cuenta ha sido desactivada"}, status_code=403)
 
         # 4. ¡Éxito!
+        # 4. ¡Éxito!
         print(f"✅ API: Login exitoso para {usuario[0]} con rol {usuario[2]}")
-        return JSONResponse({
+        response = JSONResponse({
             "id_usuario": usuario[0],  # Índice 0 para id_usuario
             "id_rol": usuario[1],       # Índice 1 para id_rol
             "rol": usuario[2]           # Índice 2 para rol_nombre
         })
+        # Set cookie for middleware
+        response.set_cookie(key="userId", value=str(usuario[0]), httponly=False) # httponly=False so frontend can read if needed, though middleware reads it from request
+        return response
 
     except Exception as e:
         print(f"🚨 API ERROR (Login): {e}")
