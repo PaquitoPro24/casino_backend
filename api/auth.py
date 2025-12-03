@@ -30,6 +30,11 @@ class UserRegister(BaseModel):
 class ForgotPasswordRequest(BaseModel):
     correo: EmailStr
 
+# Modelo Pydantic para el cambio directo de contraseña
+class ResetPasswordRequest(BaseModel):
+    correo: EmailStr
+    nueva_contrasena: str
+
 
 @router.post("/login")
 async def api_login(user_data: UserLogin):
@@ -204,6 +209,58 @@ async def api_forgot_password(request_data: ForgotPasswordRequest):
     except Exception as e:
         print(f"🚨 API ERROR (Forgot Password): {e}")
         return JSONResponse({"error": "Error interno del servidor."}, status_code=500)
+    
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+
+# ==========================================================
+#  RUTA: CAMBIO DE CONTRASEÑA DIRECTO (SIN EMAIL)
+# ==========================================================
+@router.post("/reset-password")
+async def api_reset_password(request_data: ResetPasswordRequest):
+    """
+    Ruta para cambiar la contraseña directamente dado un correo.
+    ADVERTENCIA: Esto permite cambiar la contraseña de cualquiera si se conoce el correo.
+    """
+    print(f"🔹 API: Solicitud de cambio de contraseña directo para: {request_data.correo}")
+    
+    conn = None
+    cursor = None
+    
+    try:
+        conn = db_connect.get_connection()
+        if conn is None:
+            return JSONResponse({"error": "Error interno del servidor."}, status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # 1. Verificar si el usuario existe y está activo
+        cursor.execute("SELECT id_usuario FROM Usuario WHERE email = %s AND activo = true", (request_data.correo,))
+        usuario = cursor.fetchone()
+        
+        if not usuario:
+            print(f"❌ API: Intento de cambio de contraseña para usuario no encontrado: {request_data.correo}")
+            return JSONResponse({"error": "Usuario no encontrado o inactivo."}, status_code=404)
+        
+        # 2. Hashear la nueva contraseña
+        hashed_password = pwd_context.hash(request_data.nueva_contrasena)
+        
+        # 3. Actualizar la contraseña en la base de datos
+        cursor.execute(
+            "UPDATE Usuario SET password_hash = %s WHERE email = %s",
+            (hashed_password, request_data.correo)
+        )
+        conn.commit()
+        
+        print(f"✅ API: Contraseña actualizada exitosamente para {request_data.correo}")
+        return JSONResponse({"success": True, "message": "Contraseña actualizada correctamente."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Reset Password): {e}")
+        return JSONResponse({"error": "Error interno del servidor al cambiar la contraseña."}, status_code=500)
     
     finally:
         if cursor: cursor.close()
