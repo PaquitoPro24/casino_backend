@@ -29,11 +29,11 @@ templates = Jinja2Templates(directory="templates")
 # --- SERVIR SERVICE WORKER DESDE LA RAÍZ ---
 # Esto es necesario para que el SW tenga alcance (scope) sobre toda la app, no solo /static/
 from fastapi.responses import FileResponse
-@app.get("/sw.js", include_in_schema=False)
+@app.api_route("/sw.js", methods=["GET", "HEAD"], include_in_schema=False)
 async def service_worker():
     return FileResponse("static/sw.js", media_type="application/javascript")
 
-@app.get("/manifest.json", include_in_schema=False)
+@app.api_route("/manifest.json", methods=["GET", "HEAD"], include_in_schema=False)
 async def manifest():
     return FileResponse("static/manifest.json", media_type="application/manifest+json")
 
