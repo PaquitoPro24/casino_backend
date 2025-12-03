@@ -14,6 +14,7 @@
     "theme_color": "#d8bb76",
     "orientation": "portrait",
     "dir": "ltr",
+    "lang": "es",
     "iarc_rating_id": "",
     "categories": [
         "games",
@@ -49,8 +50,8 @@
             "form_factor": "wide"
         },
         {
-            "src": "/static/img/screenshot-blackjack.jpg",
-            "sizes": "1280x720",
+            "src": "/static/img/screenshot-mobile.jpg",
+            "sizes": "720x1280",
             "type": "image/jpeg",
             "form_factor": "narrow"
         }
