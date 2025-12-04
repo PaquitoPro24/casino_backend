@@ -91,10 +91,15 @@
             throw new Error(result.error || "Error desconocido al iniciar sesión.");
           }
 
-          // Guardar datos en localStorage con nombres consistentes
-          localStorage.setItem("user_id", result.id_usuario);
-          localStorage.setItem("id_rol", result.id_rol);
-          localStorage.setItem("user_role", result.rol);
+          // Guardar datos en localStorage con nombres consistentes (viejos y nuevos)
+          localStorage.setItem("user_id", result.id_usuario);   // usado por home, soporte, etc.
+          localStorage.setItem("userId", result.id_usuario);    // usado por vistas de agente
+
+          localStorage.setItem("id_rol", result.id_rol);        // nombre viejo
+          localStorage.setItem("idRol", result.id_rol);         // por si alguna vista usa camelCase
+
+          localStorage.setItem("user_role", result.rol);        // nombre viejo
+          localStorage.setItem("userRole", result.rol);         // nombre nuevo/camelCase
 
           // Debugging - verificar qué está llegando
           console.log("🔍 Datos de login recibidos:", result);
