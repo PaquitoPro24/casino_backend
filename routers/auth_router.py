@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db.db_connect import get_connection
-from app.db import db_connect
 from psycopg2.extras import RealDictCursor
 from passlib.context import CryptContext
 
 router = APIRouter()
 
-# Configurar contexto de hasheo (debe coincidir con api/auth.py)
+# Configurar contexto de hasheo
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 @router.post("/login")
@@ -15,25 +14,20 @@ async def login(
     correo: str = Form(...),
     contrasena: str = Form(...)
 ):
-    """
-    Inicia sesión de usuario y devuelve su rol para redirección.
-    NOTA: El endpoint principal de login está en /api/auth/login
-    Este es un router alternativo/redundante
-    """
     conn = None
     cursor = None
-    
+
     try:
         conn = get_connection()
         if conn is None:
             return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
+
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        # Verificar usuario con nombres correctos de tablas y JOIN con Rol
         cursor.execute(
             """
-            SELECT u.id_usuario, u.email, u.password_hash, r.nombre as rol, u.activo
+            SELECT u.id_usuario, u.email, u.password_hash, 
+                   r.nombre AS rol, u.activo
             FROM Usuario u
             JOIN Rol r ON u.id_rol = r.id_rol
             WHERE u.email = %s
@@ -45,20 +39,38 @@ async def login(
         if not user:
             return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
 
-        # Validar contraseña con hash
         if not pwd_context.verify(contrasena, user['password_hash']):
             return JSONResponse({"error": "Contraseña incorrecta"}, status_code=401)
-        
-        # Verificar que la cuenta esté activa
+
         if not user['activo']:
             return JSONResponse({"error": "Cuenta inactiva"}, status_code=403)
 
-        # Si todo está correcto
-        return JSONResponse({
+        # --- AQUI VIENE LA SOLUCIÓN ---
+        response = JSONResponse({
             "id_usuario": user["id_usuario"],
             "rol": user["rol"],
             "message": "Inicio de sesión correcto"
         })
+
+        # Cookies NECESARIAS para /agente/*
+        response.set_cookie(
+            key="userId",
+            value=str(user["id_usuario"]),
+            path="/",
+            httponly=False,
+            samesite="lax"
+        )
+
+        response.set_cookie(
+            key="rol",
+            value=user["rol"],
+            path="/",
+            httponly=False,
+            samesite="lax"
+        )
+
+        return response
+        # -------------------------------
 
     except Exception as e:
         print(f"🚨 Error en login (router): {e}")
