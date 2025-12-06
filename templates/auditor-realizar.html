@@ -519,22 +519,19 @@
             doc.setTextColor(171, 146, 92);
             doc.text(`Cumplimiento Total: ${porcentajeCumplimiento}%`, 40, y);
 
-            // --- INICIO: GUARDAR AUDITORÍA EN EL BACKEND ---
-            // Usamos una función asíncrona para no bloquear la generación del PDF
+                        // Inicio: guardar auditoría
             const guardarAuditoria = async () => {
-                // Asumimos que el ID del auditor está en localStorage (se guarda en el login)
-                const idAuditor = localStorage.getItem("user_id");
+                const idAuditor = localStorage.getItem("id_usuario");
+
                 if (!idAuditor) {
-                    console.error("No se encontró el ID del auditor. No se puede guardar.");
-                    return; // No continuar si no hay ID
+                    console.error("No se encontró el ID del auditor.");
+                    return;
                 }
 
-                // Ajustamos el objeto para que coincida con la estructura de tu tabla
                 const auditData = {
                     id_usuario: parseInt(idAuditor),
-                    fecha_auditoria: new Date().toISOString(),
                     resumen: `Auditoría ISO 14001 - Cumplimiento: ${porcentajeCumplimiento}%`,
-                    datos_auditoria: { // Este objeto se guardará en el campo JSONB
+                    datos_auditoria: {
                         cumple: cumple,
                         no_cumple: noCumple,
                         parcial: parcial,
@@ -574,6 +571,7 @@
             }
         }
     </script>
+
 
 </body>
 
