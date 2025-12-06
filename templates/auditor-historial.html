@@ -107,13 +107,13 @@
               <span class="date">${new Date(audit.fecha_auditoria).toLocaleString('es-ES')}</span>
             </div>
             <div class="card-body">
-              <span>✅ Cumple: ${audit.datos_auditoria.cumple}</span>
-              <span>❌ No Cumple: ${audit.datos_auditoria.no_cumple}</span>
-              <span>⚠️ Parcial: ${audit.datos_auditoria.parcial}</span>
-              <span>➖ No Aplica: ${audit.datos_auditoria.no_aplica}</span>
+              <span>✅ Cumple: ${audit.cumple ?? 0}</span>
+              <span>❌ No Cumple: ${audit.no_cumple ?? 0}</span>
+              <span>⚠️ Parcial: ${audit.parcial ?? 0}</span>
+              <span>➖ No Aplica: ${audit.no_aplica ?? 0}</span>
             </div>
             <div class="card-footer">
-              <span class="compliance">Cumplimiento: ${audit.datos_auditoria.porcentaje_cumplimiento}%</span>
+              <span class="compliance">Cumplimiento: ${audit.porcentaje ?? 0}%</span>
             </div>
           </div>
         `).join('');
