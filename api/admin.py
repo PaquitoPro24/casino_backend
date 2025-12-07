@@ -30,26 +30,33 @@ async def api_get_admin_stats():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # 1. Total de usuarios (solo jugadores - id_rol = 1)
-        cursor.execute("SELECT COUNT(*) as total_users FROM Usuario WHERE id_rol = 1")
-        total_users = cursor.fetchone()['total_users']
+        # 1. Total de usuarios (solo jugadores)
+        cursor.execute("SELECT COUNT(*) as total FROM Usuario WHERE id_rol = 1")
+        total_users = cursor.fetchone()['total']
         
-        # 2. Total de juegos activos
-        cursor.execute("SELECT COUNT(*) as active_games FROM Juego WHERE activo = true")
-        active_games = cursor.fetchone()['active_games']
+        # 2. Usuarios Activos (jugadores activos)
+        cursor.execute("SELECT COUNT(*) as active FROM Usuario WHERE id_rol = 1 AND activo = true")
+        active_users = cursor.fetchone()['active']
         
-        # 3. Total de depósitos hoy
+        # 3. Depósitos Totales (Histórico)
         cursor.execute(
-            "SELECT COALESCE(SUM(monto), 0) as deposits_today FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completada' AND fecha_transaccion >= CURRENT_DATE"
+            "SELECT COALESCE(SUM(monto), 0) as total FROM Transaccion WHERE tipo_transaccion = 'Depósito' AND estado = 'Completada'"
         )
-        deposits_today = cursor.fetchone()['deposits_today']
+        total_deposits = cursor.fetchone()['total']
+
+        # 4. Retiros Totales (Histórico)
+        cursor.execute(
+            "SELECT COALESCE(SUM(monto), 0) as total FROM Transaccion WHERE tipo_transaccion = 'Retiro' AND estado = 'Completada'"
+        )
+        total_withdrawals = cursor.fetchone()['total']
         
         cursor.close()
         
         return JSONResponse({
             "total_users": total_users,
-            "active_games": active_games,
-            "deposits_today": float(deposits_today)
+            "active_users": active_users,
+            "total_deposits": float(total_deposits),
+            "total_withdrawals": float(total_withdrawals)
         })
 
     except Exception as e:

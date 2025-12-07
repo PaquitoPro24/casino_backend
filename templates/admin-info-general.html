@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Información General — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-info-general.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin" class="rc-back">‹</a>
@@ -21,26 +23,26 @@
       <div class="metrics-grid">
         <div class="metric-card">
           <h3>Usuarios Totales</h3>
-          <p class="value">12,345</p>
-          <span class="percent green">+5%</span>
+          <p class="value" id="val-total-users">--</p>
+          <!-- <span class="percent green">+5%</span> -->
         </div>
 
         <div class="metric-card">
           <h3>Usuarios Activos</h3>
-          <p class="value">8,765</p>
-          <span class="percent red">-2%</span>
+          <p class="value" id="val-active-users">--</p>
+          <!-- <span class="percent red">-2%</span> -->
         </div>
 
         <div class="metric-card">
           <h3>Depósitos Totales</h3>
-          <p class="value">$500,000.00</p>
-          <span class="percent green">+10%</span>
+          <p class="value" id="val-total-deposits">$0.00</p>
+          <!-- <span class="percent green">+10%</span> -->
         </div>
 
         <div class="metric-card">
           <h3>Retiros Totales</h3>
-          <p class="value">$300,000.00</p>
-          <span class="percent red">-8%</span>
+          <p class="value" id="val-total-withdrawals">$0.00</p>
+          <!-- <span class="percent red">-8%</span> -->
         </div>
       </div>
     </section>
@@ -72,5 +74,37 @@
     </section>
 
   </div>
+
+  <script>
+    async function loadStats() {
+      try {
+        const res = await fetch("/api/admin/stats");
+        const data = await res.json();
+
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
+
+        // Animación simple o asignación directa
+        document.getElementById("val-total-users").textContent = data.total_users;
+        document.getElementById("val-active-users").textContent = data.active_users;
+
+        // Formato moneda
+        const formatter = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
+        document.getElementById("val-total-deposits").textContent = formatter.format(data.total_deposits);
+        document.getElementById("val-total-withdrawals").textContent = formatter.format(data.total_withdrawals);
+
+      } catch (error) {
+        console.error("Error al cargar estadísticas:", error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadStats);
+  </script>
+
+
+  </div>
 </body>
+
 </html>
