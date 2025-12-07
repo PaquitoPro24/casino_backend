@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historial - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -68,7 +70,7 @@
     // ============================
     // 🔐 Verificar sesión activa
     // ============================
-    const userId = localStorage.getItem("usuario_id");
+    const userId = localStorage.getItem("user_id");
     const userRol = localStorage.getItem("rol");
 
     if (!userId) {
@@ -103,4 +105,5 @@
   </script>
 
 </body>
+
 </html>

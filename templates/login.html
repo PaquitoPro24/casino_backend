@@ -284,6 +284,7 @@
 
           localStorage.setItem("user_role", result.rol);        // nombre viejo
           localStorage.setItem("userRole", result.rol);         // nombre nuevo/camelCase
+          localStorage.setItem("rol", result.rol);              // usado por admin-usuarios.html
 
           // Debugging - verificar qué está llegando
           console.log("🔍 Datos de login recibidos:", result);
