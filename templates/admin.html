@@ -1,20 +1,41 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administrador — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
+    <!-- ENCABEZADO -->
     <!-- ENCABEZADO -->
     <header class="rc-header">
-      <a href="/home" class="rc-back">‹</a>
+      <div style="width: 24px;"></div> <!-- Espaciador para mantener centrado -->
       <h1 class="rc-screen-title">Administrador</h1>
-      <div></div> <!-- espacio vacío para centrar título -->
+      <button id="logoutBtn"
+        style="background:none; border:none; color: #AB925C; font-size: 14px; font-weight: bold; cursor: pointer;">Salir</button>
     </header>
+
+    <script>
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        if (confirm("¿Cerrar sesión?")) {
+          // Limpiar datos de sesión
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("id_rol");
+          localStorage.removeItem("idRol");
+          localStorage.removeItem("user_role");
+          localStorage.removeItem("userRole");
+          localStorage.removeItem("rol");
+
+          window.location.href = "/login";
+        }
+      });
+    </script>
 
     <!-- SECCIÓN PRINCIPAL -->
     <section class="support-section">
@@ -49,4 +70,5 @@
     </section>
   </div>
 </body>
+
 </html>
