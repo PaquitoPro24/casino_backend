@@ -5,8 +5,202 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar Sesión - Royal Crumbs</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
   <link rel="manifest" href="/manifest.json?v=2">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      background-color: #2D2D2D;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Contenedor principal */
+    .login-container {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Logo - Especificaciones de Figma: 102x96px */
+    .logo {
+      width: 102px;
+      height: 96px;
+      object-fit: contain;
+      margin-bottom: 40px;
+    }
+
+    /* Título "Iniciar Sesión" - Especificaciones de Figma */
+    .title {
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 32px;
+      font-weight: 700;
+      font-style: normal;
+      line-height: normal;
+      color: #FFFFFF;
+      margin-bottom: 40px;
+      width: 206px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Formulario */
+    .login-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Campos de entrada - Especificaciones de Figma: 315x36px */
+    .input-field {
+      width: 315px;
+      height: 36px;
+      border-radius: 8px;
+      background: #FFFFFF;
+      border: none;
+      padding: 0 12px;
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 14px;
+      color: #2D2D2D;
+    }
+
+    .input-field::placeholder {
+      color: #999999;
+    }
+
+    .input-field:focus {
+      outline: 2px solid #AB925C;
+    }
+
+    /* Link "¿Olvidaste tu Contraseña?" - Especificaciones de Figma */
+    .forgot-password {
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-decoration: underline;
+      text-decoration-style: solid;
+      text-decoration-skip-ink: auto;
+      text-underline-offset: auto;
+      text-underline-position: from-font;
+      margin-top: 8px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      align-self: flex-start;
+      margin-left: calc((100% - 315px) / 2);
+    }
+
+    .forgot-password:hover {
+      color: #AB925C;
+    }
+
+    /* Botón "Iniciar Sesión" */
+    .btn-login {
+      width: 285px;
+      height: 44px;
+      border-radius: 8px;
+      background: #AB925C;
+      border: none;
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 16px;
+    }
+
+    .btn-login:hover {
+      background: #967F4A;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(171, 146, 92, 0.3);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    /* Link "¿No tienes una cuenta? Regístrate" */
+    .register-link {
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-decoration: underline;
+      margin-top: 40px;
+      cursor: pointer;
+    }
+
+    .register-link:hover {
+      color: #AB925C;
+    }
+
+    /* Mensaje de error */
+    .error-message {
+      background: rgba(255, 59, 48, 0.1);
+      border: 1px solid #FF3B30;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+      color: #FF3B30;
+      font-size: 14px;
+      width: 315px;
+      text-align: center;
+    }
+
+    /* Responsive para pantallas pequeñas */
+    @media (max-width: 360px) {
+
+      .input-field,
+      .error-message {
+        width: 100%;
+        max-width: 315px;
+      }
+
+      .btn-login {
+        width: 100%;
+        max-width: 285px;
+      }
+
+      .forgot-password {
+        margin-left: 0;
+      }
+    }
+
+    /* Responsive para pantallas grandes */
+    @media (min-width: 768px) {
+      .logo {
+        width: 120px;
+        height: auto;
+        margin-bottom: 50px;
+      }
+
+      .title {
+        font-size: 36px;
+        width: auto;
+        height: auto;
+        margin-bottom: 50px;
+      }
+    }
+  </style>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
@@ -36,27 +230,23 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="login-container">
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-    <h2>Iniciar Sesión</h2>
+    <h1 class="title">Iniciar Sesión</h1>
 
-    <form id="login-form">
-      <div class="input-group">
-        <input type="email" id="email" name="email" placeholder="Correo Electrónico" required>
-      </div>
-      <div class="input-group">
-        <input type="password" id="password" name="password" placeholder="Contraseña" required>
-      </div>
+    <form id="login-form" class="login-form">
+      <input type="email" id="email" name="email" class="input-field" placeholder="Usuario o Correo Electrónico"
+        required>
+      <input type="password" id="password" name="password" class="input-field" placeholder="Contraseña" required>
 
-      <button type="submit" class="btn-primary">Iniciar Sesión</button>
+      <a href="/forgot-password" class="forgot-password">¿Olvidaste tu Contraseña?</a>
 
-      <div class="links">
-        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
-        <a href="/register">¿No tienes cuenta? Regístrate</a>
-      </div>
+      <button type="submit" class="btn-login">Iniciar Sesión</button>
     </form>
 
     <div id="error-message" class="error-message" style="display: none;"></div>
+
+    <a href="/register" class="register-link">¿No tienes una cuenta? Regístrate</a>
   </div>
 
   <script>
