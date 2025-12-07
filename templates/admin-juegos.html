@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     .game-list {
       margin-top: 30px;
     }
+
     .game-item {
       background: #2a2a2a;
       padding: 15px;
@@ -20,27 +22,33 @@
       align-items: center;
       color: #fff;
     }
+
     .game-item h3 {
       margin: 0;
       font-size: 1.1em;
       color: #d8bb76;
     }
+
     .game-item p {
       margin: 5px 0 0;
       font-size: 0.9em;
       color: #aaa;
     }
+
     .game-status {
       font-weight: bold;
     }
+
     .game-status.active {
       color: #4CAF50;
     }
+
     .game-status.inactive {
       color: #f44336;
     }
   </style>
 </head>
+
 <body>
   <div class="rc-container">
 
@@ -59,7 +67,7 @@
     <form class="game-form" id="gameForm">
       <label>Nombre del Juego</label>
       <input type="text" name="nombre" placeholder="Ej: Ruleta Europea" required>
-      
+
       <label>Descripción (Tipo)</label>
       <input type="text" name="descripcion" placeholder="Ej: Juego de Mesa" required>
 
@@ -85,7 +93,7 @@
 
       <button type="submit" class="save-btn">Crear Nuevo Juego</button>
     </form>
-    
+
     <!-- 
       NUEVA SECCIÓN: LISTA DE JUEGOS EXISTENTES
     -->
@@ -132,7 +140,7 @@
         }
 
         container.innerHTML = ""; // Limpiar "Cargando..."
-        
+
         data.games.forEach(game => {
           const statusClass = game.activo ? "active" : "inactive";
           const statusText = game.activo ? "Activo" : "Inactivo";
@@ -143,7 +151,10 @@
                 <p>${game.descripcion}</p>
                 <small style="color: #888;">Min: $${game.min_apuesta} / Max: $${game.max_apuesta}</small>
               </div>
-              <span class="game-status ${statusClass}">${statusText}</span>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <span class="game-status ${statusClass}">${statusText}</span>
+                <!-- <button onclick="deleteGame(${game.id_juego})" style="background:none; border:none; cursor:pointer; color:#f44336; font-weight:bold;">✕</button> -->
+              </div>
             </div>
           `;
           container.insertAdjacentHTML('beforeend', itemHTML);
@@ -158,7 +169,7 @@
     // 3. FUNCIÓN PARA CREAR JUEGO (POST)
     gameForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
+
       const formData = new FormData(gameForm);
       const button = gameForm.querySelector("button");
       button.disabled = true;
@@ -184,7 +195,7 @@
         console.error("Error al crear juego:", error);
         alert("Error de conexión al crear el juego.");
       }
-      
+
       button.disabled = false;
       button.textContent = "Crear Nuevo Juego";
     });
@@ -194,5 +205,5 @@
   </script>
 
 </body>
-</html>
 
+</html>

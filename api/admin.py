@@ -396,3 +396,108 @@ async def api_create_bono(
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
+
+@router.delete("/api/admin/bonos/{id_bono}")
+async def api_delete_bono(id_bono: int):
+    """
+    Elimina un bono.
+    """
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Bono WHERE id_bono = %s", (id_bono,))
+        conn.commit()
+        cursor.close()
+        
+        return JSONResponse({"success": True, "message": "Bono eliminado."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Admin Delete Bono): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
+# ==========================================================
+#  CONFIGURACIÓN (Bloqueo IP)
+# ==========================================================
+def ensure_ip_table():
+    """Crea la tabla BloqueoIP si no existe."""
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS BloqueoIP (
+                id_bloqueo SERIAL PRIMARY KEY,
+                ip_address VARCHAR(50) UNIQUE NOT NULL,
+                razon TEXT,
+                fecha_bloqueo TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                activo BOOLEAN DEFAULT TRUE
+            );
+        """)
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(f"Error creating BloqueoIP table: {e}")
+    finally:
+        if conn: conn.close()
+
+# Llamamos a esto al iniciar (o al primer request, simplicidad aquí)
+ensure_ip_table()
+
+@router.get("/api/admin/config/ip-block")
+async def api_get_blocked_ips():
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT * FROM BloqueoIP ORDER BY fecha_bloqueo DESC")
+        ips = cursor.fetchall()
+        cursor.close()
+        return JSONResponse({"ips": ips})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+    finally:
+        if conn: conn.close()
+
+@router.post("/api/admin/config/ip-block")
+async def api_block_ip(ip_address: str = Form(), razon: str = Form("")):
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO BloqueoIP (ip_address, razon) VALUES (%s, %s)",
+            (ip_address, razon)
+        )
+        conn.commit()
+        cursor.close()
+        return JSONResponse({"success": True})
+    except psycopg2.errors.UniqueViolation:
+        if conn: conn.rollback()
+        return JSONResponse({"error": "La IP ya está bloqueada."}, status_code=409)
+    except Exception as e:
+        if conn: conn.rollback()
+        return JSONResponse({"error": str(e)}, status_code=500)
+    finally:
+        if conn: conn.close()
+
+@router.delete("/api/admin/config/ip-block/{id_bloqueo}")
+async def api_unblock_ip(id_bloqueo: int):
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM BloqueoIP WHERE id_bloqueo = %s", (id_bloqueo,))
+        conn.commit()
+        cursor.close()
+        return JSONResponse({"success": True})
+    except Exception as e:
+        if conn: conn.rollback()
+        return JSONResponse({"error": str(e)}, status_code=500)
+    finally:
+        if conn: conn.close()

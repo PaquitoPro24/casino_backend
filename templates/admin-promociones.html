@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crear Promoción — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-promociones.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
 
@@ -17,39 +19,124 @@
     </header>
 
     <!-- ===== FORMULARIO DE PROMOCIÓN ===== -->
-    <form class="promo-form">
-      <input type="text" placeholder="Nombre de la Promoción" required>
-      <input type="text" placeholder="Tipo de Bono" required>
-      <input type="number" placeholder="Valor del Bono" required>
-      <input type="text" placeholder="Requisitos de Apuesta" required>
-      <input type="number" placeholder="Periodo de Validez (días)" required>
+    <form class="promo-form" id="promoForm">
+      <input type="text" name="nombre_bono" placeholder="Nombre de la Promoción" required>
+      <input type="text" name="tipo" placeholder="Tipo de Bono (Ej: Bienvenida)" required>
+      <input type="text" name="descripcion" placeholder="Descripción corta" required>
+      <input type="number" step="0.01" name="valor" placeholder="Valor del Bono (Monto o %)" required>
+      <input type="number" step="0.01" name="requisito_apuesta" placeholder="Requisito de Apuesta (x veces)" required>
+      <input type="number" name="dias_validez" placeholder="Periodo de Validez (días)" required>
+      <!-- Hidden Active -->
+      <input type="hidden" name="activo" value="true">
 
-      <button type="button" class="btn-gold">Crear Promoción</button>
-      <button type="submit" class="btn-gold secondary">Guardar</button>
+      <!-- <button type="button" class="btn-gold">Crear Promoción</button> -->
+      <button type="submit" class="btn-gold secondary">Guardar Promoción</button>
     </form>
 
     <!-- ===== PROMOCIONES ACTIVAS ===== -->
     <section class="promo-list">
       <h2>Promociones Activas</h2>
-
-      <div class="promo-card">
-        <div class="promo-info">
-          <p class="promo-title">200% Hasta $2000 mxn</p>
-          <p class="promo-subtitle">Bono de Bienvenida</p>
-        </div>
-        <span class="promo-status">Activo</span>
+      <div id="promo-list-container">
+        <p style="text-align: center; color: white;">Cargando promociones...</p>
       </div>
-
-      <div class="promo-card">
-        <div class="promo-info">
-          <p class="promo-title">150% Hasta $1500 mxn</p>
-          <p class="promo-subtitle">Bono Semanal</p>
-        </div>
-        <span class="promo-status">Activo</span>
-      </div>
-
     </section>
 
   </div>
-</body>
+
+  <script>
+    const form = document.getElementById("promoForm");
+    const container = document.getElementById("promo-list-container");
+
+    // 1. Cargar Promociones
+    async function loadPromos() {
+      container.innerHTML = `<p style="text-align: center; color: white;">Cargando...</p>`;
+      try {
+        const res = await fetch("/api/admin/bonos");
+        const data = await res.json();
+
+        if (data.error) {
+          container.innerHTML = `<p style='color:red;'>Error: ${data.error}</p>`;
+          return;
+        }
+
+        if (!data.bonos || data.bonos.length === 0) {
+          container.innerHTML = `<p style='text-align:center; color:#888;'>No hay promociones activas.</p>`;
+          return;
+        }
+
+        container.innerHTML = ""; // Clear
+        data.bonos.forEach(bono => {
+          const item = document.createElement("div");
+          item.className = "promo-card";
+          item.innerHTML = `
+            <div class="promo-info">
+              <p class="promo-title">${bono.nombre_bono}</p>
+              <p class="promo-subtitle">${bono.tipo} - ${bono.descripcion}</p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <span class="promo-status" style="color: ${bono.activo ? '#4CAF50' : '#f44336'}">
+                ${bono.activo ? 'Activo' : 'Inactivo'}
+              </span>
+              <button onclick="deleteBono(${bono.id_bono})" style="background:none; border:none; cursor:pointer; color:#f44336; font-weight:bold;">✕</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = `<p style='color:red;'>Error de conexión.</p>`;
+      }
+    }
+
+    // 2. Crear Promoción
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Calcular fecha expiración basada en días (simple logic for now or pass days logic to backend?)
+      // Backend expects 'fecha_expiracion' as ISO string.
+      // We have 'dias_validez'. Let's calculate it here.
+      const dias = parseInt(form.dias_validez.value) || 30;
+      const fecha = new Date();
+      fecha.setDate(fecha.getDate() + dias);
+      const fechaIso = fecha.toISOString();
+
+      const formData = new FormData(form);
+      formData.append("fecha_expiracion", fechaIso);
+
+      try {
+        const res = await fetch("/api/admin/bonos", {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Promoción creada.");
+          form.reset();
+          loadPromos();
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    // 3. Eliminar Promoción
+    async function deleteBono(id) {
+      if (!confirm("¿Eliminar esta promoción?")) return;
+      try {
+        const res = await fetch(`/api/admin/bonos/${id}`, { method: "DELETE" });
+        const result = await res.json();
+        if (result.success) loadPromos();
+        else alert(result.error);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPromos);
+  </script>
+
 </html>

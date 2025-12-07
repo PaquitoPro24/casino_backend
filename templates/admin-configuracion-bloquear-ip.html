@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bloquear IP — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-configuracion-bloquear-ip.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin/configuracion" class="rc-back">‹</a>
@@ -17,22 +19,106 @@
     </header>
 
     <!-- ===== FORMULARIO ===== -->
-    <form class="ip-form">
-      <input type="text" placeholder="Buscar IP">
-      <button type="button" class="btn-gold">Bloquear IP</button>
+    <form class="ip-form" id="ipForm">
+      <input type="text" name="ip_address" placeholder="Dirección IP (Ej: 192.168.1.1)" required>
+      <input type="text" name="razon" placeholder="Razón (Opcional)" style="margin-top: 10px;">
+      <button type="submit" class="btn-gold" style="margin-top: 10px;">Bloquear IP</button>
     </form>
 
     <!-- ===== LISTA DE IP BLOQUEADAS ===== -->
     <section class="ip-list">
       <h2>IP Bloqueadas</h2>
-      <ul>
-        <li>192.168.21.1</li>
-        <li>192.168.251.15</li>
-        <li>192.168.281.12</li>
-        <li>192.168.121.17</li>
+      <ul id="ip-list-container">
+        <!-- Dynamic content -->
+        <li style="text-align: center; color: #888;">Cargando...</li>
       </ul>
     </section>
 
   </div>
+
+  <script>
+    const form = document.getElementById("ipForm");
+    const container = document.getElementById("ip-list-container");
+
+    // 1. Cargar IPs
+    async function loadIPs() {
+      container.innerHTML = `<li style="text-align: center; color: #888;">Cargando...</li>`;
+      try {
+        const res = await fetch("/api/admin/config/ip-block");
+        const data = await res.json();
+
+        if (data.error) {
+          container.innerHTML = `<li style="color: red;">Error: ${data.error}</li>`;
+          return;
+        }
+
+        if (!data.ips || data.ips.length === 0) {
+          container.innerHTML = `<li style="text-align: center; color: #888;">No hay direcciones IP bloqueadas.</li>`;
+          return;
+        }
+
+        container.innerHTML = "";
+        data.ips.forEach(item => {
+          const li = document.createElement("li");
+          li.style.display = "flex";
+          li.style.justifyContent = "space-between";
+          li.style.alignItems = "center";
+
+          li.innerHTML = `
+            <div>
+              <span style="display:block; font-weight:bold; color:white;">${item.ip_address}</span>
+              <small style="color:#aaa;">${item.razon || 'Sin razón'}</small>
+            </div>
+            <button onclick="unblockIP(${item.id_bloqueo})" style="background:none; border:none; color:#f44336; font-size:1.2em; cursor:pointer;">&times;</button>
+          `;
+          container.appendChild(li);
+        });
+
+      } catch (e) {
+        console.error(e);
+        container.innerHTML = `<li style="color: red;">Error de conexión.</li>`;
+      }
+    }
+
+    // 2. Bloquear IP
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch("/api/admin/config/ip-block", {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("IP Bloqueada.");
+          form.reset();
+          loadIPs();
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    // 3. Desbloquear IP
+    async function unblockIP(id) {
+      if (!confirm("¿Desbloquear esta IP?")) return;
+      try {
+        const res = await fetch(`/api/admin/config/ip-block/${id}`, { method: "DELETE" });
+        const result = await res.json();
+        if (result.success) loadIPs();
+        else alert(result.error);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadIPs);
+  </script>
 </body>
+
 </html>
