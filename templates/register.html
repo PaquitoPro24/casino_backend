@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro - Royal Crumbs</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}?v=8">
 </head>
+
 <body>
   <div class="container">
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
     <h2>Crea tu cuenta</h2>
 
     <form id="registerForm">
-      <input type="email" name="correo" placeholder="Correo Electrónico" class="auth-input" required>
+      <input type="email" name="correo" placeholder="Correo Electronico" class="auth-input" required>
       <input type="text" name="curp" placeholder="CURP" class="auth-input" required>
       <input type="text" name="nombre" placeholder="Nombre(s)" class="auth-input" required>
       <input type="text" name="apellido" placeholder="Apellido(s)" class="auth-input" required>
-      
+      <input type="text" name="direccion" placeholder="Direccion" class="auth-input" required>
+
       <input type="password" name="contrasena" placeholder="Contraseña" class="auth-input" required>
-      <input type="password" name="confirmar_contrasena" placeholder="Confirmar Contraseña" class="auth-input" required>
-      
+      <input type="password" name="confirmar_contrasena" placeholder="Confirmar  Contraseña" class="auth-input"
+        required>
+
       <button type="submit" class="auth-button">Registrarse</button>
     </form>
-    
+
     <a href="/login" class="register-link">¿Ya tienes una cuenta? Inicia Sesión</a>
   </div>
 
@@ -39,7 +43,7 @@
         alert("Las contraseñas no coinciden.");
         return;
       }
-      
+
       // (Aquí puedes añadir más validaciones, como la longitud de la CURP)
 
       // Eliminar confirmar_contrasena antes de enviar
@@ -71,4 +75,5 @@
     });
   </script>
 </body>
+
 </html>

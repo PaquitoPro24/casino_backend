@@ -1,127 +1,280 @@
-/* ==================== GENERAL ==================== */
+/* ==================== ARCHIVO: auth.css ====================
+ * Descripción: Estilos para páginas de autenticación (login, registro, recuperar contraseña)
+ * Autor: Royal Crumbs Team
+ * Última modificación: 2025-12-07
+ * 
+ * ÍNDICE:
+ * 1. Reset y estilos generales
+ * 2. Contenedor principal
+ * 3. Logo
+ * 4. Tipografía (títulos, párrafos, enlaces)
+ * 5. Campos de entrada (inputs)
+ * 6. Botones
+ * 7. Enlaces
+ * 8. Media queries (responsive)
+ * ========================================================== */
+
+/* ==================== 1. RESET Y ESTILOS GENERALES ==================== */
+/* Reset básico para eliminar márgenes y paddings por defecto del navegador */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Incluye padding y border en el ancho total */
 }
 
+/* Estilos del body - Contenedor principal de toda la página */
 body {
+  /* Tipografía */
   font-family: 'Timeless', 'Arial', sans-serif;
+  /* Fuente principal del proyecto */
+
+  /* Colores */
   background-color: #202020;
+  /* Fondo oscuro estándar del proyecto */
   color: #FFFFFF;
+  /* Texto blanco por defecto */
+
+  /* Layout - Centrado horizontal, alineado arriba */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* Centra horizontalmente */
+  justify-content: flex-start;
+  /* Alinea arriba en lugar de centrar verticalmente */
   min-height: 100vh;
-  padding: clamp(12px, 2.5vw, 16px);
+  /* Altura mínima de toda la ventana */
+
+  /* Sin padding para control exacto del contenedor */
+  padding: 0;
 }
 
-/* Contenedor principal */
+/* ==================== 2. CONTENEDOR PRINCIPAL ==================== */
+/* Contenedor que envuelve el formulario de autenticación */
 .container {
   width: 100%;
-  max-width: 400px;
+  /* Ocupa todo el ancho disponible */
+  max-width: 360px;
+  /* Ancho exacto de Figma para móvil */
+  padding: 0 20px;
+  /* Padding lateral para los elementos internos */
   text-align: center;
+  /* Centra el texto dentro del contenedor */
 }
 
-/* Logo */
+/* ==================== 3. LOGO ==================== */
+/* Estilos para el logo de Royal Crumbs */
 .logo {
-  width: clamp(100px, 25vw, 120px);
-  margin: 0 auto clamp(20px, 4vw, 25px);
+  /* Dimensiones exactas de Figma Dev Mode */
+  width: 100px;
+  height: auto;
+
+  /* Centrado horizontal y márgenes verticales */
+  margin: 0 auto;
+  /* Centra horizontalmente */
+  margin-top: 20px;
+  /* Margen superior reducido */
+  margin-bottom: 60px;
+  /* Margen inferior aumentado para más espacio con el título */
+
   display: block;
+  /* Necesario para que margin: auto funcione */
 }
 
-/* ==================== TIPOGRAFÍA ==================== */
+/* ==================== 4. TIPOGRAFÍA ==================== */
+
+/* Títulos principales (h1, h2) */
 h1,
 h2 {
   font-family: 'Timeless', 'Arial', sans-serif;
-  font-size: clamp(26px, 6vw, 32px);
+
+  /* Tamaño fijo de Figma: 32px */
+  font-size: 32px;
+
   font-weight: 700;
+  /* Negrita */
   line-height: 100%;
+  /* Altura de línea compacta */
   letter-spacing: 0px;
+  /* Sin espaciado entre letras */
   color: #FFFFFF;
-  margin-bottom: clamp(20px, 4vw, 25px);
+  /* Blanco */
+
+  /* Margen inferior balanceado */
+  margin-bottom: 30px;
 }
 
+/* Texto pequeño (párrafos, enlaces, etiquetas) */
 p,
 a,
 label {
-  font-size: clamp(12px, 2.5vw, 13px);
+  font-size: 13px;
+  /* Tamaño fijo de Figma */
   color: #FFFFFF;
   text-decoration: none;
+  /* Sin subrayado por defecto */
 }
 
+/* Efecto hover en enlaces */
 a:hover {
   text-decoration: underline;
+  /* Subrayado al pasar el mouse */
   color: #ab925c;
+  /* Color dorado del proyecto */
 }
 
-/* ==================== CAMPOS DE TEXTO ==================== */
+/* ==================== 5. CAMPOS DE ENTRADA (INPUTS) ==================== */
+/* Estilos para inputs de texto, email y contraseña */
 input[type="text"],
 input[type="email"],
 input[type="password"] {
+  /* Dimensiones */
   width: 100%;
-  padding: clamp(10px, 2.5vw, 12px);
-  margin: clamp(8px, 2vw, 10px) 0;
+  /* Ocupa todo el ancho del contenedor */
+  padding: 9px 12px;
+  /* Espaciado interno balanceado */
+  margin: 7px 0;
+  /* Margen vertical reducido */
+
+  /* Bordes y esquinas */
   border: 1.5px solid #FFFFFF;
+  /* Borde blanco de 1.5px */
   border-radius: 8px;
+  /* Esquinas redondeadas */
+
+  /* Colores */
   background-color: #FFFFFF;
+  /* Fondo blanco */
   color: #202020;
-  font-size: clamp(14px, 3vw, 16px);
+  /* Texto oscuro (contraste con fondo blanco) */
+
+  /* Tipografía */
+  font-size: 16px;
+  /* Tamaño fijo de Figma */
+
   box-sizing: border-box;
+  /* Incluye padding y border en el ancho */
   transition: all 0.3s ease;
+  /* Transición suave para efectos hover/focus */
 }
 
+/* Estado focus (cuando el usuario hace click en el input) */
 input:focus {
   outline: none;
+  /* Elimina el outline azul por defecto del navegador */
   border-color: #AB925C;
+  /* Borde dorado al hacer focus */
   box-shadow: 0 0 6px rgba(171, 146, 92, 0.5);
+  /* Sombra dorada suave */
 }
 
+/* Estilo del placeholder (texto de ejemplo en el input) */
 input::placeholder {
-  color: #888;
+  color: #999;
+  /* Gris más claro para coincidir con Figma */
 }
 
-/* ==================== BOTONES ==================== */
+/* ==================== 6. BOTONES ==================== */
+/* Estilos para todos los botones */
 button {
+  /* Colores */
   background-color: #AB925C;
+  /* Fondo dorado (color principal del proyecto) */
   color: #FFFFFF;
-  font-size: clamp(18px, 4vw, 20px);
+  /* Texto blanco */
+
+  /* Tipografía */
+  font-size: 20px;
+  /* Tamaño fijo de Figma */
   font-weight: 700;
+  /* Negrita */
+
+  /* Bordes y forma */
   border: none;
+  /* Sin borde */
   border-radius: 8px;
-  padding: clamp(10px, 2.5vw, 12px);
+  /* Esquinas redondeadas */
+
+  /* Dimensiones */
+  padding: 12px;
+  /* Espaciado interno fijo de Figma */
   width: 100%;
+  /* Ocupa todo el ancho */
+
+  /* Interacción */
   cursor: pointer;
-  margin-top: clamp(12px, 3vw, 15px);
+  /* Cambia el cursor a manita al pasar sobre el botón */
+  margin-top: 20px;
+  /* Margen superior aumentado */
+
+  /* Animación */
   transition: all 0.3s ease;
+  /* Transición suave para efectos */
 }
 
+/* Efecto hover (al pasar el mouse sobre el botón) */
 button:hover {
   background-color: #967F4A;
+  /* Dorado más oscuro */
   box-shadow: 0 0 8px rgba(171, 146, 92, 0.5);
+  /* Sombra dorada */
   transform: translateY(-2px);
+  /* Eleva el botón 2px */
 }
 
+/* Efecto active (al hacer click en el botón) */
 button:active {
   transform: translateY(0);
+  /* Vuelve a la posición original */
 }
 
-/* ==================== ENLACES ==================== */
+/* ==================== 7. ENLACES ==================== */
+/* Estilos adicionales para enlaces */
 a {
   display: block;
-  margin-top: clamp(12px, 3vw, 15px);
+  /* Ocupa toda la línea */
+  margin-top: 15px;
+  /* Margen superior fijo de Figma */
 }
 
-/* ==================== RESPONSIVE ==================== */
+/* ==================== 8. RESPONSIVE (MEDIA QUERIES) ==================== */
+
+/* Pantallas medianas y grandes (640px o más) */
 @media (min-width: 640px) {
   .container {
     max-width: 420px;
+    /* Aumenta el ancho máximo del contenedor */
   }
 }
 
+/* Pantallas muy pequeñas (360px o menos) */
 @media (max-width: 360px) {
   .container {
     padding: 0 12px;
+    /* Reduce el padding para aprovechar mejor el espacio */
   }
 }
+
+/* ==================== NOTAS DE USO ====================
+ * 
+ * COLORES DEL PROYECTO:
+ * - Fondo principal: #202020 (gris muy oscuro)
+ * - Texto principal: #FFFFFF (blanco)
+ * - Color de acento: #AB925C (dorado)
+ * - Color de acento hover: #967F4A (dorado oscuro)
+ * 
+ * FUENTES:
+ * - Principal: 'Timeless' (con fallback a Arial y sans-serif)
+ * 
+ * RESPONSIVE:
+ * - Este CSS usa clamp() para tamaños responsive automáticos
+ * - clamp(mínimo, preferido, máximo) se adapta al viewport
+ * - Media queries adicionales para ajustes específicos
+ * 
+ * ARCHIVOS QUE USAN ESTE CSS:
+ * - register.html (registro de usuarios)
+ * - forgot_password.html (recuperar contraseña)
+ * - Otros formularios de autenticación
+ * 
+ * NOTA: login.html usa estilos inline y NO usa este archivo
+ * ========================================================== */

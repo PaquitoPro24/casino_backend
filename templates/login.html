@@ -35,12 +35,13 @@
       text-align: center;
     }
 
-    /* Logo - Especificaciones de Figma: 102x96px */
+    /* Logo - Ajustado para coincidir con Figma */
     .logo {
       width: 102px;
       height: 96px;
       object-fit: contain;
-      margin-bottom: 40px;
+      margin-bottom: 50px;
+      margin-top: -395px;
     }
 
     /* Título "Iniciar Sesión" - Especificaciones de Figma */
@@ -51,12 +52,8 @@
       font-style: normal;
       line-height: normal;
       color: #FFFFFF;
-      margin-bottom: 40px;
-      width: 206px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-bottom: 42px;
+      margin-top: 10px;
     }
 
     /* Formulario */
@@ -65,7 +62,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     /* Campos de entrada - Especificaciones de Figma: 315x36px */
@@ -100,8 +97,8 @@
       text-decoration-skip-ink: auto;
       text-underline-offset: auto;
       text-underline-position: from-font;
-      margin-top: 8px;
-      margin-bottom: 24px;
+      margin-top: 4px;
+      margin-bottom: 16px;
       cursor: pointer;
       align-self: flex-start;
       margin-left: calc((100% - 315px) / 2);
@@ -111,10 +108,10 @@
       color: #AB925C;
     }
 
-    /* Botón "Iniciar Sesión" */
+    /* Botón "Iniciar Sesión" - Mismo ancho que los inputs */
     .btn-login {
-      width: 285px;
-      height: 44px;
+      width: 276px;
+      height: 40px;
       border-radius: 8px;
       background: #AB925C;
       border: none;
@@ -124,7 +121,7 @@
       color: #FFFFFF;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-top: 16px;
+      margin-top: 70px;
     }
 
     .btn-login:hover {
@@ -144,7 +141,8 @@
       font-weight: 700;
       color: #FFFFFF;
       text-decoration: underline;
-      margin-top: 40px;
+      margin-top: 190px;
+      margin-bottom: -300px;
       cursor: pointer;
     }
 
@@ -167,16 +165,15 @@
 
     /* Responsive para pantallas pequeñas */
     @media (max-width: 360px) {
+      .login-container {
+        padding: 15px;
+      }
 
       .input-field,
+      .btn-login,
       .error-message {
         width: 100%;
         max-width: 315px;
-      }
-
-      .btn-login {
-        width: 100%;
-        max-width: 285px;
       }
 
       .forgot-password {
@@ -187,16 +184,13 @@
     /* Responsive para pantallas grandes */
     @media (min-width: 768px) {
       .logo {
-        width: 120px;
-        height: auto;
-        margin-bottom: 50px;
+        width: 100px;
+        margin-bottom: 40px;
       }
 
       .title {
         font-size: 36px;
-        width: auto;
-        height: auto;
-        margin-bottom: 50px;
+        margin-bottom: 40px;
       }
     }
   </style>
