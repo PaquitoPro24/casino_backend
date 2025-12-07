@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuarios.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
 
@@ -13,61 +15,90 @@
     <header class="rc-header">
       <a href="/admin/gestion-usuarios" class="rc-back">‹</a>
       <h1 class="rc-screen-title">Administradores</h1>
-      <div></div>
+      <!-- Botón para crear nuevo -->
+      <a href="/admin/administradores/perfil?id=new" class="rc-add-btn"
+        style="color: #AB925C; font-size: 24px; text-decoration: none;">+</a>
     </header>
 
     <!-- ===== BUSCADOR ===== -->
     <div class="search-bar">
-      <input type="text" placeholder="Buscar transacciones" />
+      <input type="text" id="searchInput" placeholder="Buscar administrador..." />
     </div>
 
     <!-- ===== LISTA DE USUARIOS ===== -->
-    <section class="users-list">
-      <a href="/admin/administradores/perfil" class="user-item">
-        <div class="user-info">
-          <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-          <div>
-            <p class="username">Administrador2354</p>
-            <p class="email">Usuario2354@gmail.com</p>
-          </div>
-        </div>
-        <span class="rc-chevron"></span>
-      </a>
-
-      <a href="/admin/administradores/perfil" class="user-item">
-        <div class="user-info">
-          <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-          <div>
-            <p class="username">Administrador1354</p>
-            <p class="email">Usuario1354@gmail.com</p>
-          </div>
-        </div>
-        <span class="rc-chevron"></span>
-      </a>
-
-      <a href="/admin/administradores/perfil" class="user-item">
-        <div class="user-info">
-          <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-          <div>
-            <p class="username">Administrador2354</p>
-            <p class="email">Usuario2354@gmail.com</p>
-          </div>
-        </div>
-        <span class="rc-chevron"></span>
-      </a>
-
-      <a href="/admin/administradores/perfil" class="user-item">
-        <div class="user-info">
-          <img src="{{ url_for('static', path='img/user-icon-gold.png') }}" alt="Usuario">
-          <div>
-            <p class="username">Administrador1354</p>
-            <p class="email">Usuario1354@gmail.com</p>
-          </div>
-        </div>
-        <span class="rc-chevron"></span>
-      </a>
+    <section class="users-list" id="admins-list">
+      <p style="text-align: center; color: white;">Cargando...</p>
     </section>
 
   </div>
+
+  <script>
+    const container = document.getElementById("admins-list");
+    const searchInput = document.getElementById("searchInput");
+    let allAdmins = [];
+
+    async function cargarAdmins() {
+      try {
+        const res = await fetch("/api/admin/administradores");
+        const data = await res.json();
+
+        if (data.error) {
+          container.innerHTML = `<p style="text-align:center; color:red;">${data.error}</p>`;
+          return;
+        }
+
+        allAdmins = data.admins;
+        renderAdmins(allAdmins);
+
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = `<p style="text-align:center; color:red;">Error al cargar.</p>`;
+      }
+    }
+
+    function renderAdmins(lista) {
+      container.innerHTML = "";
+      if (lista.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:white;">No hay resultados.</p>`;
+        return;
+      }
+
+      lista.forEach(admin => {
+        const item = document.createElement("a");
+        item.href = `/admin/administradores/perfil?id=${admin.id_usuario}`;
+        item.className = "user-item";
+
+        // Estado color
+        const statusColor = admin.activo ? "#4CAF50" : "#f44336";
+
+        item.innerHTML = `
+                <div class="user-info">
+                  <img src="/static/img/user-icon-gold.png" alt="Usuario">
+                  <div>
+                    <p class="username">${admin.nombre} ${admin.apellido}</p>
+                    <p class="email">${admin.email} <small style="color:#aaa;">(${admin.rol})</small></p>
+                  </div>
+                </div>
+                <span class="rc-chevron"></span>
+            `;
+        container.appendChild(item);
+      });
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allAdmins.filter(a =>
+        a.nombre.toLowerCase().includes(term) ||
+        a.apellido.toLowerCase().includes(term) ||
+        a.email.toLowerCase().includes(term)
+      );
+      renderAdmins(filtered);
+    });
+
+    document.addEventListener("DOMContentLoaded", cargarAdmins);
+  </script>
+
+  </div>
 </body>
+
 </html>

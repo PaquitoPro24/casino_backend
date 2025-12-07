@@ -1,56 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestionar perfil de Administrador — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-administrador-perfil.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin/administradores" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Gestionar perfil de Administrador</h1>
+      <h1 class="rc-screen-title" id="pageTitle">Gestionar perfil</h1>
       <div></div>
     </header>
 
     <!-- ===== FORMULARIO ===== -->
-    <form class="admin-form">
-      <select required>
+    <form class="admin-form" id="adminForm">
+      <select id="roleSelect" required>
         <option value="" disabled selected>Rol</option>
-        <option value="superadmin">Superadministrador</option>
-        <option value="moderador">Moderador</option>
-        <option value="analista">Analista</option>
+        <option value="Administrador">Administrador</option>
+        <option value="Auditor">Auditor</option>
       </select>
 
-      <input type="text" placeholder="Nombre(s)" required>
-      <input type="text" placeholder="Apellido(s)" required>
-      <input type="email" placeholder="Correo" required>
+      <input type="text" id="nameInput" placeholder="Nombre(s)" required>
+      <input type="text" id="lastNameInput" placeholder="Apellido(s)" required>
+      <input type="email" id="emailInput" placeholder="Correo" required>
+
+      <!-- Password field (Only for new admins) -->
+      <div id="passwordContainer" style="display: none; margin-top: 10px;">
+        <input type="password" id="passwordInput" placeholder="Contraseña" style="width: 100%;">
+      </div>
     </form>
 
-    <!-- ===== CONFIGURACIÓN DE CUENTA ===== -->
-    <section class="account-config">
+    <!-- ===== CONFIGURACIÓN DE CUENTA (Sólo para edición) ===== -->
+    <section class="account-config" id="accountConfigSection">
       <h2>Configuración de Cuenta</h2>
       <div class="password-reset">
-        <p>Restablecer Contraseña</p>
-        <a href="#" class="rc-chevron"></a>
+        <p>Restablecer Contraseña (N/A)</p>
+        <!-- <a href="#" class="rc-chevron"></a> -->
       </div>
 
       <div class="status-buttons">
-        <button class="status-btn active">Activa</button>
-        <button class="status-btn suspended">Suspendida</button>
-        <button class="status-btn blocked">Bloqueada</button>
+        <button type="button" class="status-btn active" data-status="true">Activa</button>
+        <button type="button" class="status-btn blocked" data-status="false">Bloqueada</button>
       </div>
     </section>
 
     <!-- ===== BOTONES ===== -->
     <div class="action-buttons">
-      <button class="save-btn">Guardar Cambios</button>
-      <button class="delete-btn">Eliminar Cuenta</button>
+      <button class="save-btn" id="saveBtn">Guardar Cambios</button>
+      <button class="delete-btn" id="deleteBtn">Eliminar Cuenta</button>
     </div>
 
   </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const adminId = params.get("id");
+
+    const pageTitle = document.getElementById("pageTitle");
+    const roleSelect = document.getElementById("roleSelect");
+    const nameInput = document.getElementById("nameInput");
+    const lastNameInput = document.getElementById("lastNameInput");
+    const emailInput = document.getElementById("emailInput");
+    const passwordContainer = document.getElementById("passwordContainer");
+    const passwordInput = document.getElementById("passwordInput");
+    const accountConfigSection = document.getElementById("accountConfigSection");
+    const saveBtn = document.getElementById("saveBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+
+    let currentActiveStatus = true; // Default for new users
+
+    // Setup UI based on mode
+    if (adminId === "new") {
+      pageTitle.textContent = "Crear Administrador";
+      accountConfigSection.style.display = "none";
+      deleteBtn.style.display = "none";
+      passwordContainer.style.display = "block";
+      passwordInput.required = true;
+      saveBtn.textContent = "Crear Administrador";
+    } else {
+      pageTitle.textContent = "Editar Administrador";
+      loadAdminData(adminId);
+    }
+
+    // Load Data
+    async function loadAdminData(id) {
+      try {
+        const res = await fetch(`/api/admin/user-profile/${id}`);
+        const data = await res.json();
+
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        // Populate form
+        roleSelect.value = data.rol;
+        nameInput.value = data.nombre;
+        lastNameInput.value = data.apellido;
+        emailInput.value = data.email;
+
+        // Set status
+        setStatusUI(data.activo);
+
+      } catch (error) {
+        console.error(error);
+        alert("Error al cargar datos.");
+      }
+    }
+
+    // Status Buttons Logic
+    const statusBtns = document.querySelectorAll(".status-btn");
+    statusBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const status = btn.dataset.status === "true";
+        setStatusUI(status);
+      });
+    });
+
+    function setStatusUI(isActive) {
+      currentActiveStatus = isActive;
+      statusBtns.forEach(btn => btn.classList.remove("selected", "active-style"));
+
+      // Simple visual toggle logic
+      if (isActive) {
+        document.querySelector('.status-btn[data-status="true"]').classList.add("active-style"); // You might need CSS for 'active-style' or reuse 'active' class effectively
+        // For now, reusing existing classes but adding a border or scale effect could be better. 
+        // The template had 'active', 'suspended', 'blocked' classes.
+        // Let's just highlight the chosen one.
+      } else {
+        document.querySelector('.status-btn[data-status="false"]').classList.add("active-style");
+      }
+    }
+
+    // Save Logic
+    saveBtn.addEventListener("click", async () => {
+      const formData = new FormData();
+      formData.append("nombre", nameInput.value);
+      formData.append("apellido", lastNameInput.value);
+      formData.append("email", emailInput.value);
+      formData.append("rol", roleSelect.value);
+      formData.append("activo", currentActiveStatus);
+
+      const url = adminId === "new" ? "/api/admin/administradores" : `/api/admin/user-profile/${adminId}`;
+      const method = adminId === "new" ? "POST" : "PUT";
+
+      if (adminId === "new") {
+        if (!passwordInput.value) {
+          alert("La contraseña es obligatoria.");
+          return;
+        }
+        formData.append("password", passwordInput.value);
+      }
+
+      try {
+        const res = await fetch(url, {
+          method: method,
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message);
+          window.location.href = "/admin/administradores";
+        } else {
+          alert(result.error || "Error al guardar.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error de conexión.");
+      }
+    });
+
+    // Delete Logic (Placeholder for safety)
+    deleteBtn.addEventListener("click", () => {
+      alert("Función de eliminar no implementada por seguridad.");
+    });
+
+  </script>
+
+  <style>
+    .active-style {
+      border: 2px solid #AB925C;
+      transform: scale(1.05);
+    }
+  </style>
 </body>
+
 </html>

@@ -5,6 +5,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import decimal # Importamos decimal para manejar dinero
 from datetime import datetime # Para manejar fechas
+from passlib.context import CryptContext
+
+# Configura el contexto de hasheo (mismo que auth.py)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 router = APIRouter()
 
@@ -123,6 +127,68 @@ async def api_get_all_admins():
 
     except Exception as e:
         print(f"🚨 API ERROR (Admin Get Admins): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
+@router.post("/api/admin/administradores")
+async def api_create_admin(
+    nombre: str = Form(),
+    apellido: str = Form(),
+    email: str = Form(),
+    password: str = Form(),
+    rol: str = Form()
+):
+    """
+    Crea un nuevo administrador o auditor.
+    Llamada por: admin-administrador-perfil.html
+    """
+    print(f"🔹 API Admin: Creando nuevo administrador: {email} ({rol})")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+
+        # 1. Obtener ID del rol
+        cursor.execute("SELECT id_rol FROM Rol WHERE nombre = %s", (rol,))
+        rol_res = cursor.fetchone()
+        if not rol_res:
+            return JSONResponse({"error": "Rol no válido"}, status_code=400)
+        id_rol = rol_res[0]
+
+        # 2. Hashear password
+        hashed_password = pwd_context.hash(password)
+
+        # 3. Insertar Usuario
+        cursor.execute(
+            """
+            INSERT INTO Usuario (nombre, apellido, email, password_hash, id_rol, fecha_registro, activo)
+            VALUES (%s, %s, %s, %s, %s, %s, true)
+            RETURNING id_usuario
+            """,
+            (nombre, apellido, email, hashed_password, id_rol, datetime.now())
+        )
+        new_id = cursor.fetchone()[0]
+
+        # 4. Insertar Saldo inicial (aunque sea admin, por integridad)
+        cursor.execute(
+            "INSERT INTO Saldo (id_usuario, saldo_actual, ultima_actualizacion) VALUES (%s, 0.00, %s)",
+            (new_id, datetime.now())
+        )
+
+        conn.commit()
+        cursor.close()
+        
+        return JSONResponse({"success": True, "message": "Administrador creado con éxito."})
+
+    except psycopg2.errors.UniqueViolation:
+        if conn: conn.rollback()
+        return JSONResponse({"error": "El correo ya está registrado."}, status_code=409)
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Create Admin): {e}")
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
