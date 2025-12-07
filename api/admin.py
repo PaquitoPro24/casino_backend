@@ -233,19 +233,6 @@ async def api_get_user_profile(id_usuario: int):
         if not user_profile:
             return JSONResponse({"error": "Usuario no encontrado"}, status_code=404)
 
-        # Aseguramos que el saldo sea un float
-        user_profile['saldo_actual'] = float(user_profile['saldo_actual'] or 0.0)
-        return JSONResponse(user_profile)
-
-    except Exception as e:
-        print(f"🚨 API ERROR (Admin Get Profile): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
-    finally:
-        if conn: conn.close()
-@router.put("/api/admin/user-profile/{id_usuario}")
-async def api_update_user_profile(
-    id_usuario: int,
-    nombre: str = Form(),
     apellido: str = Form(),
     email: str = Form(),
     rol: str = Form(),

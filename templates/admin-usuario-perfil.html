@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestionar perfil de Usuario — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/admin-usuario-perfil.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ===== ENCABEZADO ===== -->
     <header class="rc-header">
       <a href="/admin/usuarios" class="rc-back">‹</a>
@@ -18,34 +20,229 @@
 
     <!-- ===== FORMULARIO ===== -->
     <form class="user-form">
-      <input type="text" placeholder="Usuario" required>
-      <input type="text" placeholder="Rol" required>
-      <input type="text" placeholder="Nombre(s)" required>
-      <input type="text" placeholder="Apellido(s)" required>
-      <input type="email" placeholder="Correo" required>
+      <!-- Agregamos IDs para manipular desde JS -->
+      <input type="text" id="username" placeholder="Usuario" readonly style="opacity: 0.7; cursor: not-allowed;">
+      <!-- Mostraremos ID o Email aquí -->
+      <input type="text" id="rol" placeholder="Rol" readonly style="opacity: 0.7; cursor: not-allowed;">
+      <input type="text" id="nombre" placeholder="Nombre(s)" required>
+      <input type="text" id="apellido" placeholder="Apellido(s)" required>
+      <input type="email" id="email" placeholder="Correo" required>
     </form>
 
     <!-- ===== CONFIGURACIÓN DE CUENTA ===== -->
     <section class="account-config">
       <h2>Configuración de Cuenta</h2>
+
+      <!-- Reset Password Module -->
       <div class="password-reset">
-        <p>Restablecer Contraseña</p>
-        <a href="#" class="rc-chevron"></a>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;"
+          id="toggle-pwd-reset">
+          <p style="margin:0;">Restablecer Contraseña</p>
+          <span class="rc-chevron">›</span>
+        </div>
+      </div>
+      <div id="pwd-reset-container" style="display: none; margin-top: 10px;">
+        <input type="password" id="new-password" placeholder="Nueva contraseña"
+          style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #222; color: white;">
+        <button id="btn-reset-pwd"
+          style="margin-top: 8px; background: #ab925c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Actualizar
+          Contraseña</button>
       </div>
 
+      <!-- Status Buttons -->
       <div class="status-buttons">
-        <button class="status-btn active">Activa</button>
-        <button class="status-btn suspended">Suspendida</button>
-        <button class="status-btn blocked">Bloqueada</button>
+        <!-- Usaremos data-status para identificar -->
+        <button type="button" class="status-btn" data-status="active" id="btn-active">Activa</button>
+        <button type="button" class="status-btn" data-status="suspended" id="btn-suspended">Suspendida</button>
+        <button type="button" class="status-btn" data-status="blocked" id="btn-blocked">Bloqueada</button>
       </div>
     </section>
 
     <!-- ===== BOTONES ===== -->
     <div class="action-buttons">
-      <button class="save-btn">Guardar Cambios</button>
-      <button class="delete-btn">Eliminar Cuenta</button>
+      <button class="save-btn" id="btn-save">Guardar Cambios</button>
+      <button class="delete-btn" id="btn-delete">Eliminar Cuenta</button>
     </div>
 
   </div>
+
+  <script>
+    // 1. Obtener ID del URL
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("id");
+
+    // Elementos del DOM
+    const inputUser = document.getElementById("username");
+    const inputRol = document.getElementById("rol");
+    const inputNombre = document.getElementById("nombre");
+    const inputApellido = document.getElementById("apellido");
+    const inputEmail = document.getElementById("email");
+
+    const btnSave = document.getElementById("btn-save");
+    const btnDelete = document.getElementById("btn-delete");
+
+    const togglePwd = document.getElementById("toggle-pwd-reset");
+    const pwdContainer = document.getElementById("pwd-reset-container");
+    const btnResetPwd = document.getElementById("btn-reset-pwd");
+    const inputNewPwd = document.getElementById("new-password");
+
+    const btnActive = document.getElementById("btn-active");
+    const btnSuspended = document.getElementById("btn-suspended"); // No usado en BD actual pero visual
+    const btnBlocked = document.getElementById("btn-blocked");     // Mapea a activo=false
+
+    let currentUserData = null;
+
+    // 2. Cargar Datos
+    async function loadUser() {
+      if (!userId) {
+        alert("ID de usuario no proporcionado.");
+        window.location.href = "/admin/usuarios";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/user-profile/${userId}`);
+        const data = await res.json();
+
+        if (data.error) {
+          alert("Error: " + data.error);
+          return;
+        }
+
+        currentUserData = data;
+
+        // Llenar campos
+        inputUser.value = `ID: ${data.id_usuario}`;
+        inputRol.value = data.rol;
+        inputNombre.value = data.nombre;
+        inputApellido.value = data.apellido;
+        inputEmail.value = data.email;
+
+        // Set status
+        updateStatusUI(data.activo);
+
+      } catch (e) {
+        console.error("Error al cargar perfil:", e);
+      }
+    }
+
+    // UI Status Helper
+    function updateStatusUI(isActive) {
+      // Limpiar clases
+      btnActive.classList.remove("active");
+      btnSuspended.classList.remove("suspended");
+      btnBlocked.classList.remove("blocked");
+
+      // Nota: En la BD solo tenemos 'activo' (bool). 
+      // Si activo=true -> Activa. Si activo=false -> Bloqueada.
+      // 'Suspendida' es visual por ahora, o podríamos usar otro campo si existiera.
+      // Asumiremos: true = Activa, false = Bloqueada.
+
+      if (isActive) {
+        btnActive.classList.add("active");
+      } else {
+        btnBlocked.classList.add("blocked");
+      }
+    }
+
+    // Eventos de botones de estado
+    btnActive.addEventListener("click", () => updateStatusUI(true));
+    btnBlocked.addEventListener("click", () => updateStatusUI(false));
+    btnSuspended.addEventListener("click", () => {
+      alert("El estado 'Suspendida' no está implementado en la BD aún. Se marcará como Bloqueada.");
+      updateStatusUI(false);
+    });
+
+    // 3. Guardar Cambios (PUT)
+    btnSave.addEventListener("click", async () => {
+      const isActive = btnActive.classList.contains("active"); // Si tiene la clase visual, es true.
+
+      const formData = new FormData();
+      formData.append("nombre", inputNombre.value);
+      formData.append("apellido", inputApellido.value);
+      formData.append("email", inputEmail.value);
+      formData.append("rol", inputRol.value); // Rol no editable aquí, pero required por PUT endpoint
+      formData.append("activo", isActive);
+
+      try {
+        const res = await fetch(`/api/admin/user-profile/${userId}`, {
+          method: "PUT",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Cambios guardados correctamente.");
+        } else {
+          alert("Error al guardar: " + (result.error || "Desconocido"));
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Error de red al guardar.");
+      }
+    });
+
+    // 4. Reset Password
+    togglePwd.addEventListener("click", () => {
+      pwdContainer.style.display = pwdContainer.style.display === "none" ? "block" : "none";
+    });
+
+    btnResetPwd.addEventListener("click", async () => {
+      const newPwd = inputNewPwd.value;
+      if (!newPwd || newPwd.length < 4) {
+        alert("La contraseña es muy corta.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("new_password", newPwd);
+
+      try {
+        const res = await fetch(`/api/admin/user-password-reset/${userId}`, {
+          method: "POST",
+          body: formData
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Contraseña restablecida.");
+          inputNewPwd.value = "";
+          pwdContainer.style.display = "none";
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    // 5. Eliminar Cuenta
+    btnDelete.addEventListener("click", async () => {
+      if (!confirm("¿Estás seguro de ELIMINAR permanentemente este usuario? Esta acción no se puede deshacer.")) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/user-profile/${userId}`, {
+          method: "DELETE"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Usuario eliminado.");
+          window.location.href = "/admin/usuarios";
+        } else {
+          alert("Error al eliminar: " + result.error);
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Error de red al eliminar.");
+      }
+    });
+
+    // Init
+    loadUser();
+  </script>
 </body>
+
 </html>
