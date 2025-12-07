@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,8 @@
     }
 
     body {
-      font-family: 'Georgia', 'Times New Roman', serif;
-      background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      background-color: #2D2D2D;
       color: #FFFFFF;
       display: flex;
       flex-direction: column;
@@ -25,27 +26,14 @@
       position: relative;
     }
 
-    /* Efecto de brillo sutil en el fondo */
-    body::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(216, 187, 118, 0.03) 0%, transparent 70%);
-      animation: rotate 20s linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
+    /* Contenedor - Especificaciones exactas de Figma Dev Mode */
     .loading-container {
-      text-align: center;
-      z-index: 1;
+      display: flex;
+      width: 360px;
+      padding: 71px 37px 270px 38px;
+      flex-direction: column;
+      align-items: center;
+      gap: 154px;
       animation: fadeIn 0.6s ease-in;
     }
 
@@ -54,82 +42,72 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
 
-    /* Logo con efecto dorado */
+    /* Logo - Especificaciones exactas de Figma: 285x459px */
     .logo {
-      width: clamp(180px, 40vw, 280px);
+      width: 285px;
       height: auto;
-      margin: 0 auto 40px;
+      object-fit: contain;
       display: block;
-      filter: drop-shadow(0 0 20px rgba(216, 187, 118, 0.3));
-      animation: pulse 2s ease-in-out infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% {
-        filter: drop-shadow(0 0 20px rgba(216, 187, 118, 0.3));
-        transform: scale(1);
-      }
-      50% {
-        filter: drop-shadow(0 0 30px rgba(216, 187, 118, 0.5));
-        transform: scale(1.02);
-      }
-    }
-
-    /* Texto "Cargando" */
+    /* Texto "Cargando" - Especificaciones exactas de Figma */
     .loading-text {
-      font-family: 'Georgia', 'Times New Roman', serif;
-      font-size: clamp(20px, 5vw, 28px);
-      font-weight: 400;
+      font-family: 'Timeless', 'Georgia', 'Times New Roman', serif;
+      font-size: 32px;
+      font-weight: 700;
+      font-style: normal;
+      line-height: normal;
       color: #FFFFFF;
-      letter-spacing: 2px;
-      margin-bottom: 30px;
-      animation: fadeInOut 1.5s ease-in-out infinite;
+      text-align: center;
     }
 
-    @keyframes fadeInOut {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-
-    /* Spinner de carga */
-    .spinner {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto;
-      border: 3px solid rgba(216, 187, 118, 0.1);
-      border-top: 3px solid #d8bb76;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-      .logo {
-        margin-bottom: 30px;
+    /* Responsive para pantallas más pequeñas que 360px */
+    @media (max-width: 360px) {
+      .loading-container {
+        width: 100%;
+        padding: 60px 20px 200px 20px;
+        gap: 120px;
       }
-      
+
+      .logo {
+        width: 240px;
+      }
+
       .loading-text {
-        margin-bottom: 20px;
+        font-size: 28px;
+      }
+    }
+
+    /* Responsive para pantallas más grandes */
+    @media (min-width: 768px) {
+      .loading-container {
+        width: 400px;
+        padding: 80px 40px 280px 40px;
+        gap: 160px;
+      }
+
+      .logo {
+        width: 320px;
+      }
+
+      .loading-text {
+        font-size: 36px;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="loading-container">
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
     <div class="loading-text">Cargando</div>
-    <div class="spinner"></div>
   </div>
 
   <script>
@@ -141,4 +119,5 @@
     });
   </script>
 </body>
+
 </html>
