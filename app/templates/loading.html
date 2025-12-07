@@ -4,26 +4,140 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cargando - Royal Crumbs</title>
-  <!-- CORRECCIÓN: Usar url_for para que FastAPI/Jinja2 construyan la ruta correctamente -->
-  <link rel="stylesheet" href="{{ url_for('static', path='css/auth.css') }}">
+  <link rel="manifest" href="/manifest.json?v=2">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Efecto de brillo sutil en el fondo */
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(216, 187, 118, 0.03) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-container {
+      text-align: center;
+      z-index: 1;
+      animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Logo con efecto dorado */
+    .logo {
+      width: clamp(180px, 40vw, 280px);
+      height: auto;
+      margin: 0 auto 40px;
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(216, 187, 118, 0.3));
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(216, 187, 118, 0.3));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 30px rgba(216, 187, 118, 0.5));
+        transform: scale(1.02);
+      }
+    }
+
+    /* Texto "Cargando" */
+    .loading-text {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 400;
+      color: #FFFFFF;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      animation: fadeInOut 1.5s ease-in-out infinite;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Spinner de carga */
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+      border: 3px solid rgba(216, 187, 118, 0.1);
+      border-top: 3px solid #d8bb76;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .logo {
+        margin-bottom: 30px;
+      }
+      
+      .loading-text {
+        margin-bottom: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <!-- CORRECCIÓN: Usar url_for aquí también por consistencia -->
+  <div class="loading-container">
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-    <h2>Cargando</h2>
+    <div class="loading-text">Cargando</div>
+    <div class="spinner"></div>
   </div>
 
-  <!--
-    AÑADIDO:
-    Este script soluciona el problema de quedarse atascado.
-    Espera 2 segundos y luego redirige al usuario a la página de login.
-  -->
   <script>
+    // Redirigir al login después de 2.5 segundos
     document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         window.location.href = "/login";
-      }, 2000); // 2000 milisegundos = 2 segundos
+      }, 2500);
     });
   </script>
 </body>
