@@ -225,6 +225,11 @@ async def play_game(request: Request, game_id: str):
     # 3. Construir URL con el ID y la URL del Backend
     # Pasamos 'api_url' para que el juego sepa dónde consultar el saldo (Cross-Origin)
     base_url = str(request.base_url).rstrip('/')
+    # FORZAR HTTPS: Render termina SSL en el load balancer, así que base_url puede ser http.
+    # Los juegos están en https, así que necesitamos que la API también se llame por https para evitar Mixed Content.
+    if base_url.startswith("http://"):
+        base_url = base_url.replace("http://", "https://", 1)
+        
     final_url = f"{game['url']}?user_id={user_id}&api_url={base_url}"
     
     return render("play_game.html", request, {"game_url": final_url, "game_name": game["name"]})
