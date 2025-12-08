@@ -9,141 +9,85 @@
 	<meta name="orientation" content="landscape">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
-		/* Prevent text selection */
+		/* Prevent text selection and dragging */
 		* {
 			-webkit-user-select: none;
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
 			-webkit-touch-callout: none;
-		}
-
-		/* Prevent dragging */
-		* {
 			-webkit-user-drag: none;
-			-khtml-user-drag: none;
-			-moz-user-drag: none;
-			-o-user-drag: none;
 		}
 
-		/* Base body styles */
-		html,
-		body {
-			margin: 0 !important;
-			padding: 0 !important;
-			width: 100% !important;
-			height: 100% !important;
-			box-sizing: border-box !important;
-			overflow: hidden !important;
-		}
-
-		body {
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-		}
-
-		/* Container layout */
-		#container {
-			display: flex !important;
-			flex-direction: row !important;
-			gap: 0px !important;
-			align-items: flex-start !important;
-			justify-content: center !important;
-			flex-wrap: nowrap !important;
-			transform-origin: center center !important;
-		}
-
-		/* Wheel positioning */
-		.wheel {
-			flex-shrink: 0 !important;
-			position: relative !important;
-			left: 75px !important;
-		}
-
-		/* Betting board */
-		#betting_board {
-			flex-shrink: 0 !important;
-		}
-
-		/* Portrait mode - ROTATE to simulate landscape */
+		/* Portrait mode - Force rotation to landscape */
 		@media screen and (orientation: portrait) {
 			html {
+				position: fixed !important;
 				width: 100vh !important;
 				height: 100vw !important;
-				transform: rotate(90deg) !important;
-				transform-origin: top left !important;
-				position: absolute !important;
-				top: 0 !important;
-				left: 100% !important;
+				transform: rotate(90deg) translateX(0) !important;
+				transform-origin: bottom left !important;
 				overflow: hidden !important;
 			}
 
 			body {
 				width: 100vh !important;
 				height: 100vw !important;
+				margin: 0 !important;
+				padding: 0 !important;
+				display: flex !important;
 				align-items: center !important;
 				justify-content: center !important;
+				overflow: hidden !important;
 			}
 
 			#container {
-				flex-direction: row !important;
-				transform: scale(0.38) !important;
+				transform: scale(0.42) !important;
 				transform-origin: center center !important;
-				gap: 50px !important;
-			}
-
-			.wheel {
-				left: 75px !important;
-				margin-right: 30px !important;
-			}
-
-			#betting_board {
-				margin-left: 30px !important;
 			}
 		}
 
-		/* Landscape mode - normal display */
+		/* Landscape mode - Scale to fit */
 		@media screen and (orientation: landscape) {
+
+			html,
 			body {
+				margin: 0 !important;
+				padding: 0 !important;
+				width: 100% !important;
+				height: 100% !important;
+				overflow: hidden !important;
+			}
+
+			body {
+				display: flex !important;
 				align-items: center !important;
 				justify-content: center !important;
 			}
 
 			#container {
-				flex-direction: row !important;
-				transform: scale(0.45) !important;
+				transform: scale(0.48) !important;
 				transform-origin: center center !important;
-				gap: 50px !important;
-			}
-
-			.wheel {
-				left: 75px !important;
-				margin-right: 30px !important;
-			}
-
-			#betting_board {
-				margin-left: 30px !important;
 			}
 		}
 
-		/* Larger mobile landscape (tablets) */
-		@media screen and (orientation: landscape) and (min-height: 400px) {
+		/* Tablets landscape */
+		@media screen and (orientation: landscape) and (min-height: 500px) {
 			#container {
-				transform: scale(0.55) !important;
+				transform: scale(0.58) !important;
 			}
 		}
 
-		/* Desktop/larger screens */
-		@media screen and (min-width: 1024px) {
+		/* Desktop screens */
+		@media screen and (min-width: 1024px) and (min-height: 600px) {
 			#container {
-				transform: scale(0.7) !important;
+				transform: scale(0.75) !important;
 			}
 		}
 
 		@media screen and (min-width: 1400px) {
 			#container {
-				transform: scale(0.85) !important;
+				transform: scale(0.90) !important;
 			}
 		}
 	</style>
