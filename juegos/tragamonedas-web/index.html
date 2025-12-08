@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>🎰 Royal Jackpot Slots</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+  <div class="app">
+    <!-- Máquina de Slots -->
+    <div class="slot-machine">
+
+      <!-- Decoración superior -->
+      <div class="machine-top">
+        <div class="lights">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
+        <h1 class="title">💎 ROYAL JACKPOT 💎</h1>
+      </div>
+
+      <!-- Panel principal -->
+      <div class="machine-body">
+
+        <!-- Saldo y estado -->
+        <div class="info-panel">
+          <div class="balance" id="balance">$0.00</div>
+          <div class="status" id="status">¡Buena suerte!</div>
+        </div>
+
+        <!-- Rodillos -->
+        <div class="reels-container">
+          <div class="reels-frame">
+            <div class="grid" id="grid"></div>
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+          <div class="bet-control">
+            <label>APUESTA</label>
+            <input type="number" id="bet" value="10" min="1" max="100">
+          </div>
+
+          <button class="btn-auto" id="autoBtn">
+            <span>AUTO</span>
+            <span class="auto-status">OFF</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Palanca lateral -->
+      <div class="lever-container" id="leverContainer">
+        <div class="lever-arm" id="leverArm">
+          <div class="lever-handle"></div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <script>
+    // Protección contra selección y clic derecho
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+
+    // Deshabilitar teclas de inspección y zoom
+    document.addEventListener('keydown', e => {
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+Shift+I / Cmd+Option+I (Inspeccionar)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+Shift+J / Cmd+Option+J (Consola)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'J') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+Shift+C / Cmd+Option+C (Selector de elementos)
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+U / Cmd+U (Ver código fuente)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+Plus / Ctrl+Minus (Zoom in/out)
+      if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '_')) {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+0 (Reset zoom)
+      if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Prevenir zoom con rueda del mouse + Ctrl
+    document.addEventListener('wheel', e => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // Prevenir zoom táctil (pinch)
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
+  <script src="/static/sounds.js"></script>
+  <script src="/static/auth_shared.js"></script>
+  <script src="/static/app.js"></script>
+  <script src="/static/db-integration.js"></script>
+</body>
+
+</html>

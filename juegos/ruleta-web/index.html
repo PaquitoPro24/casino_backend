@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Javascript Roulette</title>
+	<meta name="title" content="Javascript Roulette">
+	<meta name="description" content="A fully functioning roulette game made using Javascript and CSS">
+	<meta name="author" content="ozboware">
+	<meta property="og:url" content="/">
+	<meta property="og:title" content="Javascript Roulette">
+	<meta property="og:description" content="A fully functioning roulette game made using Javascript and CSS">
+	<link href="/static/style.css" rel="stylesheet" type="text/css">
+	<style>
+		/* Prevent text selection */
+		* {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			-webkit-touch-callout: none;
+		}
+
+		/* Prevent dragging */
+		* {
+			-webkit-user-drag: none;
+			-khtml-user-drag: none;
+			-moz-user-drag: none;
+			-o-user-drag: none;
+		}
+	</style>
+</head>
+
+<body>
+
+	<script>
+		// Disable right-click context menu
+		document.addEventListener('contextmenu', function (e) {
+			return false;
+		});
+
+		// Disable text selection
+		document.onselectstart = function () {
+			return false;
+		};
+	</script>
+	<script src="/static/app.js"></script>
+	<script src="/static/db-integration.js"></script>
+</body>

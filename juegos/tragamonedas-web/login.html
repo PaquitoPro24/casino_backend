@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🎰 Login - Royal Jackpot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Bebas Neue', 'Righteous', cursive;
+      background: #202020 url('/static/pattern-bg.png');
+      background-size: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .login-container {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border: 3px solid #ab925c;
+      border-radius: 20px;
+      padding: 40px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(171, 146, 92, 0.3),
+                  inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      color: #ab925c;
+      text-shadow: 0 0 10px rgba(171, 146, 92, 0.5);
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: #ab925c;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid #8b7a4c;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: Arial, sans-serif;
+      transition: all 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #ab925c;
+      box-shadow: 0 0 10px rgba(171, 146, 92, 0.3);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(145deg, #ab925c, #8b7a4c);
+      border: none;
+      border-radius: 10px;
+      color: #202020;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-login:hover {
+      background: linear-gradient(145deg, #c9a865, #ab925c);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(171, 146, 92, 0.4);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid #ff4444;
+      color: #ff6666;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: none;
+      text-align: center;
+    }
+
+    .info-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .info-text a {
+      color: #ab925c;
+      text-decoration: none;
+    }
+
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>💎 ROYAL JACKPOT 💎</h1>
+    
+    <div class="error-message" id="errorMessage"></div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      
+      <button type="submit" class="btn-login">Iniciar Sesión</button>
+    </form>
+    
+    <div class="info-text">
+      ¿No tienes cuenta? Regístrate desde la App
+    </div>
+  </div>
+
+  <script>
+    const API_URL = window.location.origin;
+    const form = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const loginContainer = document.querySelector('.login-container');
+
+    // Si ya tiene token, redirigir al juego
+    if (localStorage.getItem('token')) {
+      window.location.href = '/';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      // Ocultar error anterior
+      errorMessage.style.display = 'none';
+      loginContainer.classList.add('loading');
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Guardar token y datos del usuario
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          // Redirigir al juego
+          window.location.href = '/';
+        } else {
+          const error = await response.json();
+          errorMessage.textContent = error.detail || 'Error al iniciar sesión';
+          errorMessage.style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = 'Error de conexión. Intenta de nuevo.';
+        errorMessage.style.display = 'block';
+      } finally {
+        loginContainer.classList.remove('loading');
+      }
+    });
+  </script>
+</body>
+</html>
