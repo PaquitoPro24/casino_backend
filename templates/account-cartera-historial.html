@@ -17,11 +17,6 @@
       <h1 class="rc-screen-title">Historial</h1>
     </div>
 
-    <!-- RESUMEN DEL USUARIO -->
-    <section class="user-summary" style="margin: 10px 0; text-align:center;">
-      <p id="userInfo" style="color:#d8bb76; font-weight:600;">Cargando usuario...</p>
-    </section>
-
     <!-- CONTENIDO PRINCIPAL -->
     <section class="deposit-section">
       <h2 class="rc-subtitle">Historial Transacciones y Juegos</h2>
@@ -77,31 +72,6 @@
       alert("No has iniciado sesión.");
       window.location.href = "/login";
     }
-
-    // ============================
-    // 👤 Cargar resumen del usuario
-    // ============================
-    async function cargarUsuario() {
-      try {
-        const res = await fetch(`/api/user/${userId}`);
-        const data = await res.json();
-
-        if (data.error) {
-          document.getElementById("userInfo").textContent = "Usuario no encontrado.";
-          return;
-        }
-
-        document.getElementById("userInfo").innerHTML = `
-          <span>${data.nombre || "Usuario"} • Rol: ${userRol}</span><br>
-          <small>Saldo actual: <strong>$${data.saldo?.toFixed(2) || "0.00"}</strong></small>
-        `;
-      } catch (error) {
-        console.error(error);
-        document.getElementById("userInfo").textContent = "Error al cargar información.";
-      }
-    }
-
-    cargarUsuario();
   </script>
 
 </body>
