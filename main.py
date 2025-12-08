@@ -80,22 +80,14 @@ from api.game_endpoints import router as game_router # <-- Nuevo Router de Juego
 from api.blackjack_endpoints import router as blackjack_router # <-- Router de Blackjack
 from api.auditor import router as auditor_router # <-- Router de Auditor
 
+
 from app.middleware.auth_agente import verificar_rol_agente_redirect
 
 # =========================
-#  API DE AUDITOR (¡NUEVO!)
+#  RUTAS DE LÓGICA / API
 # =========================
-@router_auditor_api.post("/guardar-auditoria", status_code=201)
-def guardar_auditoria(audit_data: AuditoriaCreate):
-    """
-    Endpoint para guardar el resultado de una auditoría en la base de datos.
-    """
-    conn = None
-    try:
-        conn = db_connect()
-        cur = conn.cursor()
-        
-        # La columna 'datos_auditoria' es JSONB, por lo que el objeto se pasa directamente
+# Montamos todos los routers de API
+app.include_router(auth_router)
 app.include_router(agente_router)
 app.include_router(support_router)
 app.include_router(admin_router)
@@ -496,3 +488,26 @@ async def agente_chat_activo(request: Request, id_chat: int):
     if redirect:
         return redirect
     return render("agente-chat-activo.html", request)
+
+# =========================
+#  AUDITOR (PANEL + REALIZAR + HISTORIAL)
+# =========================
+@app.get("/auditor", response_class=HTMLResponse)
+async def auditor_panel(request: Request):
+    """Panel principal del auditor"""
+    return render("auditor.html", request)
+
+@app.get("/auditor/realizar", response_class=HTMLResponse)
+async def auditor_realizar(request: Request):
+    """Formulario para realizar nueva auditoría"""
+    return render("auditor-realizar.html", request)
+
+@app.get("/auditor/historial", response_class=HTMLResponse)
+async def auditor_historial_page(request: Request):
+    """Página de historial de auditorías"""
+    return render("auditor-historial.html", request)
+
+@app.get("/auditor/ver_pdf/{id_auditoria}", response_class=HTMLResponse)
+async def auditor_ver_pdf(request: Request, id_auditoria: int):
+    """Visor de PDF de auditoría"""
+    return render("auditor-ver-pdf.html", request, {"id_auditoria": id_auditoria})
