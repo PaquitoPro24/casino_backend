@@ -126,6 +126,42 @@
             background-color: #4a4a4a;
         }
 
+        /* Estilos para sección de comentarios */
+        .comment-section {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: clamp(14px, 3vw, 18px);
+            margin: clamp(16px, 3vw, 20px) 0;
+            border-left: 4px solid #ab925c;
+        }
+
+        .comment-label {
+            font-size: clamp(13px, 2.8vw, 15px);
+            color: #ab925c;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-comment {
+            width: 100%;
+            background-color: #2a2a2a;
+            border: 1px solid #ab925c;
+            border-radius: 6px;
+            padding: 12px;
+            color: #fff;
+            font-size: clamp(12px, 2.5vw, 14px);
+            resize: vertical;
+            min-height: 80px;
+            font-family: arial;
+        }
+
+        .section-comment:focus {
+            outline: none;
+            border-color: #c9a86a;
+            box-shadow: 0 0 8px rgba(171, 146, 92, 0.3);
+        }
+
         @media (max-width: 640px) {
             .options-container {
                 flex-direction: column;
@@ -385,9 +421,11 @@
         var cont = document.getElementById("contenido");
         var index = 0;
         var questions = []; // Para guardar las preguntas y respuestas
+        var currentSection = "";
 
         datosAuditoria.forEach(item => {
             if (item.type === "titulo") {
+                currentSection = item.texto;
                 cont.innerHTML += `<h2 class="section-title">${item.texto}</h2>`;
             }
 
@@ -400,7 +438,8 @@
                     questions.push({
                         id: questionId,
                         seccion: item.titulo,
-                        pregunta: fila
+                        pregunta: fila,
+                        seccionPrincipal: currentSection
                     });
 
                     cont.innerHTML += `
@@ -411,162 +450,9 @@
             </div>
           `;
                 });
-            }
-        });
 
-        // Función para generar PDF
-        function generarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Header del PDF
-            doc.setFontSize(18);
-            doc.setTextColor(171, 146, 92); // Dorado
-            doc.text("Auditoría ISO 14001", 105, 20, { align: "center" });
-
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text("Royal Crumbs Casino", 105, 28, { align: "center" });
-            doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 105, 34, { align: "center" });
-
-            let y = 45;
-            let cumple = 0, noCumple = 0, parcial = 0, noAplica = 0, sinResponder = 0;
-
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-
-            questions.forEach((q, i) => {
-                // Verificar si necesitamos una nueva página
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-
-                // Obtener respuesta seleccionada
-                const radios = document.getElementsByName(q.id);
-                let respuesta = "Sin responder";
-                radios.forEach(radio => {
-                    if (radio.checked) {
-                        respuesta = radio.value;
-                    }
-                });
-
-                // Contar respuestas
-                if (respuesta === "Cumple") cumple++;
-                else if (respuesta === "No Cumple") noCumple++;
-                else if (respuesta === "Cumple Parcialmente") parcial++;
-                else if (respuesta === "No Aplica") noAplica++;
-                else sinResponder++;
-
-                // Pregunta
-                doc.setFontSize(9);
-                doc.setFont(undefined, 'bold');
-                doc.text(`${i + 1}. ${q.seccion}`, 15, y);
-                y += 5;
-
-                doc.setFont(undefined, 'normal');
-                const splitText = doc.splitTextToSize(q.pregunta, 180);
-                doc.text(splitText, 15, y);
-                y += (splitText.length * 5);
-
-                // Respuesta
-                doc.setFont(undefined, 'bold');
-                if (respuesta === "Cumple") doc.setTextColor(0, 150, 0);
-                else if (respuesta === "No Cumple") doc.setTextColor(200, 0, 0);
-                else if (respuesta === "Cumple Parcialmente") doc.setTextColor(200, 150, 0);
-                else doc.setTextColor(100);
-
-                doc.text(`Respuesta: ${respuesta}`, 15, y);
-                doc.setTextColor(0);
-                y += 8;
-            });
-
-            // Agregar página de resumen
-            doc.addPage();
-            doc.setFontSize(16);
-            doc.setTextColor(171, 146, 92);
-            doc.text("Resumen de Resultados", 105, 20, { align: "center" });
-
-            y = 40;
-            doc.setFontSize(12);
-            doc.setTextColor(0);
-
-            doc.setTextColor(0, 150, 0);
-            doc.text(`✓ Cumple: ${cumple}`, 40, y);
-            y += 10;
-
-            doc.setTextColor(200, 0, 0);
-            doc.text(`✗ No Cumple: ${noCumple}`, 40, y);
-            y += 10;
-
-            doc.setTextColor(200, 150, 0);
-            doc.text(`⚠ Cumple Parcialmente: ${parcial}`, 40, y);
-            y += 10;
-
-            doc.setTextColor(100);
-            doc.text(`− No Aplica: ${noAplica}`, 40, y);
-            y += 10;
-
-            doc.text(`? Sin Responder: ${sinResponder}`, 40, y);
-            y += 15;
-
-            // Porcentaje de cumplimiento
-            const totalRespondidas = cumple + noCumple + parcial;
-            const porcentajeCumplimiento = totalRespondidas > 0 ?
-                Math.round(((cumple + (parcial * 0.5)) / totalRespondidas) * 100) : 0;
-
-            doc.setFontSize(14);
-            doc.setTextColor(171, 146, 92);
-            doc.text(`Cumplimiento Total: ${porcentajeCumplimiento}%`, 40, y);
-
-                        // Inicio: guardar auditoría
-            const guardarAuditoria = async () => {
-                const idAuditor = localStorage.getItem("id_usuario");
-
-                if (!idAuditor) {
-                    console.error("No se encontró el ID del auditor.");
-                    return;
-                }
-
-                const auditData = {
-                    id_usuario: parseInt(idAuditor),
-                    resumen: `Auditoría ISO 14001 - Cumplimiento: ${porcentajeCumplimiento}%`,
-                    datos_auditoria: {
-                        cumple: cumple,
-                        no_cumple: noCumple,
-                        parcial: parcial,
-                        no_aplica: noAplica,
-                        porcentaje_cumplimiento: porcentajeCumplimiento
-                    }
-                };
-
-                try {
-                    // Este es el endpoint que debes crear en tu backend (FastAPI)
-                    await fetch('/api/auditor/guardar-auditoria', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(auditData)
-                    });
-                } catch (error) {
-                    console.error("Error al guardar la auditoría:", error);
-                    // Opcional: podrías notificar al usuario que el guardado falló
-                }
-            };
-
-            guardarAuditoria();
-            // --- FIN: GUARDAR AUDITORÍA EN EL BACKEND ---
-
-            // Guardar PDF
-            const fecha = new Date().toISOString().split('T')[0];
-            doc.save(`Auditoria_ISO14001_${fecha}.pdf`);
-
-            alert("✅ PDF generado y auditoría guardada exitosamente.");
-        }
-
-        // Función para limpiar formulario
-        function resetForm() {
-            if (confirm("¿Estás seguro de que deseas limpiar todas las respuestas?")) {
-                document.getElementById("audit-form").reset();
+                // Agregar sección de comentarios después de cada subsección
+                cont.innerHTML += `
                 alert("✅ Formulario limpiado");
             }
         }
