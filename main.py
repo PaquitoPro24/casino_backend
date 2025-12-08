@@ -42,8 +42,11 @@ async def assetlinks():
     return FileResponse("static/assetlinks.json", media_type="application/json")
 
 # Helper para ahorrar líneas
-def render(tpl: str, request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(tpl, {"request": request})
+def render(tpl: str, request: Request, context: dict = None) -> HTMLResponse:
+    ctx = {"request": request}
+    if context:
+        ctx.update(context)
+    return templates.TemplateResponse(tpl, ctx)
 
 # =========================
 #  RUTAS DE LÓGICA / API
@@ -189,6 +192,19 @@ async def home_page(request: Request):
 @app.get("/games", response_class=HTMLResponse)
 async def games_page(request: Request):
     return render("games.html", request)
+
+@app.get("/play/{game_id}", response_class=HTMLResponse)
+async def play_game(request: Request, game_id: str):
+    games_map = {
+        "tragamonedas": {"url": "https://tragamonedas-web.onrender.com", "name": "Tragamonedas"},
+        "ruleta": {"url": "https://ruleta-web.onrender.com", "name": "Ruleta"},
+        "blackjack": {"url": "https://blackjack-web-z4fm.onrender.com", "name": "Blackjack"},
+    }
+    game = games_map.get(game_id)
+    if not game:
+        return RedirectResponse(url="/games")
+    
+    return render("play_game.html", request, {"game_url": game["url"], "game_name": game["name"]})
 
 # =========================
 #  SOPORTE (MENÚ + SUBSECCIONES)
