@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Ruleta Royal Crumbs</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="screen-orientation" content="portrait">
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<style>
+		/* Prevent text selection */
+		* {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			-webkit-touch-callout: none;
+		}
+
+		/* Prevent dragging */
+		* {
+			-webkit-user-drag: none;
+			-khtml-user-drag: none;
+			-moz-user-drag: none;
+			-o-user-drag: none;
+		}
+
+		/* Force portrait orientation */
+		@media screen and (orientation: landscape) {
+			body::before {
+				content: "Por favor, gira tu dispositivo a modo vertical";
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: #000;
+				color: #fff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 99999;
+				font-size: 24px;
+				text-align: center;
+				padding: 20px;
+			}
+		}
+
+		/* Back button */
+		.back-button {
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			background: rgba(0, 0, 0, 0.7);
+			color: white;
+			border: 2px solid #ffd700;
+			padding: 10px 20px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: bold;
+			z-index: 1000;
+			text-decoration: none;
+			display: inline-block;
+		}
+
+		.back-button:hover {
+			background: rgba(255, 215, 0, 0.2);
+		}
+	</style>
+</head>
+
+<body>
+	<a href="/games" class="back-button">← Menú</a>
+
+	<script>
+		// Disable right-click context menu
+		document.addEventListener('contextmenu', function (e) {
+			e.preventDefault();
+			return false;
+		});
+
+		// Disable text selection
+		document.onselectstart = function () {
+			return false;
+		};
+	</script>
+	<script src="app.js"></script>
+	<script src="db-integration.js"></script>
+</body>

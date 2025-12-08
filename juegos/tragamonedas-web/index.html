@@ -5,13 +5,44 @@
   <meta charset="UTF-8">
   <title>🎰 Royal Jackpot Slots</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="screen-orientation" content="landscape">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Back button */
+    .back-button {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: 2px solid #ffd700;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      z-index: 1000;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    /* Hide title */
+    .title {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
+  <a href="/games" class="back-button">← Menú</a>
 
   <div class="app">
     <!-- Máquina de Slots -->
