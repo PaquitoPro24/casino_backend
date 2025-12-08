@@ -77,6 +77,7 @@ from api.user import router as user_router_api
 from api.wallet import router as wallet_router
 from api.bonos import router as bonos_router
 from api.game_endpoints import router as game_router # <-- Nuevo Router de Juegos
+from api.blackjack_endpoints import router as blackjack_router # <-- Router de Blackjack
 
 # --- NUEVOS MODELOS Y ROUTER PARA AUDITOR ---
 class AuditoriaCreate(BaseModel):
@@ -157,6 +158,7 @@ app.include_router(user_router_api)
 app.include_router(wallet_router)
 app.include_router(bonos_router)
 app.include_router(game_router)
+app.include_router(blackjack_router)
 app.include_router(router_auditor_api)
 
 # =========================

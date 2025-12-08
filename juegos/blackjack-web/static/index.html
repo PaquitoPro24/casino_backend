@@ -1,0 +1,73 @@
+<!-- static/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Royal Blackjack - Casino Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Experiencia premium de blackjack con estilo Royal Crumbs">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/security.css">
+</head>
+
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;" oncopy="return false;"
+    oncut="return false;" onpaste="return false;">
+    <div class="game-root">
+
+        <div class="table">
+            <div class="table-text">
+                <div>BLACKJACK ROYAL</div>
+            </div>
+
+            <div class="hand dealer-hand">
+                <div class="hand-label">DEALER</div>
+                <div class="cards" id="dealer-cards"></div>
+                <div class="hand-value" id="dealer-value"></div>
+            </div>
+        </div>
+
+        <div class="hand player-hand">
+            <div class="hand-label">JUGADOR</div>
+            <div class="cards" id="player-cards"></div>
+            <div class="hand-value" id="player-value"></div>
+        </div>
+
+        <div class="side-buttons">
+            <button id="btn-double" class="btn side">DOBLAR</button>
+            <button id="btn-hit" class="btn side">PEDIR</button>
+            <button id="btn-stand" class="btn side">MANTENERSE</button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="center-area">
+            <div class="bet-circle">
+                <div>APUESTA</div>
+                <div id="bet-amount">$0</div>
+            </div>
+
+            <div class="chips-row">
+                <button class="chip chip-5" data-amount="5">5</button>
+                <button class="chip chip-25" data-amount="25">25</button>
+                <button class="chip chip-100" data-amount="100">100</button>
+                <button class="chip chip-500" data-amount="500">500</button>
+            </div>
+
+            <button id="clear-bet" class="btn small">BORRAR APUESTA</button>
+        </div>
+
+        <div class="bottom-bar">
+            <button id="btn-main" class="btn main">REPARTIR</button>
+            <div class="bank-display">
+                <span id="bank-amount">$0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script src="/static/db-integration.js"></script>
+</body>
+
+</html>
