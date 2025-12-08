@@ -1,8 +1,5 @@
-/* --- ESCAL ADO GLOBAL PARA REDUCIR TAMA�O --- */
-body {
-	transform: scale(0.70);
-	transform-origin: top center;
-}
+/* --- ESCAL ADO GLOBAL PARA REDUCIR TAMAÑO --- */
+/* El escalado ahora se controla desde index.html con transform-origin: center center */
 
 /* --- ESTILOS GENERALES --- */
 html,
