@@ -149,10 +149,15 @@ def obtener_historial_auditorias():
 #  RUTAS DE LÓGICA / API
 # =========================
 # Montamos todos los routers de API
-@app.get("/api/user/{user_id}")
-async def get_user_data(user_id: int):
-    # Este endpoint está comentado porque ahora se maneja por user_router_api
-    pass
+app.include_router(auth_router)
+app.include_router(agente_router)
+app.include_router(support_router)
+app.include_router(admin_router)
+app.include_router(user_router_api)
+app.include_router(wallet_router)
+app.include_router(bonos_router)
+app.include_router(game_router)
+app.include_router(router_auditor_api)
 
 # =========================
 #  PÚBLICO / AUTH
