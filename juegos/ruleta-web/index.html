@@ -9,135 +9,186 @@
 	<meta name="orientation" content="landscape">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
-		/* =====================================================================
-		   DOCUMENTACIÓN DE ESTILOS - VALORES QUE AFECTAN LA POSICIÓN
-		   =====================================================================
+		/* =======================================================================
+		   DOCUMENTACIÓN LÍNEA POR LÍNEA - ESTILOS DE RULETA MÓVIL
+		   =======================================================================
 		   
-		   PROBLEMA: La ruleta aparece muy abajo en la pantalla
+		   🎯 RESUMEN RÁPIDO - VALORES PARA AJUSTAR POSICIÓN:
 		   
-		   VALORES CLAVE QUE AFECTAN LA POSICIÓN VERTICAL:
+		   Para subir la ruleta → Aumentar translateY (más negativo): -350px → -500px
+		   Para bajar la ruleta → Disminuir translateY (menos negativo): -350px → -200px
+		   Para agrandar → Aumentar scale: 0.42 → 0.50
+		   Para achicar → Disminuir scale: 0.42 → 0.35
 		   
-		   1. En style.css línea 28-29:
-		      - #container { min-height: 470px; padding: 20px; }
-		      - Esto añade altura mínima y padding que empuja el contenido
-		   
-		   2. En este archivo (index.html):
-		      - translateY(-350px) → Mueve el contenido hacia ARRIBA (negativo = arriba)
-		        Aumentar este valor moverá la ruleta MÁS ARRIBA
-		        Ej: translateY(-500px) la moverá más arriba
-		      
-		      - scale(0.42) → Reduce el tamaño al 42%
-		        Valores mayores = más grande, menores = más pequeño
-		      
-		      - transform-origin: center center → Punto desde donde se escala
-		        Opciones: top center, bottom center, center center
-		   
-		   ===================================================================== */
+		   ======================================================================= */
 
-		/* Prevent text selection and dragging */
+		/* -----------------------------------------------------------------------
+		   SELECTOR UNIVERSAL (*) - Aplica a TODOS los elementos de la página
+		   ----------------------------------------------------------------------- */
 		* {
 			-webkit-user-select: none;
+			/* Safari/Chrome: Desactiva selección de texto */
 			-moz-user-select: none;
+			/* Firefox: Desactiva selección de texto */
 			-ms-user-select: none;
+			/* Internet Explorer: Desactiva selección de texto */
 			user-select: none;
+			/* Estándar: Desactiva selección de texto */
 			-webkit-touch-callout: none;
+			/* iOS: Desactiva menú contextual al mantener presionado */
 			-webkit-user-drag: none;
+			/* Webkit: Desactiva arrastrar elementos */
 		}
 
-		/* =====================================================================
-		   MODO PORTRAIT (Celular vertical) - Se rota 90° para simular landscape
-		   ===================================================================== */
+		/* =======================================================================
+		   📱 MODO PORTRAIT (Celular en vertical)
+		   
+		   Cuando el celular está VERTICAL, estos estilos:
+		   1. Rotan toda la página 90 grados
+		   2. Simulan que está en modo landscape (horizontal)
+		   3. Escalan y posicionan la ruleta
+		   ======================================================================= */
 		@media screen and (orientation: portrait) {
+
+			/* --- Estilos para el elemento HTML (raíz del documento) --- */
 			html {
 				position: fixed !important;
+				/* Fija el elemento para que no se mueva con scroll */
 				width: 100vh !important;
-				/* Ancho = altura de la pantalla */
+				/* Ancho = altura del viewport (intercambiado por la rotación) */
 				height: 100vw !important;
-				/* Alto = ancho de la pantalla */
-				/* ROTACIÓN: Gira la página 90 grados */
+				/* Alto = ancho del viewport (intercambiado por la rotación) */
+
+				/* 🔄 ROTACIÓN: Gira la página 90 grados hacia la derecha */
 				transform: rotate(90deg) translateX(0) !important;
+
+				/* Punto de origen de la rotación: esquina inferior izquierda */
 				transform-origin: bottom left !important;
+
 				overflow: hidden !important;
-				/* Fondo con patrón Royal Crumbs */
+				/* Oculta cualquier contenido que se salga */
+
+				/* 🎨 FONDO: Patrón Royal Crumbs para evitar áreas negras */
 				background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
 				background-image: url('pattern-bg.jpg') !important;
 				background-repeat: repeat !important;
 				background-size: 300px 300px !important;
 			}
 
+			/* --- Estilos para el BODY --- */
 			body {
 				width: 100vh !important;
+				/* Ancho = altura real del viewport */
 				height: 100vw !important;
+				/* Alto = ancho real del viewport */
 				margin: 0 !important;
+				/* Sin márgenes externos */
 				padding: 0 !important;
+				/* Sin relleno interno */
 				display: flex !important;
+				/* Activa Flexbox para centrar contenido */
+
+				/* ⬆️⬇️ POSICIÓN VERTICAL: 'center' = centrado, 'flex-start' = arriba, 'flex-end' = abajo */
 				align-items: center !important;
-				/* POSICIÓN VERTICAL del contenido */
+
+				/* ⬅️➡️ POSICIÓN HORIZONTAL: 'center' = centrado */
 				justify-content: center !important;
-				/* POSICIÓN HORIZONTAL del contenido */
+
 				overflow: hidden !important;
+				/* Oculta contenido que se salga */
 				background: transparent !important;
+				/* Fondo transparente para ver el patrón del html */
 			}
 
+			/* --- Estilos para el CONTAINER (contiene ruleta + tablero) --- */
 			#container {
-				/* ⚠️ VALOR CLAVE PARA MOVER LA RULETA ARRIBA/ABAJO ⚠️
-				   translateY(-350px) = Mover 350px hacia ARRIBA
-				   - Aumentar el número negativo → Mover MÁS ARRIBA (ej: -500px)
-				   - Disminuir el número → Mover MÁS ABAJO (ej: -200px)
+				/* 🎚️ TRANSFORM - Combina dos transformaciones:
 				   
-				   scale(0.42) = Tamaño al 42% del original
-				   - Aumentar → Más grande (ej: 0.50)
-				   - Disminuir → Más pequeño (ej: 0.35)
+				   1. scale(0.42) → Reduce el tamaño al 42% del original
+				      - 0.42 = 42% del tamaño
+				      - Aumentar (0.50) = más grande
+				      - Disminuir (0.35) = más pequeño
+				   
+				   2. translateY(-350px) → Mueve verticalmente
+				      - Valor NEGATIVO = mueve hacia ARRIBA
+				      - Valor POSITIVO = mueve hacia ABAJO
+				      - -350px = sube 350 píxeles
+				      - Para subir más: usar -500px, -600px, etc.
+				      - Para bajar: usar -200px, -100px, o valores positivos
 				*/
 				transform: scale(0.42) translateY(-350px) !important;
+
+				/* Punto desde donde se aplica el scale: centro del elemento */
 				transform-origin: center center !important;
 			}
 		}
 
-		/* =====================================================================
-		   MODO LANDSCAPE (Celular horizontal) - Display normal
-		   ===================================================================== */
+		/* =======================================================================
+		   📱 MODO LANDSCAPE (Celular en horizontal)
+		   
+		   Cuando el celular está HORIZONTAL, estos estilos se aplican.
+		   No hay rotación, solo escalado para que quepa en pantalla.
+		   ======================================================================= */
 		@media screen and (orientation: landscape) {
 
+			/* --- Estilos para HTML y BODY en landscape --- */
 			html,
 			body {
 				margin: 0 !important;
+				/* Sin márgenes */
 				padding: 0 !important;
+				/* Sin relleno */
 				width: 100% !important;
+				/* Ancho completo */
 				height: 100% !important;
+				/* Alto completo */
 				overflow: hidden !important;
+				/* Sin scroll */
 			}
 
 			body {
 				display: flex !important;
+				/* Flexbox activo */
 				align-items: center !important;
+				/* Centrado vertical */
 				justify-content: center !important;
+				/* Centrado horizontal */
 			}
 
+			/* --- Container en landscape móvil --- */
 			#container {
-				/* Escala para móvil horizontal */
+				/* Escala al 48% para celulares en horizontal */
 				transform: scale(0.48) !important;
 				transform-origin: center center !important;
 			}
 		}
 
-		/* Tablets landscape (altura >= 500px) */
+		/* =======================================================================
+		   📱 TABLETS EN LANDSCAPE (altura >= 500px)
+		   ======================================================================= */
 		@media screen and (orientation: landscape) and (min-height: 500px) {
 			#container {
+				/* Tablets: escala más grande (58%) porque tienen más espacio */
 				transform: scale(0.58) !important;
 			}
 		}
 
-		/* Desktop (ancho >= 1024px y altura >= 600px) */
+		/* =======================================================================
+		   🖥️ DESKTOP (ancho >= 1024px Y altura >= 600px)
+		   ======================================================================= */
 		@media screen and (min-width: 1024px) and (min-height: 600px) {
 			#container {
+				/* Desktop: escala al 75% */
 				transform: scale(0.75) !important;
 			}
 		}
 
-		/* Pantallas grandes (ancho >= 1400px) */
+		/* =======================================================================
+		   🖥️ PANTALLAS GRANDES (ancho >= 1400px)
+		   ======================================================================= */
 		@media screen and (min-width: 1400px) {
 			#container {
+				/* Pantallas grandes: escala al 90% (casi tamaño completo) */
 				transform: scale(0.90) !important;
 			}
 		}
