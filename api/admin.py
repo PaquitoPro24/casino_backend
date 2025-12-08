@@ -235,6 +235,11 @@ async def api_get_user_profile(id_usuario: int):
 
         # Aseguramos que el saldo sea un float
         user_profile['saldo_actual'] = float(user_profile['saldo_actual'] or 0.0)
+        
+        # Convertir fecha a string (ISO format) para evitar error de serialización
+        if user_profile.get('fecha_registro'):
+            user_profile['fecha_registro'] = user_profile['fecha_registro'].isoformat()
+            
         return JSONResponse(user_profile)
 
     except Exception as e:

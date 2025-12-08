@@ -24,6 +24,7 @@
         <option value="" disabled selected>Rol</option>
         <option value="Administrador">Administrador</option>
         <option value="Auditor">Auditor</option>
+        <option value="Soporte">Soporte</option>
       </select>
 
       <input type="text" id="nameInput" placeholder="Nombre(s)" required>
@@ -177,9 +178,28 @@
       }
     });
 
-    // Delete Logic (Placeholder for safety)
-    deleteBtn.addEventListener("click", () => {
-      alert("Función de eliminar no implementada por seguridad.");
+    // Delete Logic
+    deleteBtn.addEventListener("click", async () => {
+      if (!confirm("¿Estás seguro de ELIMINAR este administrador/auditor? Esta acción es irreversible.")) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/user-profile/${adminId}`, {
+          method: "DELETE"
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          alert("Cuenta eliminada correctamente.");
+          window.location.href = "/admin/administradores";
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error de conexión al eliminar.");
+      }
     });
 
   </script>
