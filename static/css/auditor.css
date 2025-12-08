@@ -1,144 +1,139 @@
-/* ============================================================
-   🔍 PANEL AUDITOR - Royal Crumbs
-   ============================================================ */
-
+/* ESTILOS PANEL AUDITOR - Royal Crumbs */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* ======== Fondo global ======== */
-html,
 body {
     background-color: #202020;
-    height: 100%;
-    width: 100%;
-    font-family: 'Timeless', 'Arial', sans-serif;
+    font-family: sans-serif;
     color: #fff;
-    overflow-x: hidden;
 }
 
-/* =======
-
- Contenedor principal ======== */
-.rc-container {
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-    padding: clamp(16px, 3vw, 20px) clamp(12px, 2.5vw, 16px) 50px;
-    color: #fff;
-    background-color: #202020;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* ======== Encabezado ======== */
 .rc-header {
-    display: grid;
-    grid-template-columns: 40px 1fr 40px;
-    align-items: center;
-    background-color: #202020;
-    padding: clamp(14px, 3vw, 18px) clamp(16px, 3.5vw, 20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.rc-back {
-    color: #FFFFFF;
-    font-size: clamp(28px, 6vw, 34px);
-    text-decoration: none;
-    text-align: center;
-    transition: 0.2s;
-    line-height: 1;
-}
-
-.rc-back:hover {
-    color: #AB925C;
-}
-
-.rc-screen-title {
-    text-align: center;
-    font-size: clamp(22px, 5vw, 28px);
-    font-weight: 700;
-    color: #FFFFFF;
-}
-
-/* ======== Sección de auditoría ======== */
-.audit-section {
-    margin-top: clamp(20px, 4vw, 28px);
-}
-
-/* ======== Lista de opciones ======== */
-.rc-list-card {
-    background-color: transparent;
-    border-radius: 0;
-}
-
-.rc-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    text-decoration: none;
-    color: #FFFFFF;
-    font-size: clamp(15px, 3.5vw, 16px);
-    padding: clamp(14px, 3vw, 16px) clamp(16px, 3.5vw, 18px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    padding: 15px;
+    background-color: #202020;
+    border-bottom: 1px solid #333;
 }
 
-.rc-list-item:last-child {
-    border-bottom: none;
+.rc-back {
+    color: #fff;
+    text-decoration: none;
+    font-size: 24px;
+}
+
+.rc-screen-title {
+    font-size: 20px;
+    color: #ab925c;
+}
+
+.rc-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Lista de Menú */
+.rc-list-item {
+    display: block;
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
 }
 
 .rc-list-item:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: #2a2a2a;
     color: #ab925c;
 }
 
-/* Flechita dorada */
-.rc-chevron::after {
-    content: "›";
-    font-size: clamp(20px, 4vw, 22px);
-    color: #FFFFFF;
-    transition: color 0.3s ease;
+/* Formulario Checklist */
+.section-title {
+    background: linear-gradient(135deg, #ab925c, #c9a86a);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 20px 0 10px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
 }
 
-.rc-list-item:hover .rc-chevron::after {
+.question-block {
+    background: #181818;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ab925c;
+}
+
+.question-text {
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+.options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.option-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #2a2a2a;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.option-label:hover {
+    background: #333;
+    border-color: #ab925c;
+}
+
+.option-label input[type="radio"] {
+    margin-right: 6px;
+    cursor: pointer;
+    accent-color: #ab925c;
+}
+
+input[type="radio"]:checked+span {
     color: #ab925c;
+    font-weight: bold;
 }
 
-/* ============================================================
-   📱 RESPONSIVE BREAKPOINTS
-   ============================================================ */
-
-@media (min-width: 640px) {
-    .rc-container {
-        max-width: 600px;
-        padding-left: clamp(20px, 4vw, 32px);
-        padding-right: clamp(20px, 4vw, 32px);
-    }
+.btn-generate-pdf {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #ab925c, #c9a86a);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
 }
 
-@media (min-width: 768px) {
-    .rc-container {
-        max-width: 700px;
-    }
-
-    .rc-screen-title {
-        font-size: clamp(26px, 5.5vw, 32px);
-    }
-
-    .rc-list-item {
-        font-size: 17px;
-        padding: 16px 28px;
-    }
+.btn-generate-pdf:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(171, 146, 92, 0.4);
 }
 
-@media (min-width: 1024px) {
-    .rc-container {
-        max-width: 800px;
-        padding-bottom: 100px;
+@media (max-width: 640px) {
+    .options-container {
+        flex-direction: column;
+    }
+
+    .option-label {
+        width: 100%;
+        justify-content: flex-start;
     }
 }

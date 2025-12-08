@@ -78,24 +78,7 @@ from api.wallet import router as wallet_router
 from api.bonos import router as bonos_router
 from api.game_endpoints import router as game_router # <-- Nuevo Router de Juegos
 from api.blackjack_endpoints import router as blackjack_router # <-- Router de Blackjack
-
-# --- NUEVOS MODELOS Y ROUTER PARA AUDITOR ---
-class AuditoriaCreate(BaseModel):
-    id_usuario: int
-    resumen: str
-    datos_auditoria: Dict[str, Any]
-
-class AuditoriaHistorial(AuditoriaCreate):
-    id_auditoria: int
-    fecha_auditoria: datetime.datetime # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
-
-class HistorialResponse(BaseModel):
-    historial: List[AuditoriaHistorial]
-
-router_auditor_api = APIRouter(
-    prefix="/api/auditor",
-    tags=["Auditor API"]
-)
+from api.auditor import router as auditor_router # <-- Router de Auditor
 
 from app.middleware.auth_agente import verificar_rol_agente_redirect
 
@@ -113,44 +96,6 @@ def guardar_auditoria(audit_data: AuditoriaCreate):
         cur = conn.cursor()
         
         # La columna 'datos_auditoria' es JSONB, por lo que el objeto se pasa directamente
-        cur.execute(
-            """
-            INSERT INTO Auditoria (id_usuario, resumen, datos_auditoria)
-            VALUES (%s, %s, %s)
-            RETURNING id_auditoria;
-            """,
-            (audit_data.id_usuario, audit_data.resumen, psycopg2.extras.Json(audit_data.datos_auditoria))
-        )
-        new_id = cur.fetchone()[0]
-        conn.commit()
-        cur.close()
-        return {"success": True, "id_auditoria": new_id}
-    except Exception as e:
-        if conn: conn.rollback()
-        print(f"Error al guardar auditoría: {e}")
-        raise HTTPException(status_code=500, detail="Error interno al guardar la auditoría.")
-    finally:
-        if conn: conn.close()
-
-@router_auditor_api.get("/historial", response_model=HistorialResponse)
-def obtener_historial_auditorias():
-    """
-    Endpoint para obtener todo el historial de auditorías.
-    """
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT * FROM Auditoria ORDER BY fecha_auditoria DESC;")
-        historial = cur.fetchall()
-        return {"historial": historial}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Error al obtener el historial.")
-# =========================
-#  RUTAS DE LÓGICA / API
-# =========================
-# Montamos todos los routers de API
-app.include_router(auth_router)
 app.include_router(agente_router)
 app.include_router(support_router)
 app.include_router(admin_router)
@@ -159,7 +104,7 @@ app.include_router(wallet_router)
 app.include_router(bonos_router)
 app.include_router(game_router)
 app.include_router(blackjack_router)
-app.include_router(router_auditor_api)
+app.include_router(auditor_router)
 
 # =========================
 #  PÚBLICO / AUTH

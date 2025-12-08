@@ -1,0 +1,24 @@
+# Agregar al final de main.py, después de las rutas de agente
+
+# =========================
+#  AUDITOR (PANEL + REALIZAR + HISTORIAL)
+# =========================
+@app.get("/auditor", response_class=HTMLResponse)
+async def auditor_panel(request: Request):
+    """Panel principal del auditor"""
+    return render("auditor.html", request)
+
+@app.get("/auditor/realizar", response_class=HTMLResponse)
+async def auditor_realizar(request: Request):
+    """Formulario para realizar nueva auditoría"""
+    return render("auditor-realizar.html", request)
+
+@app.get("/auditor/historial", response_class=HTMLResponse)
+async def auditor_historial_page(request: Request):
+    """Página de historial de auditorías"""
+    return render("auditor-historial.html", request)
+
+@app.get("/auditor/ver_pdf/{id_auditoria}", response_class=HTMLResponse)
+async def auditor_ver_pdf(request: Request, id_auditoria: int):
+    """Visor de PDF de auditoría"""
+    return render("auditor-ver-pdf.html", request, {"id_auditoria": id_auditoria})

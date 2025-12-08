@@ -3,226 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realizar Auditoría - Royal Crumbs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Realizar Auditoría</title>
     <link rel="stylesheet" href="{{ url_for('static', path='css/auditor.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* Estilos específicos para el checklist */
-        .audit-form {
-            margin-top: 20px;
-        }
-
-        .section-title {
-            background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
-            color: #fff;
-            padding: clamp(12px, 2.5vw, 16px);
-            margin: clamp(20px, 4vw, 30px) 0 clamp(12px, 2.5vw, 16px);
-            border-radius: 8px;
-            font-size: clamp(18px, 4vw, 22px);
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .question-block {
-            background-color: #181818;
-            border-radius: 10px;
-            padding: clamp(14px, 3vw, 18px);
-            margin-bottom: clamp(12px, 2.5vw, 16px);
-            border-left: 4px solid #ab925c;
-        }
-
-        .question-title {
-            font-size: clamp(14px, 3vw, 16px);
-            font-weight: 600;
-            color: #ab925c;
-            margin-bottom: 8px;
-        }
-
-        .question-text {
-            font-size: clamp(13px, 2.8vw, 15px);
-            color: #ccc;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .options-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: clamp(10px, 2vw, 12px);
-            margin-top: 12px;
-        }
-
-        .option-label {
-            display: inline-flex;
-            align-items: center;
-            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 14px);
-            background-color: #2a2a2a;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: clamp(12px, 2.5vw, 14px);
-            color: #ccc;
-            border: 2px solid transparent;
-        }
-
-        .option-label:hover {
-            background-color: #353535;
-            border-color: #ab925c;
-        }
-
-        .option-label input[type="radio"] {
-            margin-right: 6px;
-            cursor: pointer;
-            accent-color: #ab925c;
-        }
-
-        .option-label input[type="radio"]:checked+span {
-            color: #ab925c;
-            font-weight: 600;
-        }
-
-        .btn-container {
-            display: flex;
-            gap: 12px;
-            margin-top: clamp(24px, 4vw, 30px);
-            flex-wrap: wrap;
-        }
-
-        .btn-generate-pdf {
-            flex: 1;
-            min-width: 200px;
-            background: linear-gradient(135deg, #ab925c 0%, #c9a86a 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 24px);
-            font-size: clamp(14px, 3vw, 16px);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-generate-pdf:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(171, 146, 92, 0.4);
-        }
-
-        .btn-reset {
-            flex: 1;
-            min-width: 200px;
-            background-color: #3a3a3a;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 24px);
-            font-size: clamp(14px, 3vw, 16px);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-reset:hover {
-            background-color: #4a4a4a;
-        }
-
-        /* Estilos para sección de comentarios */
-        .comment-section {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            padding: clamp(14px, 3vw, 18px);
-            margin: clamp(16px, 3vw, 20px) 0;
-            border-left: 4px solid #ab925c;
-        }
-
-        .comment-label {
-            font-size: clamp(13px, 2.8vw, 15px);
-            color: #ab925c;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .section-comment {
-            width: 100%;
-            background-color: #2a2a2a;
-            border: 1px solid #ab925c;
-            border-radius: 6px;
-            padding: 12px;
-            color: #fff;
-            font-size: clamp(12px, 2.5vw, 14px);
-            resize: vertical;
-            min-height: 80px;
-            font-family: arial;
-        }
-
-        .section-comment:focus {
-            outline: none;
-            border-color: #c9a86a;
-            box-shadow: 0 0 8px rgba(171, 146, 92, 0.3);
-        }
-
-        @media (max-width: 640px) {
-            .options-container {
-                flex-direction: column;
-            }
-
-            .option-label {
-                width: 100%;
-                justify-content: flex-start;
-            }
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- ======== ENCABEZADO ======== -->
     <div class="rc-header">
         <a href="/auditor" class="rc-back">‹</a>
-        <h1 class="rc-screen-title">Auditoría ISO 14001</h1>
+        <h1 class="rc-screen-title">Nueva Auditoría ISO 14001</h1>
         <div></div>
     </div>
 
-    <!-- ======== CONTENEDOR ======== -->
     <div class="rc-container">
-
-        <form id="audit-form" class="audit-form">
-            <div id="contenido"></div>
-
-            <div class="btn-container">
-                <button type="button" class="btn-generate-pdf" onclick="generarPDF()">
-                    📄 Generar PDF
-                </button>
-                <button type="button" class="btn-reset" onclick="resetForm()">
-                    🔄 Limpiar Formulario
-                </button>
+        <form id="formAuditoria">
+            <!-- Información General -->
+            <div class="section-title">📋 INFORMACIÓN GENERAL</div>
+            <div class="question-block">
+                <label class="question-text">Fecha de la auditoría:</label>
+                <input type="date" id="fecha" name="fecha" required
+                    style="width:100%; padding:10px; background:#2a2a2a; border:1px solid #ab925c; color:#fff; border-radius:5px;">
             </div>
+
+            <!-- Contenedor dinámico para las preguntas -->
+            <div id="cuestionario"></div>
+
+            <button type="submit" class="btn-generate-pdf">✅ Terminar Auditoría</button>
         </form>
 
+        <div id="mensaje" style="margin-top:20px; text-align:center; color:#ab925c;"></div>
     </div>
 
     <script>
-        // Función para generar opciones de respuesta
-        function opciones(nombre) {
+        // Función para crear preguntas
+        function crearPregunta(nombre, texto) {
             return `
-        <div class="options-container">
-          <label class="option-label">
-            <input type="radio" name="${nombre}" value="Cumple">
-            <span>✅ Cumple</span>
-          </label>
-          <label class="option-label">
-            <input type="radio" name="${nombre}" value="No Cumple">
-            <span>❌ No Cumple</span>
-          </label>
-          <label class="option-label">
-            <input type="radio" name="${nombre}" value="Cumple Parcialmente">
-            <span>⚠️ Cumple Parcialmente</span>
-          </label>
-          <label class="option-label">
-            <input type="radio" name="${nombre}" value="No Aplica">
-            <span>➖ No Aplica</span>
-          </label>
+        <div class="question-block">
+          <p class="question-text">${texto}</p>
+          <div class="options-container">
+            <label class="option-label">
+              <input type="radio" name="${nombre}" value="Cumple" required>
+              <span>✅ Cumple</span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="${nombre}" value="No Cumple">
+              <span>❌ No Cumple</span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="${nombre}" value="Cumple Parcialmente">
+              <span>⚠️ Cumple Parcialmente</span>
+            </label>
+            <label class="option-label">
+              <input type="radio" name="${nombre}" value="No Aplica">
+              <span>➖ No Aplica</span>
+            </label>
+          </div>
         </div>
       `;
         }
@@ -417,48 +261,70 @@
             }
         ];
 
-        // Generar HTML del checklist
-        var cont = document.getElementById("contenido");
-        var index = 0;
-        var questions = []; // Para guardar las preguntas y respuestas
-        var currentSection = "";
+        // Generar el cuestionario dinámicamente
+        var cuestionario = document.getElementById('cuestionario');
+        var contador = 0;
 
-        datosAuditoria.forEach(item => {
+        datosAuditoria.forEach(function (item) {
             if (item.type === "titulo") {
-                currentSection = item.texto;
-                cont.innerHTML += `<h2 class="section-title">${item.texto}</h2>`;
+                cuestionario.innerHTML += `<div class="section-title">${item.texto}</div>`;
+            } else if (item.type === "grid") {
+                cuestionario.innerHTML += `<div style="margin-top:15px; font-weight:bold; color:#ab925c;">${item.titulo}</div>`;
+                item.filas.forEach(function (pregunta) {
+                    contador++;
+                    cuestionario.innerHTML += crearPregunta('q' + contador, pregunta);
+                });
+            }
+        });
+
+        // Manejo del formulario
+        document.getElementById('formAuditoria').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const respuestas = {};
+
+            // Recopilar todas las respuestas
+            for (let [key, value] of formData.entries()) {
+                if (key !== 'fecha') {
+                    const pregunta = document.querySelector(`input[name="${key}"]`)
+                        .closest('.question-block')
+                        .querySelector('.question-text').textContent;
+                    respuestas[pregunta] = value;
+                }
             }
 
-            if (item.type === "grid") {
-                item.filas.forEach(fila => {
-                    index++;
-                    const questionId = "p" + index;
+            const datos = {
+                fecha: formData.get('fecha'),
+                respuestas: respuestas
+            };
 
-                    // Guardar pregunta para el PDF
-                    questions.push({
-                        id: questionId,
-                        seccion: item.titulo,
-                        pregunta: fila,
-                        seccionPrincipal: currentSection
-                    });
-
-                    cont.innerHTML += `
-            <div class="question-block">
-              <div class="question-title">${item.titulo}</div>
-              <div class="question-text">${fila}</div>
-              ${opciones(questionId)}
-            </div>
-          `;
+            try {
+                const response = await fetch('/api/guardar_checklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
                 });
 
-                // Agregar sección de comentarios después de cada subsección
-                cont.innerHTML += `
-                alert("✅ Formulario limpiado");
+                const resultado = await response.json();
+                const mensaje = document.getElementById('mensaje');
+
+                if (resultado.exito) {
+                    mensaje.innerHTML = `✅ Auditoría guardada. <button onclick="window.location.href='/auditor/ver_pdf/${resultado.pdf_url.split('/').pop()}'" style="background:linear-gradient(135deg,#ab925c,#c9a961); color:#1a1a1a; border:none; padding:8px 16px; border-radius:5px; cursor:pointer; font-weight:bold;">Ver PDF 📄</button>`;
+                    this.reset();
+                    window.scrollTo(0, 0);
+                } else {
+                    mensaje.innerHTML = `❌ Error: ${resultado.mensaje}`;
+                }
+            } catch (error) {
+                document.getElementById('mensaje').innerHTML = `❌ Error de conexión: ${error}`;
             }
-        }
+        });
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) { e.preventDefault(); } });
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('dragstart', e => e.preventDefault());
     </script>
-
-
 </body>
 
 </html>

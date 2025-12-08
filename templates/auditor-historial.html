@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Historial de Auditorías - Royal Crumbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Historial de Auditorías</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/auditor.css') }}">
   <style>
     .history-list {
@@ -20,6 +20,7 @@
       padding: 18px;
       border-left: 4px solid #ab925c;
       transition: all 0.3s;
+      cursor: pointer;
     }
 
     .history-card:hover {
@@ -60,13 +61,32 @@
       margin-top: 15px;
       padding-top: 10px;
       border-top: 1px solid #333;
-      text-align: right;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .card-footer .compliance {
       font-size: 18px;
       font-weight: 700;
       color: #ab925c;
+    }
+
+    .btn-pdf {
+      background: linear-gradient(135deg, #ab925c, #c9a961);
+      color: #1a1a1a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-pdf:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(171, 146, 92, 0.4);
     }
   </style>
 </head>
@@ -89,8 +109,9 @@
     async function cargarHistorial() {
       const container = document.getElementById('history-container');
       try {
-        // Este es el endpoint que debes crear para obtener los datos
-        const response = await fetch('/api/auditor/historial');
+        const response = await fetch('/api/auditor/historial', {
+          credentials: 'include'
+        });
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.error || 'Error al cargar el historial');
@@ -107,13 +128,14 @@
               <span class="date">${new Date(audit.fecha_auditoria).toLocaleString('es-ES')}</span>
             </div>
             <div class="card-body">
-              <span>✅ Cumple: ${audit.cumple ?? 0}</span>
-              <span>❌ No Cumple: ${audit.no_cumple ?? 0}</span>
-              <span>⚠️ Parcial: ${audit.parcial ?? 0}</span>
-              <span>➖ No Aplica: ${audit.no_aplica ?? 0}</span>
+              <span>✅ Cumple: ${audit.datos_auditoria?.cumple ?? 0}</span>
+              <span>❌ No Cumple: ${audit.datos_auditoria?.no_cumple ?? 0}</span>
+              <span>⚠️ Parcial: ${audit.datos_auditoria?.parcial ?? 0}</span>
+              <span>➖ No Aplica: ${audit.datos_auditoria?.no_aplica ?? 0}</span>
             </div>
             <div class="card-footer">
-              <span class="compliance">Cumplimiento: ${audit.porcentaje ?? 0}%</span>
+              <span class="compliance">Cumplimiento: ${audit.datos_auditoria?.porcentaje_cumplimiento ?? 0}%</span>
+              <a href="/auditor/ver_pdf/${audit.id_auditoria}" class="btn-pdf">Ver PDF 📄</a>
             </div>
           </div>
         `).join('');
@@ -126,6 +148,12 @@
 
     // Cargar el historial cuando la página se abra
     document.addEventListener('DOMContentLoaded', cargarHistorial);
+
+    // Protección
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) { e.preventDefault(); } });
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
   </script>
 
 </body>
