@@ -153,7 +153,6 @@ def obtener_historial_auditorias():
 async def get_user_data(user_id: int):
     # Este endpoint está comentado porque ahora se maneja por user_router_api
     pass
-"""
 
 # =========================
 #  PÚBLICO / AUTH

@@ -104,3 +104,54 @@ async def api_spin(request: Request, spin_data: SpinRequest):
         return JSONResponse({"detail": "Error interno del servidor"}, status_code=500)
     finally:
         if conn: conn.close()
+
+# Roulette-specific models
+class RouletteSpinRequest(BaseModel):
+    balance: float
+    currentBet: float
+    bets: list
+    numbersBet: list
+
+@router.post("/spin-roulette")
+async def api_spin_roulette(request: Request, spin_data: RouletteSpinRequest):
+    """
+    Procesa el giro de ruleta y calcula ganancias basadas en las apuestas.
+    """
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        return JSONResponse({"detail": "No autenticado"}, status_code=401)
+
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        cursor = conn.cursor()
+
+        # Generar número ganador (0-36)
+        winning_spin = random.randint(0, 36)
+        
+        # Calcular ganancias basadas en las apuestas
+        win_value = 0
+        for bet in spin_data.bets:
+            bet_numbers = [int(x.strip()) for x in bet['numbers'].split(',')]
+            if winning_spin in bet_numbers:
+                win_value += bet['amt'] * bet['odds']
+        
+        # Actualizar saldo en BD
+        new_balance = spin_data.balance + win_value
+        cursor.execute("UPDATE Saldo SET saldo_actual = %s WHERE id_usuario = %s", (new_balance, user_id))
+        conn.commit()
+        cursor.close()
+
+        return {
+            "winningSpin": winning_spin,
+            "winValue": win_value,
+            "newBalance": new_balance
+        }
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Roulette Spin): {e}")
+        return JSONResponse({"detail": "Error interno del servidor"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
