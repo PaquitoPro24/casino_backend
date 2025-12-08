@@ -26,27 +26,37 @@
 		}
 
 		/* Force horizontal layout */
-		body>div {
+		body {
 			display: flex !important;
 			flex-direction: row !important;
-			align-items: center !important;
+			align-items: flex-start !important;
 			justify-content: center !important;
 			gap: 20px !important;
 			padding: 20px !important;
-			width: 100vw !important;
-			height: 100vh !important;
+			min-height: 100vh !important;
 			box-sizing: border-box !important;
+			overflow-x: auto !important;
 		}
 
 		/* Adjust wheel size for horizontal view */
 		.wheel {
-			transform: scale(0.9) !important;
+			transform: scale(0.8) !important;
 			flex-shrink: 0 !important;
+			margin-top: 20px !important;
 		}
 
 		/* Adjust betting board for horizontal view */
 		#betting_board {
 			flex-shrink: 0 !important;
+			margin-top: 20px !important;
+		}
+
+		/* Ensure container uses flexbox */
+		body>div:first-child {
+			display: flex !important;
+			flex-direction: row !important;
+			gap: 30px !important;
+			align-items: flex-start !important;
 		}
 	</style>
 </head>
