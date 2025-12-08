@@ -5,7 +5,7 @@
 	<title>Ruleta Royal Crumbs</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="mobile-web-app-capable" content="yes">
-	<meta name="screen-orientation" content="portrait">
+	<meta name="screen-orientation" content="landscape">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
 		/* Prevent text selection */
@@ -23,27 +23,6 @@
 			-khtml-user-drag: none;
 			-moz-user-drag: none;
 			-o-user-drag: none;
-		}
-
-		/* Force portrait orientation */
-		@media screen and (orientation: landscape) {
-			body::before {
-				content: "Por favor, gira tu dispositivo a modo vertical";
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: #000;
-				color: #fff;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				z-index: 99999;
-				font-size: 24px;
-				text-align: center;
-				padding: 20px;
-			}
 		}
 	</style>
 </head>
