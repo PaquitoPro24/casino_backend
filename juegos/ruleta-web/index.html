@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="screen-orientation" content="landscape">
+	<meta name="orientation" content="landscape">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
 		/* Prevent text selection */
@@ -67,6 +68,36 @@
 			gap: 30px !important;
 			align-items: flex-start !important;
 		}
+
+		/* Force landscape orientation - rotate if portrait */
+		@media screen and (orientation: portrait) {
+			html {
+				transform: rotate(-90deg);
+				transform-origin: left top;
+				width: 100vh;
+				height: 100vw;
+				overflow-x: hidden;
+				position: absolute;
+				top: 100%;
+				left: 0;
+			}
+
+			body {
+				width: 100vh;
+				height: 100vw;
+			}
+		}
+
+		/* Landscape mode - normal display */
+		@media screen and (orientation: landscape) {
+
+			html,
+			body {
+				width: 100vw;
+				height: 100vh;
+				overflow: auto;
+			}
+		}
 	</style>
 </head>
 
@@ -83,6 +114,30 @@
 		document.onselectstart = function () {
 			return false;
 		};
+
+		// Force landscape orientation
+		if (screen.orientation && screen.orientation.lock) {
+			screen.orientation.lock('landscape').catch(function (error) {
+				console.log('Orientation lock not supported:', error);
+			});
+		}
+
+		// Alternative: Request fullscreen in landscape
+		function enterFullscreenLandscape() {
+			const elem = document.documentElement;
+			if (elem.requestFullscreen) {
+				elem.requestFullscreen({ orientationLock: 'landscape' }).catch(err => {
+					console.log('Fullscreen request failed:', err);
+				});
+			}
+		}
+
+		// Auto-enter fullscreen on first user interaction
+		document.addEventListener('click', function () {
+			if (!document.fullscreenElement) {
+				enterFullscreenLandscape();
+			}
+		}, { once: true });
 	</script>
 	<script src="app.js"></script>
 	<script src="db-integration.js"></script>
