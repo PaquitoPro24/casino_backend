@@ -47,8 +47,8 @@
 		#container {
 			display: flex !important;
 			flex-direction: row !important;
-			gap: 10px !important;
-			align-items: center !important;
+			gap: 0px !important;
+			align-items: flex-start !important;
 			justify-content: center !important;
 			flex-wrap: nowrap !important;
 			transform-origin: center center !important;
@@ -66,28 +66,38 @@
 			flex-shrink: 0 !important;
 		}
 
-		/* Portrait mode - show message to rotate */
+		/* Portrait mode - ROTATE to simulate landscape */
 		@media screen and (orientation: portrait) {
+			html {
+				width: 100vh !important;
+				height: 100vw !important;
+				transform: rotate(90deg) !important;
+				transform-origin: top left !important;
+				position: absolute !important;
+				top: 0 !important;
+				left: 100% !important;
+				overflow: hidden !important;
+			}
+
 			body {
-				align-items: flex-start !important;
-				padding-top: 20px !important;
+				width: 100vh !important;
+				height: 100vw !important;
+				align-items: center !important;
+				justify-content: center !important;
 			}
 
 			#container {
-				flex-direction: column !important;
-				align-items: center !important;
-				transform: scale(0.5) !important;
-				transform-origin: top center !important;
-				gap: 0px !important;
+				flex-direction: row !important;
+				transform: scale(0.40) !important;
+				transform-origin: center center !important;
 			}
 
 			.wheel {
 				left: 75px !important;
-				margin-bottom: -80px !important;
 			}
 		}
 
-		/* Landscape mode - optimized for mobile gaming */
+		/* Landscape mode - normal display */
 		@media screen and (orientation: landscape) {
 			body {
 				align-items: center !important;
@@ -98,7 +108,6 @@
 				flex-direction: row !important;
 				transform: scale(0.48) !important;
 				transform-origin: center center !important;
-				gap: 0px !important;
 			}
 
 			.wheel {
