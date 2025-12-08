@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+﻿from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db import db_connect # <-- CORRECCIÓN: Importación relativa
 import psycopg2
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/admin", tags=["Admin"])
 # ==========================================================
 #  ESTADÍSTICAS (Ya existente)
 # ==========================================================
-@router.get("/api/admin/stats")
+@router.get("/stats")
 async def api_get_admin_stats():
     """
     Obtiene estadísticas clave para el dashboard del administrador.
@@ -68,7 +68,7 @@ async def api_get_admin_stats():
 # ==========================================================
 #  NUEVO: LISTAR USUARIOS Y ADMINS
 # ==========================================================
-@router.get("/api/admin/usuarios")
+@router.get("/usuarios")
 async def api_get_all_users():
     """
     Obtiene la lista de todos los usuarios con rol 'Jugador'.
@@ -103,7 +103,7 @@ async def api_get_all_users():
     finally:
         if conn: conn.close()
 
-@router.get("/api/admin/administradores")
+@router.get("/administradores")
 async def api_get_all_admins():
     """
     Obtiene la lista de todos los usuarios con rol 'Administrador' o 'Auditor'.
@@ -138,7 +138,7 @@ async def api_get_all_admins():
     finally:
         if conn: conn.close()
 
-@router.post("/api/admin/administradores")
+@router.post("/administradores")
 async def api_create_admin(
     nombre: str = Form(),
     apellido: str = Form(),
@@ -203,7 +203,7 @@ async def api_create_admin(
 # ==========================================================
 #  GESTIÓN DE PERFIL DE USUARIO (Ya existente)
 # ==========================================================
-@router.get("/api/admin/user-profile/{id_usuario}")
+@router.get("/user-profile/{id_usuario}")
 async def api_get_user_profile(id_usuario: int):
     """
     Obtiene el perfil completo de un usuario para el admin.
@@ -248,7 +248,7 @@ async def api_get_user_profile(id_usuario: int):
     finally:
         if conn: conn.close()
 
-@router.put("/api/admin/user-profile/{id_usuario}")
+@router.put("/user-profile/{id_usuario}")
 async def api_update_user_profile(
     id_usuario: int,
     nombre: str = Form(),
@@ -295,7 +295,7 @@ async def api_update_user_profile(
 # ==========================================================
 #  GESTIÓN DE JUEGOS (Ya existente)
 # ==========================================================
-@router.get("/api/admin/games")
+@router.get("/games")
 async def api_get_all_games():
     """
     Obtiene la lista de todos los juegos para el admin.
@@ -318,7 +318,7 @@ async def api_get_all_games():
     finally:
         if conn: conn.close()
 
-@router.post("/api/admin/games")
+@router.post("/games")
 async def api_create_game(
     nombre: str = Form(),
     descripcion: str = Form(),
@@ -355,7 +355,7 @@ async def api_create_game(
 # ==========================================================
 #  GESTIÓN DE PROMOCIONES (Ya existente)
 # ==========================================================
-@router.get("/api/admin/bonos")
+@router.get("/bonos")
 async def api_get_all_bonos():
     """
     Obtiene la lista de todas las promociones/bonos.
@@ -378,7 +378,7 @@ async def api_get_all_bonos():
     finally:
         if conn: conn.close()
 
-@router.post("/api/admin/bonos")
+@router.post("/bonos")
 async def api_create_bono(
     nombre_bono: str = Form(),
     tipo: str = Form(),
@@ -416,7 +416,7 @@ async def api_create_bono(
     finally:
         if conn: conn.close()
 
-@router.delete("/api/admin/bonos/{id_bono}")
+@router.delete("/bonos/{id_bono}")
 async def api_delete_bono(id_bono: int):
     """
     Elimina un bono.
@@ -468,7 +468,7 @@ def ensure_ip_table():
 # Llamamos a esto al iniciar (o al primer request, simplicidad aquí)
 ensure_ip_table()
 
-@router.get("/api/admin/config/ip-block")
+@router.get("/config/ip-block")
 async def api_get_blocked_ips():
     conn = None
     try:
@@ -483,7 +483,7 @@ async def api_get_blocked_ips():
     finally:
         if conn: conn.close()
 
-@router.post("/api/admin/config/ip-block")
+@router.post("/config/ip-block")
 async def api_block_ip(ip_address: str = Form(), razon: str = Form("")):
     conn = None
     try:
@@ -505,7 +505,7 @@ async def api_block_ip(ip_address: str = Form(), razon: str = Form("")):
     finally:
         if conn: conn.close()
 
-@router.delete("/api/admin/config/ip-block/{id_bloqueo}")
+@router.delete("/config/ip-block/{id_bloqueo}")
 async def api_unblock_ip(id_bloqueo: int):
     conn = None
     try:

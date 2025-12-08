@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+﻿from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/bonos", tags=["Bonos"])
 # ==========================================================
 #  OBTENER BONOS DISPONIBLES (Para 'account-bonos.html')
 # ==========================================================
-@router.get("/api/bonos/disponibles/{id_usuario}")
+@router.get("/disponibles/{id_usuario}")
 async def api_get_available_bonos(id_usuario: int):
     """
     Obtiene bonos que están activos Y que el usuario AÚN NO TIENE.
@@ -49,7 +49,7 @@ async def api_get_available_bonos(id_usuario: int):
 # ==========================================================
 #  RECLAMAR UN BONO (Para 'account-bonos.html')
 # ==========================================================
-@router.post("/api/bonos/reclamar")
+@router.post("/reclamar")
 async def api_claim_bono(
     id_usuario: int = Form(),
     id_bono: int = Form()
@@ -94,7 +94,7 @@ async def api_claim_bono(
 # ==========================================================
 #  OBTENER BONOS ACTIVOS (Para 'account-bonos-activos.html')
 # ==========================================================
-@router.get("/api/bonos/activos/{id_usuario}")
+@router.get("/activos/{id_usuario}")
 async def api_get_active_bonos(id_usuario: int):
     """
     Obtiene los bonos que el usuario SÍ tiene y están 'Activos'
@@ -129,7 +129,7 @@ async def api_get_active_bonos(id_usuario: int):
 # ==========================================================
 #  OBTENER BONOS HISTORIAL (Para 'account-bonos-historial.html')
 # ==========================================================
-@router.get("/api/bonos/historial/{id_usuario}")
+@router.get("/historial/{id_usuario}")
 async def api_get_bonus_history(id_usuario: int):
     """
     Obtiene los bonos que el usuario tiene y están 'Usado' o 'Expirado'

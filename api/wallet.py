@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+﻿from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/wallet", tags=["Wallet"])
 #  RUTAS DE DEPÓSITO Y GUARDADO DE CLABE (Ya existentes)
 # ==========================================================
 
-@router.post("/api/wallet/deposit-card")
+@router.post("/deposit-card")
 async def api_deposit_card(
     id_usuario: int = Form(), 
     monto: str = Form(),
@@ -55,7 +55,7 @@ async def api_deposit_card(
         if conn: conn.close()
 
 
-@router.post("/api/wallet/save-method-bank")
+@router.post("/save-method-bank")
 async def api_save_bank_method(
     id_usuario: int = Form(),
     clabe: str = Form(),
@@ -108,7 +108,7 @@ async def api_save_bank_method(
 # ==========================================================
 #  RUTAS DE RETIRO (Ya existentes)
 # ==========================================================
-@router.post("/api/wallet/withdraw-bank")
+@router.post("/withdraw-bank")
 async def api_withdraw_bank(
     id_usuario: int = Form(),
     monto: str = Form(),
@@ -159,7 +159,7 @@ async def api_withdraw_bank(
     finally:
         if conn: conn.close()
 
-@router.post("/api/wallet/withdraw-card")
+@router.post("/withdraw-card")
 async def api_withdraw_card(
     id_usuario: int = Form(),
     monto: str = Form(),
@@ -213,7 +213,7 @@ async def api_withdraw_card(
 # ==========================================================
 #  NUEVO: GUARDAR MÉTODO DE PAGO (TARJETA)
 # ==========================================================
-@router.post("/api/wallet/save-method-card")
+@router.post("/save-method-card")
 async def api_save_card_method(
     id_usuario: int = Form(),
     numero_tarjeta: str = Form(),
@@ -303,7 +303,7 @@ async def api_save_card_method(
 # ==========================================================
 #  NUEVO: DEPÓSITO POR TRANSFERENCIA (GENERAR REFERENCIA)
 # ==========================================================
-@router.post("/api/wallet/deposit-transfer")
+@router.post("/deposit-transfer")
 async def api_deposit_transfer(
     id_usuario: int = Form(),
     monto: str = Form()

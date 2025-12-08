@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+﻿from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/support", tags=["Support"])
 # ==========================================================
 #  CREAR NUEVO TICKET DE SOPORTE
 # ==========================================================
-@router.post("/api/support/tickets/create")
+@router.post("/tickets/create")
 async def api_create_ticket(
     id_usuario: int = Form(),
     asunto: str = Form(),  # Viene del <select>
@@ -59,7 +59,7 @@ async def api_create_ticket(
 #  OBTENER TICKETS (ACTIVOS E HISTORIAL)
 # ==========================================================
 
-@router.get("/api/support/tickets/active/{id_usuario}")
+@router.get("/tickets/active/{id_usuario}")
 async def api_get_active_tickets(id_usuario: int):
     """
     Ruta para obtener tickets 'Abiertos' o 'En Proceso'
@@ -93,7 +93,7 @@ async def api_get_active_tickets(id_usuario: int):
         if conn: conn.close()
 
 
-@router.get("/api/support/tickets/history/{id_usuario}")
+@router.get("/tickets/history/{id_usuario}")
 async def api_get_ticket_history(id_usuario: int):
     """
     Ruta para obtener tickets 'Cerrados'

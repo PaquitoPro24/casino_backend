@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+﻿from fastapi import APIRouter, Form
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/agente", tags=["Agente Soporte"])
 # ==========================================================
 #  DASHBOARD DEL AGENTE - ESTADÍSTICAS
 # ==========================================================
-@router.get("/api/agente/dashboard/{id_agente}")
+@router.get("/dashboard/{id_agente}")
 async def api_get_agent_dashboard(id_agente: int):
     """
     Obtiene estadísticas del dashboard para el agente de soporte
@@ -69,7 +69,7 @@ async def api_get_agent_dashboard(id_agente: int):
 # ==========================================================
 #  LISTAR TODOS LOS TICKETS (PARA AGENTE)
 # ==========================================================
-@router.get("/api/agente/tickets/all")
+@router.get("/tickets/all")
 async def api_get_all_tickets():
     """
     Obtiene todos los tickets para que el agente pueda verlos
@@ -119,7 +119,7 @@ async def api_get_all_tickets():
 # ==========================================================
 #  LISTAR MIS TICKETS (ASIGNADOS AL AGENTE)
 # ==========================================================
-@router.get("/api/agente/tickets/mis-tickets/{id_agente}")
+@router.get("/tickets/mis-tickets/{id_agente}")
 async def api_get_my_tickets(id_agente: int):
     """
     Obtiene los tickets asignados a un agente específico
@@ -163,7 +163,7 @@ async def api_get_my_tickets(id_agente: int):
 # ==========================================================
 #  ASIGNAR TICKET A AGENTE
 # ==========================================================
-@router.post("/api/agente/tickets/asignar")
+@router.post("/tickets/asignar")
 async def api_assign_ticket(
     id_ticket: int = Form(),
     id_agente: int = Form()
@@ -206,7 +206,7 @@ async def api_assign_ticket(
 # ==========================================================
 #  OBTENER DETALLE DE UN TICKET
 # ==========================================================
-@router.get("/api/agente/tickets/detalle/{id_ticket}")
+@router.get("/tickets/detalle/{id_ticket}")
 async def api_get_ticket_detail(id_ticket: int):
     """
     Obtiene el detalle completo de un ticket
@@ -256,7 +256,7 @@ async def api_get_ticket_detail(id_ticket: int):
 # ==========================================================
 #  CERRAR TICKET
 # ==========================================================
-@router.post("/api/agente/tickets/cerrar")
+@router.post("/tickets/cerrar")
 async def api_close_ticket(id_ticket: int = Form()):
     """
     Cierra un ticket y registra la fecha de cierre
@@ -295,7 +295,7 @@ async def api_close_ticket(id_ticket: int = Form()):
 # ==========================================================
 #  REABRIR TICKET
 # ==========================================================
-@router.post("/api/agente/tickets/reabrir")
+@router.post("/tickets/reabrir")
 async def api_reopen_ticket(id_ticket: int = Form()):
     """
     Reabre un ticket cerrado
