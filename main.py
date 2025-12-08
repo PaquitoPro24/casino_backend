@@ -36,6 +36,7 @@ print("✅✅✅ INICIANDO APLICACIÓN - VERSIÓN MÁS RECIENTE ✅✅✅")
 # Los archivos estáticos están en la carpeta 'static' a nivel raíz.
 # Las plantillas están en la carpeta 'templates' a nivel raíz.
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/juegos", StaticFiles(directory="juegos"), name="juegos") # <-- Montar juegos locales
 templates = Jinja2Templates(directory="templates")
 
 # --- SERVIR SERVICE WORKER DESDE LA RAÍZ ---
@@ -75,6 +76,7 @@ from api.admin import router as admin_router
 from api.user import router as user_router_api
 from api.wallet import router as wallet_router
 from api.bonos import router as bonos_router
+from api.game_endpoints import router as game_router # <-- Nuevo Router de Juegos
 
 # --- NUEVOS MODELOS Y ROUTER PARA AUDITOR ---
 class AuditoriaCreate(BaseModel):
@@ -147,18 +149,6 @@ def obtener_historial_auditorias():
 #  RUTAS DE LÓGICA / API
 # =========================
 # Montamos todos los routers de API
-app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
-app.include_router(agente_router, tags=["Agente Soporte"])
-app.include_router(support_router, tags=["Support"])
-app.include_router(admin_router, tags=["Admin"])
-app.include_router(user_router_api, prefix="/api/user", tags=["User"])
-app.include_router(wallet_router, tags=["Wallet"])
-app.include_router(bonos_router, tags=["Bonos"])
-app.include_router(router_auditor_api) # <-- AÑADIMOS EL NUEVO ROUTER
-
-# NOTA: El endpoint /api/user/{user_id} ahora se maneja por el router user_router_api
-# El endpoint duplicado de abajo se comenta para evitar conflictos
-"""
 @app.get("/api/user/{user_id}")
 async def get_user_data(user_id: int):
     # Este endpoint está comentado porque ahora se maneja por user_router_api
@@ -212,11 +202,11 @@ async def play_game(request: Request, game_id: str):
     if not user_id:
         return RedirectResponse(url="/login")
 
-    # 2. Mapeo de juegos
+    # 2. Mapeo de juegos LOCALES
     games_map = {
-        "tragamonedas": {"url": "https://tragamonedas-web.onrender.com", "name": "Tragamonedas"},
-        "ruleta": {"url": "https://ruleta-web.onrender.com", "name": "Ruleta"},
-        "blackjack": {"url": "https://blackjack-web-z4fm.onrender.com", "name": "Blackjack"},
+        "tragamonedas": {"url": "/juegos/tragamonedas-web/index.html", "name": "Tragamonedas"},
+        "ruleta": {"url": "/juegos/ruleta-web/index.html", "name": "Ruleta"},
+        "blackjack": {"url": "/juegos/blackjack-web/index.html", "name": "Blackjack"},
     }
     game = games_map.get(game_id)
     if not game:
@@ -239,6 +229,34 @@ async def play_game(request: Request, game_id: str):
 # =========================
 #  SOPORTE (MENÚ + SUBSECCIONES)
 # =========================
+@app.get("/api/saldo")
+async def api_get_balance_cookie(request: Request):
+    """
+    Endpoint para obtener saldo vía cookie (para juegos locales).
+    """
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        return JSONResponse({"error": "No autenticado"}, status_code=401)
+    
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        
+        saldo = float(result[0]) if result else 0.0
+        return JSONResponse({"saldo": saldo})
+            
+    except Exception as e:
+        print(f"🚨 API ERROR (Saldo): {e}")
+        return JSONResponse({"error": "Error interno"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
 @app.get("/support", response_class=HTMLResponse)
 async def support_root(request: Request):
     return render("support.html", request)
