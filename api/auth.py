@@ -11,7 +11,7 @@ from datetime import datetime # Para la fecha de registro
 # Usamos Argon2 porque bcrypt estaba dando problemas en Render
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
-router = APIRouter()
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 # Modelo Pydantic para validar los datos de entrada del login
 class UserLogin(BaseModel):
