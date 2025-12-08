@@ -13,6 +13,9 @@ let container = document.createElement('div');
 let wheel;
 let ballTrack;
 
+// Agregar el container al body para que se muestre
+document.body.appendChild(container);
+
 startGame();
 
 // MODIFICACIÓN: Integración de saldo de usuario real
