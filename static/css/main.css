@@ -26,7 +26,8 @@ header {
 }
 
 header img {
-  height: clamp(40px, 10vw, 48px);
+  height: clamp(60px, 15vw, 80px);
+  /* Aumentado de 48px */
 }
 
 header .profile {
