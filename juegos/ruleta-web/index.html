@@ -9,6 +9,31 @@
 	<meta name="orientation" content="landscape">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
+		/* =====================================================================
+		   DOCUMENTACIÓN DE ESTILOS - VALORES QUE AFECTAN LA POSICIÓN
+		   =====================================================================
+		   
+		   PROBLEMA: La ruleta aparece muy abajo en la pantalla
+		   
+		   VALORES CLAVE QUE AFECTAN LA POSICIÓN VERTICAL:
+		   
+		   1. En style.css línea 28-29:
+		      - #container { min-height: 470px; padding: 20px; }
+		      - Esto añade altura mínima y padding que empuja el contenido
+		   
+		   2. En este archivo (index.html):
+		      - translateY(-350px) → Mueve el contenido hacia ARRIBA (negativo = arriba)
+		        Aumentar este valor moverá la ruleta MÁS ARRIBA
+		        Ej: translateY(-500px) la moverá más arriba
+		      
+		      - scale(0.42) → Reduce el tamaño al 42%
+		        Valores mayores = más grande, menores = más pequeño
+		      
+		      - transform-origin: center center → Punto desde donde se escala
+		        Opciones: top center, bottom center, center center
+		   
+		   ===================================================================== */
+
 		/* Prevent text selection and dragging */
 		* {
 			-webkit-user-select: none;
@@ -19,15 +44,21 @@
 			-webkit-user-drag: none;
 		}
 
-		/* Portrait mode - Force rotation to landscape */
+		/* =====================================================================
+		   MODO PORTRAIT (Celular vertical) - Se rota 90° para simular landscape
+		   ===================================================================== */
 		@media screen and (orientation: portrait) {
 			html {
 				position: fixed !important;
 				width: 100vh !important;
+				/* Ancho = altura de la pantalla */
 				height: 100vw !important;
+				/* Alto = ancho de la pantalla */
+				/* ROTACIÓN: Gira la página 90 grados */
 				transform: rotate(90deg) translateX(0) !important;
 				transform-origin: bottom left !important;
 				overflow: hidden !important;
+				/* Fondo con patrón Royal Crumbs */
 				background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
 				background-image: url('pattern-bg.jpg') !important;
 				background-repeat: repeat !important;
@@ -41,18 +72,31 @@
 				padding: 0 !important;
 				display: flex !important;
 				align-items: center !important;
+				/* POSICIÓN VERTICAL del contenido */
 				justify-content: center !important;
+				/* POSICIÓN HORIZONTAL del contenido */
 				overflow: hidden !important;
 				background: transparent !important;
 			}
 
 			#container {
+				/* ⚠️ VALOR CLAVE PARA MOVER LA RULETA ARRIBA/ABAJO ⚠️
+				   translateY(-350px) = Mover 350px hacia ARRIBA
+				   - Aumentar el número negativo → Mover MÁS ARRIBA (ej: -500px)
+				   - Disminuir el número → Mover MÁS ABAJO (ej: -200px)
+				   
+				   scale(0.42) = Tamaño al 42% del original
+				   - Aumentar → Más grande (ej: 0.50)
+				   - Disminuir → Más pequeño (ej: 0.35)
+				*/
 				transform: scale(0.42) translateY(-350px) !important;
 				transform-origin: center center !important;
 			}
 		}
 
-		/* Landscape mode - Scale to fit */
+		/* =====================================================================
+		   MODO LANDSCAPE (Celular horizontal) - Display normal
+		   ===================================================================== */
 		@media screen and (orientation: landscape) {
 
 			html,
@@ -71,25 +115,27 @@
 			}
 
 			#container {
+				/* Escala para móvil horizontal */
 				transform: scale(0.48) !important;
 				transform-origin: center center !important;
 			}
 		}
 
-		/* Tablets landscape */
+		/* Tablets landscape (altura >= 500px) */
 		@media screen and (orientation: landscape) and (min-height: 500px) {
 			#container {
 				transform: scale(0.58) !important;
 			}
 		}
 
-		/* Desktop screens */
+		/* Desktop (ancho >= 1024px y altura >= 600px) */
 		@media screen and (min-width: 1024px) and (min-height: 600px) {
 			#container {
 				transform: scale(0.75) !important;
 			}
 		}
 
+		/* Pantallas grandes (ancho >= 1400px) */
 		@media screen and (min-width: 1400px) {
 			#container {
 				transform: scale(0.90) !important;
