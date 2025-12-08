@@ -15,25 +15,6 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-	background-image: url('pattern-bg.jpg');
-	background-repeat: repeat;
-	background-size: 300px 300px;
-}
-
-/* Contenedor principal de la aplicaci�n */
-#container {
-	display: flex;
-	justify-content: center;
-	background-color: transparent;
-	height: 470px;
-	padding: 20px;
-	color: #fff;
-}
-
-/* --- SECCI�N DE NOTIFICACIONES --- */
-/* Estilo para el cuadro de notificaci�n emergente (ej. "Bancarrota", "Ganaste") */
-#notification {
 	position: absolute;
 	width: 500px;
 	height: 318px;
