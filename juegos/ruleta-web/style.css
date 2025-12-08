@@ -15,6 +15,29 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+	background-image: url('pattern-bg.jpg');
+	background-repeat: repeat;
+	background-size: 300px 300px;
+}
+
+/* Contenedor principal de la aplicación */
+#container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	background-color: transparent;
+	min-height: 470px;
+	padding: 20px;
+	gap: 30px;
+	color: #fff;
+	flex-wrap: nowrap;
+}
+
+/* --- SECCIÓN DE NOTIFICACIONES --- */
+/* Estilo para el cuadro de notificación emergente (ej. "Bancarrota", "Ganaste") */
+#notification {
 	position: absolute;
 	width: 500px;
 	height: 318px;
