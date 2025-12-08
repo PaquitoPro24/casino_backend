@@ -231,9 +231,7 @@ async def play_game(request: Request, game_id: str):
 # =========================
 @app.get("/api/saldo")
 async def api_get_balance_cookie(request: Request):
-    """
-    Endpoint para obtener saldo vía cookie (para juegos locales).
-    """
+    """Endpoint para obtener saldo vía cookie (para juegos locales)."""
     user_id = request.cookies.get("userId")
     if not user_id:
         return JSONResponse({"error": "No autenticado"}, status_code=401)
