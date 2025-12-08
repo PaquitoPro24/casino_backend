@@ -14,7 +14,19 @@ import datetime # <-- ¡AÑADIMOS ESTE IMPORT!
 # =========================
 #  APP & STATIC / TEMPLATES
 # =========================
+from fastapi.middleware.cors import CORSMiddleware # Importar CORS
+
 app = FastAPI(title="Royal Crumbs")
+
+# Configurar CORS para permitir que los juegos externos (tragamonedas-web.onrender.com, etc)
+# consulten este backend.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # En producción cambiar por dominios específicos de los juegos
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # --- MARCA DE VERSIÓN PARA DESPLIEGUE ---
 print("✅✅✅ INICIANDO APLICACIÓN - VERSIÓN MÁS RECIENTE ✅✅✅")
@@ -210,42 +222,14 @@ async def play_game(request: Request, game_id: str):
     if not game:
         return RedirectResponse(url="/games")
     
-    # 3. Construir URL con el ID (para que el juego sepa quién es)
-    # Asumimos que el juego espera ?user_id=123 o similar. 
-    # El usuario dijo "como en app inventor", usualmente pasamos el dato en la URL.
-    final_url = f"{game['url']}?user_id={user_id}"
+    # 3. Construir URL con el ID y la URL del Backend
+    # Pasamos 'api_url' para que el juego sepa dónde consultar el saldo (Cross-Origin)
+    base_url = str(request.base_url).rstrip('/')
+    final_url = f"{game['url']}?user_id={user_id}&api_url={base_url}"
     
     return render("play_game.html", request, {"game_url": final_url, "game_name": game["name"]})
 
-@app.get("/api/saldo")
-async def api_get_balance_cookie(request: Request):
-    """
-    Endpoint para compatibilidad con juegos heredados (App Inventor).
-    Obtiene el saldo basado en la cookie de sesión 'userId'.
-    """
-    user_id = request.cookies.get("userId")
-    if not user_id:
-        return JSONResponse({"error": "No autenticado"}, status_code=401)
-    
-    conn = None
-    try:
-        conn = db_connect.get_connection()
-        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
-        
-        cursor = conn.cursor()
-        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (user_id,))
-        result = cursor.fetchone()
-        cursor.close()
-        
-        # Devolver JSON simple {"saldo": 123.45}
-        saldo = float(result[0]) if result else 0.0
-        return JSONResponse({"saldo": saldo})
-            
-    except Exception as e:
-        print(f"🚨 API ERROR (Legacy Saldo): {e}")
-        return JSONResponse({"error": "Error interno"}, status_code=500)
-    finally:
-        if conn: conn.close()
+
 
 # =========================
 #  SOPORTE (MENÚ + SUBSECCIONES)
