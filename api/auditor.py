@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
@@ -9,7 +9,13 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor
 import os
-from .auth import get_current_user_cookie
+
+# Simple auth dependency using cookies
+async def get_current_user_from_cookie(request: Request):
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="No autenticado")
+    return {"id_usuario": int(user_id)}
 
 router = APIRouter(prefix="/api", tags=["Auditor"])
 
@@ -30,7 +36,7 @@ os.makedirs(PDF_DIR, exist_ok=True)
 @router.post("/guardar_checklist", response_model=AuditoriaResponse)
 async def guardar_checklist(
     auditoria: AuditoriaRequest,
-    current_user: dict = Depends(get_current_user_cookie)
+    current_user: dict = Depends(get_current_user_from_cookie)
 ):
     """Guardar checklist de auditoría y generar PDF"""
     try:
@@ -99,7 +105,7 @@ async def guardar_checklist(
         raise HTTPException(status_code=500, detail=f"Error al guardar auditoría: {str(e)}")
 
 @router.get("/auditor/historial")
-async def obtener_historial(current_user: dict = Depends(get_current_user_cookie)):
+async def obtener_historial(current_user: dict = Depends(get_current_user_from_cookie)):
     """Obtener historial de auditorías del usuario"""
     try:
         from .db_config import get_db_connection
@@ -135,7 +141,7 @@ async def obtener_historial(current_user: dict = Depends(get_current_user_cookie
 @router.get("/pdf_auditoria/{id_auditoria}")
 async def descargar_pdf(
     id_auditoria: int,
-    current_user: dict = Depends(get_current_user_cookie)
+    current_user: dict = Depends(get_current_user_from_cookie)
 ):
     """Descargar PDF de auditoría"""
     try:
