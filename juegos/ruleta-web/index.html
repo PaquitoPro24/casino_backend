@@ -24,6 +24,30 @@
 			-moz-user-drag: none;
 			-o-user-drag: none;
 		}
+
+		/* Force horizontal layout */
+		body>div {
+			display: flex !important;
+			flex-direction: row !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 20px !important;
+			padding: 20px !important;
+			width: 100vw !important;
+			height: 100vh !important;
+			box-sizing: border-box !important;
+		}
+
+		/* Adjust wheel size for horizontal view */
+		.wheel {
+			transform: scale(0.9) !important;
+			flex-shrink: 0 !important;
+		}
+
+		/* Adjust betting board for horizontal view */
+		#betting_board {
+			flex-shrink: 0 !important;
+		}
 	</style>
 </head>
 
