@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
+from fastapi import APIRouter, Form, Request # <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
 from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
@@ -115,3 +115,5 @@ async def api_update_user_info(
     
     finally:
         if conn: conn.close()
+
+

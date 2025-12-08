@@ -217,6 +217,36 @@ async def play_game(request: Request, game_id: str):
     
     return render("play_game.html", request, {"game_url": final_url, "game_name": game["name"]})
 
+@app.get("/api/saldo")
+async def api_get_balance_cookie(request: Request):
+    """
+    Endpoint para compatibilidad con juegos heredados (App Inventor).
+    Obtiene el saldo basado en la cookie de sesión 'userId'.
+    """
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        return JSONResponse({"error": "No autenticado"}, status_code=401)
+    
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        cursor.execute("SELECT saldo_actual FROM Saldo WHERE id_usuario = %s", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        
+        # Devolver JSON simple {"saldo": 123.45}
+        saldo = float(result[0]) if result else 0.0
+        return JSONResponse({"saldo": saldo})
+            
+    except Exception as e:
+        print(f"🚨 API ERROR (Legacy Saldo): {e}")
+        return JSONResponse({"error": "Error interno"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
 # =========================
 #  SOPORTE (MENÚ + SUBSECCIONES)
 # =========================
