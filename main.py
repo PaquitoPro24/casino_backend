@@ -195,6 +195,12 @@ async def games_page(request: Request):
 
 @app.get("/play/{game_id}", response_class=HTMLResponse)
 async def play_game(request: Request, game_id: str):
+    # 1. Obtener User ID de la cookie
+    user_id = request.cookies.get("userId")
+    if not user_id:
+        return RedirectResponse(url="/login")
+
+    # 2. Mapeo de juegos
     games_map = {
         "tragamonedas": {"url": "https://tragamonedas-web.onrender.com", "name": "Tragamonedas"},
         "ruleta": {"url": "https://ruleta-web.onrender.com", "name": "Ruleta"},
@@ -204,7 +210,12 @@ async def play_game(request: Request, game_id: str):
     if not game:
         return RedirectResponse(url="/games")
     
-    return render("play_game.html", request, {"game_url": game["url"], "game_name": game["name"]})
+    # 3. Construir URL con el ID (para que el juego sepa quién es)
+    # Asumimos que el juego espera ?user_id=123 o similar. 
+    # El usuario dijo "como en app inventor", usualmente pasamos el dato en la URL.
+    final_url = f"{game['url']}?user_id={user_id}"
+    
+    return render("play_game.html", request, {"game_url": final_url, "game_name": game["name"]})
 
 # =========================
 #  SOPORTE (MENÚ + SUBSECCIONES)
