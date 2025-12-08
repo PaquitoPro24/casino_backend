@@ -72,19 +72,19 @@
 		/* Force landscape orientation - rotate if portrait */
 		@media screen and (orientation: portrait) {
 			html {
-				transform: rotate(-90deg);
+				transform: rotate(90deg);
 				transform-origin: left top;
 				width: 100vh;
-				height: 100vw;
 				overflow-x: hidden;
 				position: absolute;
-				top: 100%;
-				left: 0;
+				top: 0;
+				left: 100%;
 			}
 
 			body {
 				width: 100vh;
 				height: 100vw;
+				overflow: auto;
 			}
 		}
 
