@@ -7,7 +7,7 @@ from datetime import datetime
 import decimal # Para manejar el dinero de forma segura
 import random # Para simular la referencia
 
-router = APIRouter()
+router = APIRouter(prefix="/api/wallet", tags=["Wallet"])
 
 # ==========================================================
 #  RUTAS DE DEPÓSITO Y GUARDADO DE CLABE (Ya existentes)

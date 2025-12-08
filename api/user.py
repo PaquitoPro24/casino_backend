@@ -4,7 +4,7 @@ from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-router = APIRouter()
+router = APIRouter(prefix="/api/user", tags=["User"])
 
 @router.get("/{id_usuario}")
 async def api_get_user_info(id_usuario: int):

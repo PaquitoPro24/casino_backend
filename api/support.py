@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/api/support", tags=["Support"])
 
 # ==========================================================
 #  CREAR NUEVO TICKET DE SOPORTE

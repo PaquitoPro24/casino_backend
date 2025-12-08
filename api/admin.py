@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 # Configura el contexto de hasheo (mismo que auth.py)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
-router = APIRouter()
+router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
 # ==========================================================
 #  ESTADÍSTICAS (Ya existente)

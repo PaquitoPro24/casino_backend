@@ -5,7 +5,7 @@ from app.db import db_connect
 import random
 import decimal
 
-router = APIRouter()
+router = APIRouter(tags=["Games"])
 
 # Modelos
 class SpinRequest(BaseModel):
