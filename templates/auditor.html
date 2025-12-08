@@ -12,9 +12,10 @@
 
     <!-- ======== ENCABEZADO ======== -->
     <div class="rc-header">
-        <a href="/logout" class="rc-back">‹</a>
-        <h1 class="rc-screen-title">Panel Auditor</h1>
+        <!-- <a href="/logout" class="rc-back">‹</a> -->
         <div></div>
+        <h1 class="rc-screen-title">Panel Auditor</h1>
+        <button class="logout-btn" id="logoutBtn">Salir</button>
     </div>
 
     <!-- ======== CONTENEDOR ======== -->
@@ -40,5 +41,30 @@
     </div>
 
 </body>
+
+<script>
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("id_rol");
+        localStorage.removeItem("rol");
+        window.location.href = "/login";
+    });
+</script>
+
+<style>
+    .logout-btn {
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid rgba(255, 0, 0, 0.4);
+        color: #ffcccc;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 0, 0, 0.4);
+    }
+</style>
 
 </html>

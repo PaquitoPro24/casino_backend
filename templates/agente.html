@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agente de Soporte — Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/agente.css') }}">
 </head>
+
 <body>
   <div class="rc-container">
-    
+
     <!-- ENCABEZADO -->
     <header class="rc-header">
-      <a href="/home" class="rc-back">‹</a>
+      <!-- <a href="/home" class="rc-back">‹</a> -->
+      <div></div>
       <h1 class="rc-screen-title">Agente de Soporte</h1>
-      <div></div> <!-- espacio vacío para centrar título -->
+      <button class="logout-btn" id="logoutBtn">Salir</button>
     </header>
 
     <!-- SECCIÓN PRINCIPAL -->
@@ -48,5 +51,33 @@
       </div>
     </section>
   </div>
+  </section>
+  </div>
+
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("id_rol");
+      localStorage.removeItem("rol");
+      window.location.href = "/login";
+    });
+  </script>
+
+  <style>
+    .logout-btn {
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid rgba(255, 0, 0, 0.4);
+      color: #ffcccc;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 0, 0, 0.4);
+    }
+  </style>
 </body>
+
 </html>
