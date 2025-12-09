@@ -7,7 +7,16 @@
         "profile": "My Profile",
         "support": "Support",
         "admin": "Administration",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "subtitle": "Where every move is a luxury experience.",
+        "login_button": "Login",
+        "email": "Username or Email",
+        "password": "Password",
+        "forgot_password": "Forgot Password?",
+        "no_account": "Don't have an account? Sign up",
+        "create_account": "Create Account",
+        "register_button": "Sign Up",
+        "have_account": "Already have an account? Login"
     },
     "menu": {
         "home": "Home",

@@ -122,6 +122,14 @@
         <img src="{{ url_for('static', path='img/usuario_icon.png') }}" alt="Perfil">
       </button>
 
+      <!-- IDIOMA -->
+      <select id="langSwitcher"
+        style="background: #1a1a1a; color: #d8bb76; border: 1px solid #d8bb76; border-radius: 4px; padding: 4px; margin-right: 10px; cursor: pointer;">
+        <option value="es">ES</option>
+        <option value="en">EN</option>
+      </select>
+
+
       <!-- MENÚ DESPLEGABLE -->
       <div class="dropdown-menu" id="dropdownMenu">
         <a href="/account">Mi Cuenta</a>
@@ -140,14 +148,14 @@
       <div class="welcome-card">
         <img src="{{ url_for('static', path='img/casino.jpg') }}" alt="Bienvenido a Royal Crumbs">
         <div class="welcome-overlay">
-          <h1>BIENVENIDO<br>A ROYAL CRUMBS</h1>
-          <p>Donde cada jugada es una experiencia de lujo.</p>
+          <h1>{{ trans('common.welcome', request) }}</h1>
+          <p>{{ trans('common.subtitle', request) }}</p>
         </div>
       </div>
     </section>
 
     <section class="bonus-section">
-      <h2>BONOS Y PROMOCIONES</h2>
+      <h2>{{ trans('menu.promotions', request) }}</h2>
       <div class="bonus-card">
         <img src="{{ url_for('static', path='img/bonos.jpg') }}" alt="Bono de bienvenida">
         <div class="bonus-info">
@@ -213,7 +221,36 @@
       });
     }
   </script>
+
+  // === IDIOMA ===
+  const langSwitcher = document.getElementById('langSwitcher');
+
+  // Set initial value based on cookie
+  const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  langSwitcher.value = getCookie('app_lang') || 'es';
+
+  langSwitcher.addEventListener('change', async (e) => {
+  const newLang = e.target.value;
+  try {
+  const res = await fetch('/set-language', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({lang: newLang})
+  });
+  if (res.ok) {
+  window.location.reload();
+  }
+  } catch (err) {
+  console.error(err);
+  }
+  });
+  </script>
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
+
 </body>
 
 </html>

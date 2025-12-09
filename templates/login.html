@@ -225,22 +225,30 @@
 
 <body>
   <div class="login-container">
+    <div style="position: absolute; top: 20px; right: 20px;">
+      <select id="loginLangSwitcher"
+        style="background: #202020; color: #fff; border: 1px solid #AB925C; border-radius: 4px; padding: 5px; cursor: pointer;">
+        <option value="es">ES</option>
+        <option value="en">EN</option>
+      </select>
+    </div>
     <img src="{{ url_for('static', path='img/logo.png') }}" alt="Royal Crumbs Logo" class="logo">
-    <h1 class="title">Iniciar Sesión</h1>
+    <h1 class="title">{{ trans('common.login', request) }}</h1>
 
     <form id="login-form" class="login-form">
-      <input type="email" id="email" name="email" class="input-field" placeholder="Usuario o Correo Electrónico"
+      <input type="email" id="email" name="email" class="input-field" placeholder="{{ trans('common.email', request) }}"
         required>
-      <input type="password" id="password" name="password" class="input-field" placeholder="Contraseña" required>
+      <input type="password" id="password" name="password" class="input-field"
+        placeholder="{{ trans('common.password', request) }}" required>
 
-      <a href="/forgot-password" class="forgot-password">¿Olvidaste tu Contraseña?</a>
+      <a href="/forgot-password" class="forgot-password">{{ trans('common.forgot_password', request) }}</a>
 
-      <button type="submit" class="btn-login">Iniciar Sesión</button>
+      <button type="submit" class="btn-login">{{ trans('common.login_button', request) }}</button>
     </form>
 
     <div id="error-message" class="error-message" style="display: none;"></div>
 
-    <a href="/register" class="register-link">¿No tienes una cuenta? Regístrate</a>
+    <a href="/register" class="register-link">{{ trans('common.no_account', request) }}</a>
   </div>
 
   <script>
@@ -316,6 +324,36 @@
         }
       });
     });
+  </script>
+  <script>
+    // === IDIOMA ===
+    const loginLangSwitcher = document.getElementById('loginLangSwitcher');
+
+    // Set initial value
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    if (loginLangSwitcher) {
+      loginLangSwitcher.value = getCookie('app_lang') || 'es';
+
+      loginLangSwitcher.addEventListener('change', async (e) => {
+        const newLang = e.target.value;
+        try {
+          const res = await fetch('/set-language', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lang: newLang })
+          });
+          if (res.ok) {
+            window.location.reload();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
   </script>
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
 </body>

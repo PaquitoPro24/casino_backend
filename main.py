@@ -144,6 +144,26 @@ async def home_page(request: Request):
 async def games_page(request: Request):
     return render("games.html", request)
 
+@app.post("/set-language")
+async def set_language(request: Request):
+    """
+    Endpoint para cambiar el idioma globalmente.
+    Recibe JSON: {"lang": "es" | "en"}
+    Setea la cookie 'app_lang'
+    """
+    try:
+        data = await request.json()
+        lang = data.get("lang", "es")
+        if lang not in ["es", "en"]:
+            lang = "es"
+        
+        response = JSONResponse({"success": True, "lang": lang})
+        response.set_cookie(key="app_lang", value=lang, max_age=31536000, httponly=False)
+        return response
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=400)
+
+
 @app.get("/play/{game_id}", response_class=HTMLResponse)
 async def play_game(request: Request, game_id: str):
     # 1. Obtener User ID de la cookie
