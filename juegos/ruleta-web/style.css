@@ -1035,7 +1035,7 @@ only screen and (max-height: 550px) {
 		/* Ajusta estos valores para cambiar el tamaño: */
 		/* - scaleX controla el ancho (horizontal) */
 		/* - scaleY controla el alto (vertical) */
-		transform: scaleX(calc(85vw / 1500)) scaleY(calc(85vh / 900));
+		transform: scaleX(calc(75vw / 2000)) scaleY(calc(75vh / 1200));
 		height: auto;
 		margin: 0;
 	}
