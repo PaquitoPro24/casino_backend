@@ -4,6 +4,7 @@ from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from app.utils import serialize_data
 import decimal # Para manejar el dinero de forma segura
 import random # Para simular la referencia
 
@@ -369,4 +370,44 @@ async def api_deposit_transfer(
     
     finally:
         if cursor: cursor.close()
+        if conn: conn.close()
+# ==========================================================
+#  HISTORIAL DE TRANSACCIONES
+# ==========================================================
+@router.get("/transactions/{id_usuario}")
+async def api_get_transactions(id_usuario: int):
+    """
+    Obtiene el historial de transacciones del usuario
+    """
+    print(f"🔹 API: Historial de transacciones para: {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        cursor.execute(
+            """
+            SELECT 
+                tipo_transaccion, 
+                monto, 
+                estado, 
+                metodo_pago, 
+                fecha_transaccion
+            FROM Transaccion
+            WHERE id_usuario = %s
+            ORDER BY fecha_transaccion DESC
+            """,
+            (id_usuario,)
+        )
+        transactions = cursor.fetchall()
+        cursor.close()
+        
+        return JSONResponse({"transactions": serialize_data(transactions)})
+
+    except Exception as e:
+        print(f"🚨 API ERROR (Historial Transacciones): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
         if conn: conn.close()

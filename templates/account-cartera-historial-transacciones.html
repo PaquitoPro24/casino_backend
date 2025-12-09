@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Historial de Transacciones - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-cartera-historial-transacciones.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -16,25 +18,12 @@
     </div>
 
     <!-- BUSCADOR -->
-    <input type="text" class="search-bar" placeholder="Buscar transacciones">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Buscar transacciones"
+      onkeyup="filtrarTransacciones()">
 
     <!-- LISTA DE TRANSACCIONES -->
-    <div class="transaction-list">
-      <div class="transaction-item">
-        <div>
-          <h3>15 mayo de 2024</h3>
-          <p>Depósito</p>
-        </div>
-        <span class="positivo">+ 500</span>
-      </div>
-
-      <div class="transaction-item">
-        <div>
-          <h3>15 mayo de 2024</h3>
-          <p>Retiro</p>
-        </div>
-        <span class="positivo">+ 2500</span>
-      </div>
+    <div class="transaction-list" id="transactionContainer">
+      <div class="rc-loading">Cargando transacciones...</div>
     </div>
   </div>
 
@@ -52,12 +41,90 @@
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
       <span>Soporte</span>
     </a>
-    <a href="/wallet" class="rc-nav-item active">
+    <a href="/account/cartera" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
       <span>Cartera</span>
     </a>
   </nav>
 
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
-</body>
+  <script>
+    const userId = localStorage.getItem('user_id');
+    let allTransactions = [];
+
+    async function cargarTransacciones() {
+      const container = document.getElementById('transactionContainer');
+
+      if (!userId) {
+        container.innerHTML = '<div class="rc-error">No has iniciado sesión</div>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/wallet/transactions/${userId}`);
+        if (!response.ok) throw new Error('Error al conectar con el servidor');
+
+        const data = await response.json();
+
+        if (data.error) {
+          container.innerHTML = `<div class="rc-error">${data.error}</div>`;
+          return;
+        }
+
+        allTransactions = data.transactions || [];
+        renderTransactions(allTransactions);
+
+      } catch (error) {
+        console.error(error);
+        container.innerHTML = '<div class="rc-error">Error al cargar historial</div>';
+      }
+    }
+
+    function renderTransactions(list) {
+      const container = document.getElementById('transactionContainer');
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="rc-empty">No hay transacciones registradas</div>';
+        return;
+      }
+
+      container.innerHTML = list.map(tx => {
+        const fecha = new Date(tx.fecha_transaccion).toLocaleDateString('es-ES', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        });
+        const esPositivo = tx.tipo_transaccion === 'Depósito' || tx.tipo_transaccion === 'Premio'; // Asumiendo Deposito es positivo
+        // Ajustamos lógica: Depósito = positivo, Retiro = negativo (visual)
+        // Pero en DB el monto suele ser absoluto.
+        const signo = (tx.tipo_transaccion === 'Retiro') ? '-' : '+';
+        const claseColor = (tx.tipo_transaccion === 'Retiro') ? 'negativo' : 'positivo'; // CSS class needed? o siempre verde? 
+        // En el mockup original todo era 'positivo' (verde).
+        // Vamos a usar 'positivo' para deposito/premio y tal vez nada para retiro.
+
+        const colorStyle = (tx.tipo_transaccion === 'Retiro') ? 'color: #ff4444;' : 'color: #4CAF50;';
+
+        return `
+            <div class="transaction-item">
+                <div>
+                    <h3>${fecha}</h3>
+                    <p>${tx.tipo_transaccion} - ${tx.metodo_pago} (${tx.estado})</p>
+                </div>
+                <span style="${colorStyle} font-weight: bold;">${signo} $${tx.monto}</span>
+            </div>
+            `;
+      }).join('');
+    }
+
+    function filtrarTransacciones() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtrados = allTransactions.filter(tx =>
+        tx.tipo_transaccion.toLowerCase().includes(query) ||
+        tx.estado.toLowerCase().includes(query) ||
+        tx.metodo_pago.toLowerCase().includes(query)
+      );
+      renderTransactions(filtrados);
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarTransacciones);
+  </script>
+
 </html>
