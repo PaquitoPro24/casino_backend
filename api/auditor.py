@@ -23,6 +23,7 @@ router = APIRouter(prefix="/api", tags=["Auditor"])
 class AuditoriaRequest(BaseModel):
     fecha: str
     respuestas: Dict[str, str]
+    comentarios: Optional[Dict[str, str]] = {}
 
 class AuditoriaResponse(BaseModel):
     exito: bool
@@ -61,7 +62,8 @@ async def guardar_checklist(
             "parcial": parcial,
             "no_aplica": no_aplica,
             "porcentaje_cumplimiento": porcentaje,
-            "respuestas": auditoria.respuestas
+            "respuestas": auditoria.respuestas,
+            "comentarios": auditoria.comentarios if auditoria.comentarios else {}
         }
         
         cursor.execute("""
@@ -92,7 +94,8 @@ async def guardar_checklist(
             no_cumple,
             parcial,
             no_aplica,
-            porcentaje
+            porcentaje,
+            auditoria.comentarios if auditoria.comentarios else {}
         )
         
         return AuditoriaResponse(
@@ -177,7 +180,8 @@ async def descargar_pdf(
                 datos.get("no_cumple", 0),
                 datos.get("parcial", 0),
                 datos.get("no_aplica", 0),
-                datos.get("porcentaje_cumplimiento", 0)
+                datos.get("porcentaje_cumplimiento", 0),
+                datos.get("comentarios", {})
             )
             
             cursor.close()
@@ -203,7 +207,8 @@ def generar_pdf_auditoria(
     no_cumple: int,
     parcial: int,
     no_aplica: int,
-    porcentaje: int
+    porcentaje: int,
+    comentarios: Dict[str, str] = {}
 ):
     """Generar PDF de auditoría con ReportLab"""
     c = canvas.Canvas(pdf_path, pagesize=letter)
@@ -213,6 +218,7 @@ def generar_pdf_auditoria(
     dorado = HexColor("#ab925c")
     negro = HexColor("#1a1a1a")
     gris = HexColor("#666666")
+    azul = HexColor("#4a90e2")
     
     # Header
     c.setFillColor(dorado)
@@ -310,5 +316,50 @@ def generar_pdf_auditoria(
     c.setFillColor(dorado)
     c.setFont("Helvetica-Bold", 16)
     c.drawString(100, y, f"Cumplimiento Total: {porcentaje}%")
+    y -= 60
+    
+    # Comentarios (si existen)
+    if comentarios:
+        c.setFillColor(dorado)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(100, y, "Comentarios y Observaciones")
+        y -= 30
+        
+        for seccion, comentario in comentarios.items():
+            if y < 150:
+                c.showPage()
+                y = height - 50
+            
+            # Título de la sección
+            c.setFillColor(azul)
+            c.setFont("Helvetica-Bold", 11)
+            seccion_nombre = seccion.replace('_', ' ').title()
+            c.drawString(100, y, f"• {seccion_nombre}")
+            y -= 20
+            
+            # Comentario con word wrap
+            c.setFillColor(negro)
+            c.setFont("Helvetica", 9)
+            comentario_lines = []
+            words = comentario.split()
+            line = ""
+            for word in words:
+                test_line = line + word + " "
+                if c.stringWidth(test_line, "Helvetica", 9) < width - 220:
+                    line = test_line
+                else:
+                    comentario_lines.append(line)
+                    line = word + " "
+            comentario_lines.append(line)
+            
+            for line in comentario_lines:
+                if y < 100:
+                    c.showPage()
+                    y = height - 50
+                c.drawString(120, y, line)
+                y -= 12
+            
+            y -= 10  # Espacio entre comentarios
     
     c.save()
+

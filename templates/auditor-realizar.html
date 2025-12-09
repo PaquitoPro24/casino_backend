@@ -264,9 +264,11 @@
         // Generar el cuestionario dinámicamente
         var cuestionario = document.getElementById('cuestionario');
         var contador = 0;
+        var seccionActual = '';
 
-        datosAuditoria.forEach(function (item) {
+        datosAuditoria.forEach(function (item, index) {
             if (item.type === "titulo") {
+                seccionActual = item.texto;
                 cuestionario.innerHTML += `<div class="section-title">${item.texto}</div>`;
             } else if (item.type === "grid") {
                 cuestionario.innerHTML += `<div style="margin-top:15px; font-weight:bold; color:#ab925c;">${item.titulo}</div>`;
@@ -274,6 +276,20 @@
                     contador++;
                     cuestionario.innerHTML += crearPregunta('q' + contador, pregunta);
                 });
+
+                // Agregar campo de comentarios después de cada subsección
+                cuestionario.innerHTML += `
+                    <div style="margin-top:15px; margin-bottom:20px;">
+                        <label style="display:block; color:#ab925c; font-weight:bold; margin-bottom:5px;">
+                            💬 Comentarios adicionales (opcional):
+                        </label>
+                        <textarea 
+                            name="comentario_${item.titulo.replace(/[^a-zA-Z0-9]/g, '_')}" 
+                            placeholder="Agregue observaciones, recomendaciones o notas adicionales..."
+                            style="width:100%; min-height:80px; padding:10px; background:#2a2a2a; border:1px solid #ab925c; color:#fff; border-radius:5px; font-family:Arial; resize:vertical;"
+                        ></textarea>
+                    </div>
+                `;
             }
         });
 
@@ -283,10 +299,19 @@
 
             const formData = new FormData(this);
             const respuestas = {};
+            const comentarios = {};
 
-            // Recopilar todas las respuestas
+            // Recopilar todas las respuestas y comentarios
             for (let [key, value] of formData.entries()) {
-                if (key !== 'fecha') {
+                if (key === 'fecha') {
+                    // Ignorar, se maneja aparte
+                } else if (key.startsWith('comentario_')) {
+                    // Es un comentario
+                    if (value.trim()) {  // Solo guardar si no está vacío
+                        comentarios[key.replace('comentario_', '')] = value;
+                    }
+                } else {
+                    // Es una respuesta de pregunta
                     const pregunta = document.querySelector(`input[name="${key}"]`)
                         .closest('.question-block')
                         .querySelector('.question-text').textContent;
@@ -296,7 +321,8 @@
 
             const datos = {
                 fecha: formData.get('fecha'),
-                respuestas: respuestas
+                respuestas: respuestas,
+                comentarios: comentarios
             };
 
             try {
@@ -325,7 +351,7 @@
         document.addEventListener('copy', e => e.preventDefault());
         document.addEventListener('dragstart', e => e.preventDefault());
     </script>
-  <script src="{{ url_for('static', path='js/security.js') }}"></script>
+    <script src="{{ url_for('static', path='js/security.js') }}"></script>
 </body>
 
 </html>
