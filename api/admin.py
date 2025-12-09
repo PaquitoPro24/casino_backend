@@ -4,11 +4,23 @@ from app.db import db_connect # <-- CORRECCIÓN: Importación relativa
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import decimal # Importamos decimal para manejar dinero
-from datetime import datetime # Para manejar fechas
+from datetime import datetime, date # Para manejar fechas
 from passlib.context import CryptContext
 
 # Configura el contexto de hasheo (mismo que auth.py)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+# Helper para serialización JSON
+def serialize_data(data):
+    if isinstance(data, list):
+        return [serialize_data(x) for x in data]
+    if isinstance(data, dict):
+        return {k: serialize_data(v) for k, v in data.items()}
+    if isinstance(data, (datetime, date)):
+        return data.isoformat()
+    if isinstance(data, decimal.Decimal):
+        return float(data)
+    return data
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -255,7 +267,7 @@ async def api_update_user_profile(
     apellido: str = Form(),
     email: str = Form(),
     rol: str = Form(),
-    activo: bool = Form()
+    activo: str = Form()
 ):
     """
     Actualiza el perfil de un usuario desde el panel de admin.
@@ -279,7 +291,7 @@ async def api_update_user_profile(
         # Ahora actualizamos con id_rol
         cursor.execute(
             "UPDATE Usuario SET nombre = %s, apellido = %s, email = %s, id_rol = %s, activo = %s WHERE id_usuario = %s",
-            (nombre, apellido, email, id_rol, activo, id_usuario)
+            (nombre, apellido, email, id_rol, activo.lower() == 'true', id_usuario)
         )
         conn.commit()
         cursor.close()
@@ -310,7 +322,7 @@ async def api_get_all_games():
         cursor.execute("SELECT * FROM Juego ORDER BY nombre")
         juegos = cursor.fetchall()
         cursor.close()
-        return JSONResponse({"games": juegos})
+        return JSONResponse({"games": serialize_data(juegos)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Admin Get Games): {e}")
@@ -352,6 +364,27 @@ async def api_create_game(
     finally:
         if conn: conn.close()
 
+@router.put("/games/{id_juego}/status")
+async def api_toggle_game_status(id_juego: int, activo: bool = Form()):
+    """
+    Activa o desactiva un juego.
+    """
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Juego SET activo = %s WHERE id_juego = %s", (activo, id_juego))
+        conn.commit()
+        cursor.close()
+        return JSONResponse({"success": True})
+    except Exception as e:
+        if conn: conn.rollback()
+        return JSONResponse({"error": str(e)}, status_code=500)
+    finally:
+        if conn: conn.close()
+
 # ==========================================================
 #  GESTIÓN DE PROMOCIONES (Ya existente)
 # ==========================================================
@@ -370,7 +403,7 @@ async def api_get_all_bonos():
         cursor.execute("SELECT * FROM Bono ORDER BY nombre_bono")
         bonos = cursor.fetchall()
         cursor.close()
-        return JSONResponse({"bonos": bonos})
+        return JSONResponse({"bonos": serialize_data(bonos)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Admin Get Bonos): {e}")
