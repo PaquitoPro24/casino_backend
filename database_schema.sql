@@ -246,3 +246,20 @@ CREATE INDEX idx_chat_estado ON Chat (estado);
 -- Mensaje_Chat: Búsquedas por chat y ordenamiento por fecha
 CREATE INDEX idx_mensaje_chat_chat ON Mensaje_Chat (id_chat);
 CREATE INDEX idx_mensaje_chat_fecha ON Mensaje_Chat (id_chat, fecha_mensaje);
+
+-- ===================================================================
+-- 16. TABLA RESPUESTA_TICKET
+-- Almacena las respuestas de los tickets de soporte
+-- ===================================================================
+CREATE TABLE IF NOT EXISTS RespuestaTicket (
+    id_respuesta SERIAL PRIMARY KEY,
+    id_ticket INTEGER NOT NULL REFERENCES Soporte(id_ticket) ON DELETE CASCADE,
+    id_usuario INTEGER NOT NULL REFERENCES Usuario(id_usuario) ON DELETE RESTRICT,
+    mensaje TEXT NOT NULL,
+    fecha_respuesta TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+    es_agente BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE INDEX idx_respuesta_ticket ON RespuestaTicket (id_ticket);
+CREATE INDEX idx_respuesta_fecha ON RespuestaTicket (id_ticket, fecha_respuesta);
+

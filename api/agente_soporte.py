@@ -249,36 +249,110 @@ async def api_get_ticket_detail(id_ticket: int):
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
+        # 1. Obtener info del ticket
         cursor.execute("""
             SELECT 
                 s.id_ticket,
                 s.id_jugador,
-                u.nombre as nombre_jugador,
-                u.apellido as apellido_jugador,
-                u.email as email_jugador,
+                u.nombre as nombre_usuario,
+                u.apellido as apellido_usuario,
+                u.email,
                 s.asunto,
                 s.mensaje,
                 s.estado,
                 s.fecha_creacion,
                 s.fecha_cierre,
-                s.id_agente
+                s.id_agente,
+                (SELECT nombre || ' ' || apellido FROM Usuario WHERE id_usuario = s.id_agente) as nombre_agente
             FROM Soporte s
             JOIN Usuario u ON s.id_jugador = u.id_usuario
             WHERE s.id_ticket = %s
         """, (id_ticket,))
         
         ticket = cursor.fetchone()
-        cursor.close()
         
         if not ticket:
+            cursor.close()
             return JSONResponse({"error": "Ticket no encontrado"}, status_code=404)
+
+        # 2. Obtener respuestas
+        cursor.execute("""
+            SELECT 
+                r.id_respuesta,
+                r.id_usuario,
+                u.nombre || ' ' || u.apellido as nombre_usuario,
+                r.mensaje,
+                r.fecha_respuesta,
+                r.es_agente
+            FROM RespuestaTicket r
+            JOIN Usuario u ON r.id_usuario = u.id_usuario
+            WHERE r.id_ticket = %s
+            ORDER BY r.fecha_respuesta ASC
+        """, (id_ticket,))
         
-        return JSONResponse(serialize_data(ticket))
+        respuestas = cursor.fetchall()
+        cursor.close()
+        
+        return JSONResponse({
+            "ticket": serialize_data(ticket),
+            "respuestas": serialize_data(respuestas)
+        })
 
     except Exception as e:
         print(f"🚨 API ERROR (Detalle Ticket): {e}")
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
+        if conn: conn.close()
+
+
+# ==========================================================
+#  RESPONDER TICKET
+# ==========================================================
+@router.post("/responder-ticket")
+async def api_respond_ticket(
+    id_ticket: int = Form(),
+    id_agente: int = Form(),
+    mensaje: str = Form()
+):
+    """
+    Agrega una respuesta a un ticket por parte del agente
+    """
+    print(f"🔹 API Agente: Respondiendo ticket {id_ticket}")
+    conn = None
+    cursor = None
+    
+    try:
+        conn = db_connect.get_connection()
+        if conn is None:
+            return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        
+        # Insertar respuesta
+        cursor.execute("""
+            INSERT INTO RespuestaTicket (id_ticket, id_usuario, mensaje, es_agente, fecha_respuesta)
+            VALUES (%s, %s, %s, TRUE, NOW())
+        """, (id_ticket, id_agente, mensaje))
+        
+        # Si el ticket estaba 'Abierto', pasarlo a 'En Proceso' ? 
+        # Opcional, pero buena práctica si el agente responde.
+        cursor.execute("""
+            UPDATE Soporte 
+            SET estado = 'En Proceso' 
+            WHERE id_ticket = %s AND estado = 'Abierto'
+        """, (id_ticket,))
+        
+        conn.commit()
+        
+        print(f"✅ Respuesta enviada al ticket {id_ticket}")
+        return JSONResponse({"success": True, "message": "Respuesta enviada correctamente"})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Responder Ticket): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if cursor: cursor.close()
         if conn: conn.close()
 
 
