@@ -219,7 +219,8 @@ async function spinOnce() {
           clearInterval(animationInterval);
 
           // Obtener resultado para ESTE rodillo específico del servidor
-          fetch(`${API_URL}/reel`, {
+          // Obtener resultado para ESTE rodillo específico del servidor
+          fetch(`${API_URL}/api/reel`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ reel_index: reelIndex })
@@ -268,7 +269,7 @@ async function spinOnce() {
 
   // Enviar spin al servidor con autenticación
   try {
-    const spinResponse = await fetch(`${API_URL}/spin`, {
+    const spinResponse = await fetch(`${API_URL}/api/spin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
