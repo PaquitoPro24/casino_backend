@@ -40,7 +40,7 @@ async def guardar_checklist(
 ):
     """Guardar checklist de auditoría y generar PDF"""
     try:
-        from .db_config import get_db_connection
+        from app.db import db_connect
         
         # Calcular estadísticas
         cumple = sum(1 for v in auditoria.respuestas.values() if v == "Cumple")
@@ -52,7 +52,7 @@ async def guardar_checklist(
         porcentaje = round(((cumple + (parcial * 0.5)) / total_respondidas) * 100) if total_respondidas > 0 else 0
         
         # Guardar en base de datos
-        conn = get_db_connection()
+        conn = db_connect.get_connection()
         cursor = conn.cursor()
         
         datos_json = {
@@ -108,9 +108,9 @@ async def guardar_checklist(
 async def obtener_historial(current_user: dict = Depends(get_current_user_from_cookie)):
     """Obtener historial de auditorías del usuario"""
     try:
-        from .db_config import get_db_connection
+        from app.db import db_connect
         
-        conn = get_db_connection()
+        conn = db_connect.get_connection()
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -150,9 +150,9 @@ async def descargar_pdf(
         
         if not os.path.exists(pdf_path):
             # Si no existe, regenerar
-            from .db_config import get_db_connection
+            from app.db import db_connect
             
-            conn = get_db_connection()
+            conn = db_connect.get_connection()
             cursor = conn.cursor()
             
             cursor.execute("""
