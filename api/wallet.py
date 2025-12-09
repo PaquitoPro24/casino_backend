@@ -411,3 +411,63 @@ async def api_get_transactions(id_usuario: int):
         return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
+
+# ==========================================================
+#  SOLICITAR PRÉSTAMO (SIMULADO)
+# ==========================================================
+@router.post("/loan")
+async def api_request_loan(
+    id_usuario: int = Form(),
+    monto: str = Form()
+):
+    """
+    Simula un préstamo ingresando dinero a la cuenta.
+    """
+    print(f"🔹 API: Solicitud de préstamo de ${monto} para usuario: {id_usuario}")
+    conn = None
+    try:
+        monto_decimal = decimal.Decimal(monto)
+        if monto_decimal <= 0:
+            return JSONResponse({"error": "El monto debe ser positivo."}, status_code=400)
+    except:
+         return JSONResponse({"error": "Monto inválido."}, status_code=400)
+
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+
+        # 1. Registrar la transacción como 'Completada' (Préstamo)
+        cursor.execute(
+            """
+            INSERT INTO Transaccion 
+                (id_usuario, tipo_transaccion, monto, estado, metodo_pago, fecha_transaccion)
+            VALUES 
+                (%s, 'Préstamo', %s, 'Completada', 'Crédito Casino', %s)
+            """,
+            (id_usuario, monto_decimal, datetime.now())
+        )
+        
+        # 2. Actualizar el saldo del usuario (Incrementar)
+        cursor.execute(
+            """
+            UPDATE Saldo 
+            SET saldo_actual = saldo_actual + %s, ultima_actualizacion = %s 
+            WHERE id_usuario = %s
+            """,
+            (monto_decimal, datetime.now(), id_usuario)
+        )
+        
+        conn.commit()
+        cursor.close()
+        
+        print(f"✅ API: Préstamo de ${monto} abonado a {id_usuario}")
+        return JSONResponse({"success": True, "message": "Préstamo aprobado y abonado a tu cuenta."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Loan): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()

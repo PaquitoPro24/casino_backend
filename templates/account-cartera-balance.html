@@ -35,13 +35,13 @@
       <section class="prestamo-section">
         <h2 class="rc-subtitle">Préstamo</h2>
 
-        <input type="text" class="input-field" placeholder="Introduce un monto">
+        <input type="number" id="loanAmount" class="input-field" placeholder="Introduce un monto">
         <select class="input-field">
           <option>Seleccionar Garantía</option>
           <option>Saldo Principal</option>
           <option>Bonificación</option>
         </select>
-        <button class="btn-dorado">Solicitar</button>
+        <button id="btnSolicitarPrestamo" class="btn-dorado">Solicitar</button>
 
         <div class="balance-box">
           <h3>Adeudos</h3>
@@ -170,7 +170,51 @@
         const saldoTotal = document.querySelector(".saldo-total");
         if (saldoTotal) saldoTotal.textContent = "Error al cargar";
         alert("Error: " + error.message + "\n\nRevisa la consola (F12) para más detalles.");
+        alert("Error: " + error.message + "\n\nRevisa la consola (F12) para más detalles.");
       }
+
+      // -----------------------------------------------------------------
+      // LÓGICA DE PRÉSTAMO (NUEVO)
+      // -----------------------------------------------------------------
+      const btnPrestamo = document.getElementById("btnSolicitarPrestamo");
+      if (btnPrestamo) {
+        btnPrestamo.addEventListener("click", async () => {
+          const amountInput = document.getElementById("loanAmount");
+          const amount = amountInput.value;
+
+          if (!amount || amount <= 0) {
+            alert("Ingresa un monto válido para el préstamo.");
+            return;
+          }
+
+          // Confirmación simple
+          if (!confirm(`¿Solicitar préstamo de $${amount}?`)) return;
+
+          const formData = new FormData();
+          formData.append("id_usuario", userId);
+          formData.append("monto", amount);
+
+          try {
+            const res = await fetch("/api/wallet/loan", {
+              method: "POST",
+              body: formData
+            });
+            const result = await res.json();
+
+            if (result.success) {
+              alert(result.message);
+              window.location.reload(); // Recargar para ver saldo actualizado
+            } else {
+              alert("Error: " + (result.error || "Desconocido"));
+            }
+
+          } catch (err) {
+            console.error(err);
+            alert("Error de conexión al solicitar préstamo.");
+          }
+        });
+      }
+
     });
   </script>
 
