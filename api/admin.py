@@ -294,6 +294,64 @@ async def api_update_user_profile(
     finally:
         if conn: conn.close()
 
+@router.post("/user-password-reset/{id_usuario}")
+async def api_admin_reset_password(id_usuario: int, new_password: str = Form()):
+    """
+    Restablece la contraseña de un usuario desde el admin.
+    Llamada por: admin-usuario-perfil.html
+    """
+    print(f"🔹 API Admin: Reset password para usuario {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        # Hashear la nueva contraseña
+        hashed_password = pwd_context.hash(new_password)
+        
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE Usuario SET password_hash = %s WHERE id_usuario = %s",
+            (hashed_password, id_usuario)
+        )
+        conn.commit()
+        cursor.close()
+        
+        return JSONResponse({"success": True, "message": "Contraseña actualizada."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Admin Reset Pwd): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
+@router.delete("/user-profile/{id_usuario}")
+async def api_delete_user(id_usuario: int):
+    """
+    Elimina un usuario (y sus datos relacionados por CASCADE).
+    Llamada por: admin-usuario-perfil.html
+    """
+    print(f"🔹 API Admin: Eliminando usuario {id_usuario}")
+    conn = None
+    try:
+        conn = db_connect.get_connection()
+        if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
+        
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Usuario WHERE id_usuario = %s", (id_usuario,))
+        conn.commit()
+        cursor.close()
+        
+        return JSONResponse({"success": True, "message": "Usuario eliminado."})
+
+    except Exception as e:
+        if conn: conn.rollback()
+        print(f"🚨 API ERROR (Admin Delete User): {e}")
+        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+    finally:
+        if conn: conn.close()
+
 # ==========================================================
 #  GESTIÓN DE JUEGOS (Ya existente)
 # ==========================================================

@@ -1,0 +1,24 @@
+{
+    "common": {
+        "welcome": "Welcome to Royal Crumbs",
+        "login": "Log In",
+        "register": "Sign Up",
+        "logout": "Log Out",
+        "profile": "My Profile",
+        "support": "Support",
+        "admin": "Administration",
+        "loading": "Loading..."
+    },
+    "menu": {
+        "home": "Home",
+        "games": "Games",
+        "promotions": "Promotions",
+        "about": "About Us"
+    },
+    "forms": {
+        "email": "Email",
+        "password": "Password",
+        "submit": "Submit",
+        "cancel": "Cancel"
+    }
+}

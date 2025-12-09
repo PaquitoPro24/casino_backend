@@ -71,10 +71,12 @@ async def api_update_user_info(
     id_usuario: int,
     nombre: str = Form(),
     apellido: str = Form(),
-    email: str = Form()
+    email: str = Form(),
+    contrasena: str = Form(None) # Opcional
 ):
     """
     Ruta para GUARDAR los cambios del formulario de 'account-configuracion.html'
+    Ahora soporta cambio de contraseña.
     """
     print(f"🔹 API: Actualizando perfil para: {id_usuario}")
     conn = None
@@ -85,7 +87,7 @@ async def api_update_user_info(
         
         cursor = conn.cursor()
         
-        # 1. Ejecutar el UPDATE en la tabla 'Usuario'
+        # 1. Update básico (Nombre, Apellido, Email)
         cursor.execute(
             """
             UPDATE Usuario
@@ -95,7 +97,26 @@ async def api_update_user_info(
             (nombre, apellido, email, id_usuario)
         )
         
-        # 2. Confirmar la transacción
+        # 2. Si hay contraseña nueva, actualizarla también
+        if contrasena and contrasena.strip():
+            print(f"🔹 API: Actualizando contraseña para usuario {id_usuario}")
+            from api.auth import pwd_context # Importar aquí para evitar circular import si fuera necesario, o usar el global si está movido.
+            # Mejor importar pwd_context de un lugar comun si es posible, o re-instanciar.
+            # Dado que auth.py lo instancia, podemos importarlo de ahí. 
+            # api.auth ya está importado en main, así que debería estar bien.
+            
+            hashed_password = pwd_context.hash(contrasena)
+            
+            cursor.execute(
+                """
+                UPDATE Usuario
+                SET password_hash = %s
+                WHERE id_usuario = %s
+                """,
+                (hashed_password, id_usuario)
+            )
+
+        # 3. Confirmar la transacción
         conn.commit()
         
         cursor.close()

@@ -10,6 +10,7 @@ from psycopg2.extras import RealDictCursor # <-- Para queries con diccionarios
 from pydantic import BaseModel
 from typing import Dict, Any, List
 import datetime # <-- ¡AÑADIMOS ESTE IMPORT!
+from api.i18n import load_translations, trans # <-- Importar i18n
 
 # =========================
 #  APP & STATIC / TEMPLATES
@@ -38,6 +39,11 @@ print("✅✅✅ INICIANDO APLICACIÓN - VERSIÓN MÁS RECIENTE ✅✅✅")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/juegos", StaticFiles(directory="juegos"), name="juegos") # <-- Montar juegos locales
 templates = Jinja2Templates(directory="templates")
+
+# --- i18n SETUP ---
+load_translations("locales")
+templates.env.globals["trans"] = trans
+
 
 # --- SERVIR SERVICE WORKER DESDE LA RAÍZ ---
 # Esto es necesario para que el SW tenga alcance (scope) sobre toda la app, no solo /static/
