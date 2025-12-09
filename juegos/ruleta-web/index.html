@@ -5,8 +5,11 @@
 	<title>Ruleta Royal Crumbs</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="screen-orientation" content="landscape">
 	<meta name="orientation" content="landscape">
+	<link rel="manifest" href="manifest.json">
 	<link href="style.css" rel="stylesheet" type="text/css">
 	<style>
 		/* =======================================================================
@@ -47,29 +50,75 @@
 			return false;
 		};
 
-		// Force landscape orientation
-		if (screen.orientation && screen.orientation.lock) {
-			screen.orientation.lock('landscape').catch(function (error) {
-				console.log('Orientation lock not supported:', error);
-			});
+		// Forzar orientación landscape para PWA
+		function forceLandscape() {
+			// Método 1: Screen Orientation API (más moderno)
+			if (screen.orientation && screen.orientation.lock) {
+				screen.orientation.lock('landscape').then(function () {
+					console.log('✅ Orientación bloqueada en landscape');
+				}).catch(function (error) {
+					console.log('⚠️ No se pudo bloquear orientación:', error.message);
+					// Intentar método alternativo
+					tryFullscreenLandscape();
+				});
+			} else {
+				// Si no está disponible, intentar fullscreen
+				tryFullscreenLandscape();
+			}
 		}
 
-		// Alternative: Request fullscreen in landscape
-		function enterFullscreenLandscape() {
+		// Método 2: Fullscreen con orientación landscape
+		function tryFullscreenLandscape() {
 			const elem = document.documentElement;
 			if (elem.requestFullscreen) {
-				elem.requestFullscreen({ orientationLock: 'landscape' }).catch(err => {
-					console.log('Fullscreen request failed:', err);
+				elem.requestFullscreen({ orientationLock: 'landscape' }).then(function () {
+					console.log('✅ Fullscreen landscape activado');
+					// Intentar bloquear orientación después de fullscreen
+					if (screen.orientation && screen.orientation.lock) {
+						screen.orientation.lock('landscape').catch(function (e) {
+							console.log('Orientación ya bloqueada o no soportada');
+						});
+					}
+				}).catch(function (err) {
+					console.log('⚠️ Fullscreen no disponible:', err.message);
 				});
 			}
 		}
 
-		// Auto-enter fullscreen on first user interaction
+		// Detectar si es PWA (standalone mode)
+		function isPWA() {
+			return window.matchMedia('(display-mode: standalone)').matches ||
+				window.navigator.standalone === true ||
+				document.referrer.includes('android-app://');
+		}
+
+		// Intentar forzar landscape al cargar
+		window.addEventListener('load', function () {
+			if (isPWA()) {
+				console.log('📱 PWA detectada - Forzando landscape');
+				forceLandscape();
+			} else {
+				console.log('🌐 Modo navegador - Landscape opcional');
+			}
+		});
+
+		// Intentar forzar landscape en primera interacción
 		document.addEventListener('click', function () {
-			if (!document.fullscreenElement) {
-				enterFullscreenLandscape();
+			if (!document.fullscreenElement && isPWA()) {
+				forceLandscape();
 			}
 		}, { once: true });
+
+		// Detectar cambios de orientación y avisar al usuario
+		window.addEventListener('orientationchange', function () {
+			if (window.orientation === 0 || window.orientation === 180) {
+				// Portrait detectado
+				console.log('⚠️ Dispositivo en portrait - Se recomienda landscape');
+			} else {
+				// Landscape detectado
+				console.log('✅ Dispositivo en landscape');
+			}
+		});
 	</script>
 	<script src="app.js"></script>
 	<script src="db-integration.js"></script>
