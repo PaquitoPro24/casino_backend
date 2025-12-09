@@ -104,14 +104,29 @@
   </div>
 
   <script>
-    // Protección contra selección y clic derecho
+    // ========== MEDIDAS DE SEGURIDAD COMPLETAS ==========
+
+    // Deshabilitar menú contextual (clic derecho)
     document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Deshabilitar selección de texto
     document.addEventListener('selectstart', e => e.preventDefault());
+
+    // Deshabilitar copiar
     document.addEventListener('copy', e => e.preventDefault());
+
+    // Deshabilitar cortar
+    document.addEventListener('cut', e => e.preventDefault());
+
+    // Deshabilitar pegar
+    document.addEventListener('paste', e => e.preventDefault());
+
+    // Deshabilitar arrastrar
+    document.addEventListener('dragstart', e => e.preventDefault());
 
     // Deshabilitar teclas de inspección y zoom
     document.addEventListener('keydown', e => {
-      // F12
+      // F12 (DevTools)
       if (e.key === 'F12') {
         e.preventDefault();
         return false;
@@ -137,6 +152,18 @@
 
       // Ctrl+U / Cmd+U (Ver código fuente)
       if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+S / Cmd+S (Guardar página)
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+P / Cmd+P (Imprimir)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
         e.preventDefault();
         return false;
       }
@@ -167,6 +194,11 @@
         e.preventDefault();
       }
     }, { passive: false });
+
+    // Prevenir zoom con gestos táctiles
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend', e => e.preventDefault());
   </script>
   <script src="sounds.js"></script>
   <script src="auth_shared.js"></script>
