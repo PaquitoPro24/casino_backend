@@ -1013,3 +1013,30 @@ only screen and (max-height: 550px) {
 }
 
 /* --- FIN DE ESTILOS DE FICHAS --- */
+
+/* --- MOBILE LANDSCAPE ADAPTATION --- */
+@media only screen and (max-width: 900px),
+only screen and (max-height: 550px) {
+	body {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		/* Prevent scrolling */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+	}
+
+	#container {
+		transform-origin: center center;
+		/* Escala separada para ajustar ancho y alto independientemente */
+		/* Ajusta estos valores para cambiar el tamaño: */
+		/* - scaleX controla el ancho (horizontal) */
+		/* - scaleY controla el alto (vertical) */
+		transform: scaleX(calc(90vw / 1320)) scaleY(calc(90vh / 770));
+		height: auto;
+		margin: 0;
+	}
+}
