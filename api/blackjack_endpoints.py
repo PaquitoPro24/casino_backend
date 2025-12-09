@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 import random
 import decimal
 
-router = APIRouter(tags=["Blackjack"])
+router = APIRouter(prefix="/api", tags=["Blackjack"])
 
 # ========== CONSTANTES DEL JUEGO ==========
 
@@ -167,7 +167,7 @@ def get_user_id_from_cookie(request: Request):
 
 # ========== ENDPOINTS DEL JUEGO BLACKJACK ==========
 
-@router.get("/api/state")
+@router.get("/state")
 async def api_state(request: Request):
     """Obtener estado actual del juego"""
     user_id = get_user_id_from_cookie(request)
@@ -175,7 +175,7 @@ async def api_state(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/bet")
+@router.post("/bet")
 async def api_bet(bet_req: BetRequest, request: Request):
     """Hacer una apuesta"""
     user_id = get_user_id_from_cookie(request)
@@ -194,7 +194,7 @@ async def api_bet(bet_req: BetRequest, request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/clear_bet")
+@router.post("/clear_bet")
 async def api_clear_bet(request: Request):
     """Borrar apuesta"""
     user_id = get_user_id_from_cookie(request)
@@ -207,7 +207,7 @@ async def api_clear_bet(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/deal")
+@router.post("/deal")
 async def api_deal(request: Request):
     """Repartir cartas"""
     user_id = get_user_id_from_cookie(request)
@@ -246,7 +246,7 @@ async def api_deal(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/hit")
+@router.post("/hit")
 async def api_hit(request: Request):
     """Pedir carta"""
     user_id = get_user_id_from_cookie(request)
@@ -264,7 +264,7 @@ async def api_hit(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/stand")
+@router.post("/stand")
 async def api_stand(request: Request):
     """Mantenerse"""
     user_id = get_user_id_from_cookie(request)
@@ -296,7 +296,7 @@ async def api_stand(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/double")
+@router.post("/double")
 async def api_double(request: Request):
     """Doblar apuesta"""
     user_id = get_user_id_from_cookie(request)
@@ -336,7 +336,7 @@ async def api_double(request: Request):
     save_game_state(user_id, g)
     return serialize_state(g)
 
-@router.post("/api/new_round")
+@router.post("/new_round")
 async def api_new_round(request: Request):
     """Nueva ronda"""
     user_id = get_user_id_from_cookie(request)
