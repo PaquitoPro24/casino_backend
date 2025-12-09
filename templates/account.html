@@ -14,26 +14,26 @@
     <!-- ENCABEZADO -->
     <header class="rc-header">
       <a href="/home" class="rc-back">‹</a>
-      <h1 class="rc-screen-title">Mi Cuenta</h1>
+      <h1 class="rc-screen-title" data-i18n="account.title">Mi Cuenta</h1>
       <div></div>
     </header>
 
     <!-- LISTA DE OPCIONES -->
     <section class="rc-list-card">
       <a href="/account/configuracion" class="rc-list-item">
-        Configuración
+        <span data-i18n="account.settings">Configuración</span>
         <span class="rc-chevron"></span>
       </a>
       <a href="/account/bonos" class="rc-list-item">
-        Bonos y Promociones
+        <span data-i18n="account.bonuses">Bonos y Promociones</span>
         <span class="rc-chevron"></span>
       </a>
       <a href="/account/cartera" class="rc-list-item">
-        Cartera
+        <span data-i18n="account.wallet">Cartera</span>
         <span class="rc-chevron"></span>
       </a>
       <a href="/account/cartera/historial" class="rc-list-item">
-        Historial de Juegos
+        <span data-i18n="account.history">Historial de Juegos</span>
         <span class="rc-chevron"></span>
       </a>
       <a href="/account/metodos" class="rc-list-item">
@@ -44,7 +44,7 @@
       <!-- Selector de Idioma -->
       <div class="rc-list-item"
         style="display: flex; justify-content: space-between; align-items: center; cursor: default;">
-        <span>🌐 Idioma / Language</span>
+        <span data-i18n="lang.select">🌐 Idioma / Language</span>
         <select id="language-selector" style="
           background: linear-gradient(135deg, #ab925c 0%, #d5b714 100%);
           color: #1a1a1a;
@@ -68,19 +68,19 @@
   <nav class="rc-nav">
     <a href="/home" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/home_icon.png') }}" alt="Inicio">
-      <span>Inicio</span>
+      <span data-i18n="nav.home">Inicio</span>
     </a>
     <a href="/games" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/games_icon.png') }}" alt="Juegos">
-      <span>Juegos</span>
+      <span data-i18n="nav.games">Juegos</span>
     </a>
     <a href="/support" class="rc-nav-item">
       <img src="{{ url_for('static', path='img/support_icon.png') }}" alt="Soporte">
-      <span>Soporte</span>
+      <span data-i18n="nav.support">Soporte</span>
     </a>
     <a href="/account/cartera" class="rc-nav-item active">
       <img src="{{ url_for('static', path='img/wallet_icon.png') }}" alt="Cartera">
-      <span>Cartera</span>
+      <span data-i18n="nav.wallet">Cartera</span>
     </a>
   </nav>
 
