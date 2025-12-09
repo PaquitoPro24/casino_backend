@@ -16,7 +16,8 @@
         "no_account": "¿No tienes cuenta? Regístrate",
         "create_account": "Crea tu cuenta",
         "register_button": "Registrarse",
-        "have_account": "¿Ya tienes cuenta? Inicia Sesión"
+        "have_account": "¿Ya tienes cuenta? Inicia Sesión",
+        "view_details": "Ver detalles"
     },
     "menu": {
         "home": "Inicio",

@@ -16,7 +16,8 @@
         "no_account": "Don't have an account? Sign up",
         "create_account": "Create Account",
         "register_button": "Sign Up",
-        "have_account": "Already have an account? Login"
+        "have_account": "Already have an account? Login",
+        "view_details": "View Details"
     },
     "menu": {
         "home": "Home",
