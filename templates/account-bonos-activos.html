@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bonos y Promociones - Activos</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos-activos.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -24,16 +26,9 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="bonos-activos">
-      <div class="bono-item">
-        <p class="bono-titulo">Bono de bienvenida</p>
-        <p class="bono-fecha">Activado el 07/01/2022</p>
-      </div>
-
-      <div class="bono-item">
-        <p class="bono-titulo">Bono por Recomendación</p>
-        <p class="bono-fecha">Activado el 07/01/2022</p>
-      </div>
+    <div class="bonos-activos" id="bonosContainer">
+      <!-- Se llena dinámicamente -->
+      <p style="text-align:center; color:#999; margin-top:20px;">Cargando bonos...</p>
     </div>
   </div>
 
@@ -58,5 +53,50 @@
   </nav>
 
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const userId = localStorage.getItem("userId");
+      const container = document.getElementById("bonosContainer");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/bonos/activos/${userId}`);
+        const data = await response.json();
+
+        container.innerHTML = ""; // Limpiar loading
+
+        if (data.bonos && data.bonos.length > 0) {
+          data.bonos.forEach(bono => {
+            const date = new Date(bono.fecha_adquisicion).toLocaleDateString();
+            const item = document.createElement("div");
+            item.className = "bono-item";
+            item.innerHTML = `
+                        <div style="flex:1;">
+                            <p class="bono-titulo">${bono.nombre_bono}</p>
+                            <p class="bono-fecha">Activado el ${date}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="color:#00c851; font-weight:bold;">ACTIVO</span>
+                            <br>
+                            <small style="color:#aaa;">Progreso: ${Math.round(bono.progreso * 100)}%</small>
+                        </div>
+                    `;
+            container.appendChild(item);
+          });
+        } else {
+          container.innerHTML = `<p style="text-align:center; color:#999; margin-top:20px;">No tienes bonos activos actualmente.</p>`;
+        }
+
+      } catch (error) {
+        console.error("Error al cargar bonos activos:", error);
+        container.innerHTML = `<p style="text-align:center; color:#ff4444;">Error al cargar datos.</p>`;
+      }
+    });
+  </script>
 </body>
+
 </html>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bonos y Promociones - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account-bonos.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -23,33 +25,8 @@
     </div>
 
     <!-- CONTENIDO -->
-    <div class="bonus-list">
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Bono de Bienvenida</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Bono de bienvenida">
-      </div>
-
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Bono por Recomendación</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Bono por recomendación">
-      </div>
-
-      <div class="bonus-card">
-        <div class="bonus-info">
-          <h3>Giro gratis semanal</h3>
-          <button class="btn-reclamar">Reclamar</button>
-          <button class="btn-saber">Saber más</button>
-        </div>
-        <img src="{{ url_for('static', path='img/tragamonedas.jpg') }}" alt="Giro gratis semanal">
-      </div>
+    <div class="bonus-list" id="disponiblesContainer">
+      <p style="text-align:center; color:#999; margin-top:20px;">Cargando bonos disponibles...</p>
     </div>
   </div>
 
@@ -74,5 +51,80 @@
   </nav>
 
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const userId = localStorage.getItem("userId");
+      const container = document.getElementById("disponiblesContainer");
+
+      if (!userId) {
+        window.location.href = "/login";
+        return;
+      }
+
+      async function loadBonos() {
+        try {
+          const response = await fetch(`/api/bonos/disponibles/${userId}`);
+          const data = await response.json();
+
+          container.innerHTML = "";
+
+          if (data.bonos && data.bonos.length > 0) {
+            data.bonos.forEach(bono => {
+              const div = document.createElement("div");
+              div.className = "bonus-card";
+
+              // Default image or specific mapped image
+              const imgUrl = "{{ url_for('static', path='img/bonos.jpg') }}"; // Generic fallback
+
+              div.innerHTML = `
+                            <div class="bonus-info">
+                                <h3>${bono.nombre_bono}</h3>
+                                <p style="font-size:0.9em; margin-bottom:5px; color:#ccc;">${bono.descripcion || ''}</p>
+                                <button class="btn-reclamar" onclick="reclamarBono(${bono.id_bono})">Reclamar</button>
+                            </div>
+                            <img src="${imgUrl}" alt="${bono.nombre_bono}" style="max-height:100px; object-fit:cover;">
+                        `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = `<p style="text-align:center; color:#999; margin-top:20px;">No hay nuevos bonos disponibles por el momento.</p>`;
+          }
+
+        } catch (error) {
+          console.error("Error al cargar bonos disponibles:", error);
+          container.innerHTML = `<p style="text-align:center; color:#ff4444;">Error al cargar datos.</p>`;
+        }
+      }
+
+      window.reclamarBono = async (idBono) => {
+        if (!confirm("¿Deseas reclamar este bono?")) return;
+
+        try {
+          const formData = new FormData();
+          formData.append("id_usuario", userId);
+          formData.append("id_bono", idBono);
+
+          const res = await fetch("/api/bonos/reclamar", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            alert("¡Bono reclamado exitosamente!");
+            loadBonos(); // Recargar lista
+          } else {
+            alert(result.error || "Error al reclamar bono");
+          }
+        } catch (e) {
+          console.error(e);
+          alert("Error de conexión");
+        }
+      };
+
+      loadBonos();
+    });
+  </script>
 </body>
+
 </html>
