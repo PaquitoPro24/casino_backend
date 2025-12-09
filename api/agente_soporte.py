@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime, date
+from datetime import datetime
+from app.utils import serialize_data
 from typing import Optional
 import decimal
 
@@ -71,17 +72,6 @@ async def api_get_agent_dashboard(id_agente: int):
 # ==========================================================
 #  LISTAR TODOS LOS TICKETS (PARA AGENTE)
 # ==========================================================
-# Helper para serialización JSON (mismo que admin)
-def serialize_data(data):
-    if isinstance(data, list):
-        return [serialize_data(x) for x in data]
-    if isinstance(data, dict):
-        return {k: serialize_data(v) for k, v in data.items()}
-    if isinstance(data, (datetime, date)):
-        return data.isoformat()
-    if isinstance(data, decimal.Decimal):
-        return float(data)
-    return data
 
 # ==========================================================
 #  LISTAR TODOS LOS TICKETS (PARA AGENTE)

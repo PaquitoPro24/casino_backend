@@ -4,6 +4,7 @@ from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+from app.utils import serialize_data
 
 router = APIRouter(prefix="/api/bonos", tags=["Bonos"])
 
@@ -118,7 +119,7 @@ async def api_get_active_bonos(id_usuario: int):
         )
         bonos = cursor.fetchall()
         cursor.close()
-        return JSONResponse({"bonos": bonos})
+        return JSONResponse({"bonos": serialize_data(bonos)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Bonos Activos): {e}")
@@ -153,7 +154,7 @@ async def api_get_bonus_history(id_usuario: int):
         )
         bonos = cursor.fetchall()
         cursor.close()
-        return JSONResponse({"bonos": bonos})
+        return JSONResponse({"bonos": serialize_data(bonos)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Historial Bonos): {e}")

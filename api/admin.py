@@ -4,23 +4,13 @@ from app.db import db_connect # <-- CORRECCIÓN: Importación relativa
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import decimal # Importamos decimal para manejar dinero
-from datetime import datetime, date # Para manejar fechas
+from datetime import datetime, date
+from app.utils import serialize_data
 from passlib.context import CryptContext
 
 # Configura el contexto de hasheo (mismo que auth.py)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
-# Helper para serialización JSON
-def serialize_data(data):
-    if isinstance(data, list):
-        return [serialize_data(x) for x in data]
-    if isinstance(data, dict):
-        return {k: serialize_data(v) for k, v in data.items()}
-    if isinstance(data, (datetime, date)):
-        return data.isoformat()
-    if isinstance(data, decimal.Decimal):
-        return float(data)
-    return data
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
