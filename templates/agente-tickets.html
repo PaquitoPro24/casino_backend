@@ -54,7 +54,7 @@
 
         async function cargarTickets(estado = '', asignado = '') {
             try {
-                let url = '/api/agente/tickets?';
+                let url = '/api/agente/tickets/all?';
                 if (estado) url += `estado=${estado}&`;
                 if (asignado) url += `asignado=${asignado}`;
 
@@ -89,7 +89,7 @@
           <div class="ticket-info">
             <h3>${ticket.asunto}</h3>
             <div class="ticket-meta">
-              <span>👤 ${ticket.nombre_usuario}</span>
+              <span>👤 ${ticket.nombre_jugador} ${ticket.apellido_jugador}</span>
               <span>📅 ${new Date(ticket.fecha_creacion).toLocaleDateString()}</span>
               ${ticket.nombre_agente ? `<span>👨‍💼 ${ticket.nombre_agente}</span>` : ''}
             </div>
@@ -115,7 +115,7 @@
         // Actualizar cada 15 segundos
         setInterval(() => aplicarFiltros(), 15000);
     </script>
-  <script src="{{ url_for('static', path='js/security.js') }}"></script>
+    <script src="{{ url_for('static', path='js/security.js') }}"></script>
 </body>
 
 </html>

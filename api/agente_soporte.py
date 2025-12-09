@@ -3,7 +3,9 @@ from fastapi.responses import JSONResponse
 from app.db import db_connect
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from datetime import datetime
+from datetime import datetime, date
+from typing import Optional
+import decimal
 
 router = APIRouter(prefix="/api/agente", tags=["Agente Soporte"])
 
@@ -69,12 +71,31 @@ async def api_get_agent_dashboard(id_agente: int):
 # ==========================================================
 #  LISTAR TODOS LOS TICKETS (PARA AGENTE)
 # ==========================================================
+# Helper para serialización JSON (mismo que admin)
+def serialize_data(data):
+    if isinstance(data, list):
+        return [serialize_data(x) for x in data]
+    if isinstance(data, dict):
+        return {k: serialize_data(v) for k, v in data.items()}
+    if isinstance(data, (datetime, date)):
+        return data.isoformat()
+    if isinstance(data, decimal.Decimal):
+        return float(data)
+    return data
+
+# ==========================================================
+#  LISTAR TODOS LOS TICKETS (PARA AGENTE)
+# ==========================================================
 @router.get("/tickets/all")
-async def api_get_all_tickets():
+async def api_get_all_tickets(
+    estado: Optional[str] = None,
+    asignado: Optional[str] = None
+):
     """
     Obtiene todos los tickets para que el agente pueda verlos
+    Soporta filtros por estado y asignación
     """
-    print("🔹 API Agente: Listando todos los tickets")
+    print(f"🔹 API Agente: Listando tickets (estado={estado}, asignado={asignado})")
     conn = None
     try:
         conn = db_connect.get_connection()
@@ -83,8 +104,8 @@ async def api_get_all_tickets():
         
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        # Obtener todos los tickets con información del jugador
-        cursor.execute("""
+        # Construcción dinámica de la query
+        query = """
             SELECT 
                 s.id_ticket,
                 s.id_jugador,
@@ -92,22 +113,40 @@ async def api_get_all_tickets():
                 u.apellido as apellido_jugador,
                 s.asunto,
                 s.estado,
+                s.mensaje,
                 s.fecha_creacion,
                 s.id_agente,
-                CASE WHEN s.id_agente IS NOT NULL THEN 'Asignado' ELSE 'Sin asignar' END as estado_asignacion
+                CASE WHEN s.id_agente IS NOT NULL THEN 'Asignado' ELSE 'Sin asignar' END as estado_asignacion,
+                (SELECT nombre || ' ' || apellido FROM Usuario WHERE id_usuario = s.id_agente) as nombre_agente
             FROM Soporte s
             JOIN Usuario u ON s.id_jugador = u.id_usuario
+            WHERE 1=1
+        """
+        params = []
+
+        if estado and estado.strip():
+            query += " AND s.estado = %s"
+            params.append(estado)
+        
+        if asignado:
+            if asignado == 'si':
+                query += " AND s.id_agente IS NOT NULL"
+            elif asignado == 'no':
+                query += " AND s.id_agente IS NULL"
+
+        query += """
             ORDER BY 
                 CASE WHEN s.estado = 'Abierto' THEN 1
                      WHEN s.estado = 'En Proceso' THEN 2
                      ELSE 3 END,
                 s.fecha_creacion DESC
-        """)
+        """
         
+        cursor.execute(query, tuple(params))
         tickets = cursor.fetchall()
         cursor.close()
         
-        return JSONResponse({"tickets": tickets})
+        return JSONResponse({"tickets": serialize_data(tickets)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Listar Tickets): {e}")
@@ -151,7 +190,7 @@ async def api_get_my_tickets(id_agente: int):
         tickets = cursor.fetchall()
         cursor.close()
         
-        return JSONResponse({"tickets": tickets})
+        return JSONResponse({"tickets": serialize_data(tickets)})
 
     except Exception as e:
         print(f"🚨 API ERROR (Mis Tickets): {e}")
@@ -244,7 +283,7 @@ async def api_get_ticket_detail(id_ticket: int):
         if not ticket:
             return JSONResponse({"error": "Ticket no encontrado"}, status_code=404)
         
-        return JSONResponse(ticket)
+        return JSONResponse(serialize_data(ticket))
 
     except Exception as e:
         print(f"🚨 API ERROR (Detalle Ticket): {e}")
