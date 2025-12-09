@@ -921,34 +921,6 @@ body {
 	border-color: purple;
 }
 
-/* --- MOBILE LANDSCAPE ADAPTATION --- */
-@media only screen and (max-width: 900px),
-only screen and (max-height: 550px) {
-	body {
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		/* Prevent scrolling */
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-	}
-
-	#container {
-		transform-origin: center center;
-		/* Calculate scale based on viewport size. 
-           Base size is approx 850px x 500px. 
-           We use a safe scale factor. */
-		transform: scale(min(calc(100vw / 900), calc(100vh / 520)));
-		height: auto;
-		/* Allow height to be determined by content if needed, or keep fixed and scale */
-		/* Reset margins if any */
-		margin: 0;
-	}
-}
-
 .red {
 	border-color: red;
 }
@@ -1031,13 +1003,10 @@ only screen and (max-height: 550px) {
 
 	#container {
 		transform-origin: center center;
-		/* Escala separada para ajustar ancho y alto independientemente */
-		/* Ajusta estos valores para cambiar el tamaño: */
-		/* - scaleX controla el ancho (horizontal) */
-		/* - scaleY controla el alto (vertical) */
-		transform: scaleX(calc(75vw / 2000)) scaleY(calc(75vh / 1200));
+		/* Escala uniforme para que todo quepa en pantalla */
+		/* Ajusta este valor para cambiar el tamaño (0.5 = 50%) */
+		transform: scale(0.5);
 		height: auto;
 		margin: 0;
 	}
 }
-
