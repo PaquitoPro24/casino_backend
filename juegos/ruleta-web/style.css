@@ -999,13 +999,16 @@ only screen and (max-height: 550px) {
 		justify-content: center;
 		height: 100vh;
 		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+		background-image: url('pattern-bg.jpg');
+		background-repeat: repeat;
+		background-size: 300px 300px;
 	}
 
 	#container {
 		transform-origin: center center;
 		/* Escala uniforme para que todo quepa en pantalla */
 		/* Ajusta este valor para cambiar el tamaño (0.5 = 50%) */
-		transform: scale(0.5);
+		transform: scale(0.7);
 		height: auto;
 		margin: 0;
 	}

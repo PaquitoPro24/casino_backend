@@ -47,6 +47,22 @@
 			align-items: center;
 			justify-content: center;
 		}
+
+		/* Botón de volver - ajustes para móvil */
+		@media only screen and (max-width: 900px),
+		only screen and (max-height: 550px) {
+			#back-button {
+				top: 10px !important;
+				left: 10px !important;
+				padding: 8px 12px !important;
+				font-size: 14px !important;
+			}
+
+			#back-button svg {
+				width: 16px !important;
+				height: 16px !important;
+			}
+		}
 	</style>
 </head>
 
@@ -64,6 +80,35 @@
 				horizontal</p>
 		</div>
 	</div>
+
+	<!-- Botón de Volver al Menú -->
+	<a href="/games" id="back-button" style="
+		position: fixed;
+		top: 20px;
+		left: 20px;
+		z-index: 9998;
+		background: linear-gradient(135deg, #ab925c 0%, #d5b714 100%);
+		color: #1a1a1a;
+		padding: 12px 20px;
+		border-radius: 8px;
+		text-decoration: none;
+		font-family: Arial, sans-serif;
+		font-weight: bold;
+		font-size: 16px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		box-shadow: 0 4px 15px rgba(171, 146, 92, 0.4);
+		transition: all 0.3s ease;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+	" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(171, 146, 92, 0.6)';"
+		onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(171, 146, 92, 0.4)';">
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<path d="M19 12H5M12 19l-7-7 7-7" />
+		</svg>
+		Volver
+	</a>
+
 
 	<script>
 		// Disable right-click context menu
