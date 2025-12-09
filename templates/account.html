@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Cuenta - Royal Crumbs</title>
   <link rel="stylesheet" href="{{ url_for('static', path='css/account.css') }}">
 </head>
+
 <body>
 
   <div class="rc-container">
@@ -38,6 +40,27 @@
         Métodos de Pago
         <span class="rc-chevron"></span>
       </a>
+
+      <!-- Selector de Idioma -->
+      <div class="rc-list-item"
+        style="display: flex; justify-content: space-between; align-items: center; cursor: default;">
+        <span>🌐 Idioma / Language</span>
+        <select id="language-selector" style="
+          background: linear-gradient(135deg, #ab925c 0%, #d5b714 100%);
+          color: #1a1a1a;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          padding: 8px 12px;
+          font-weight: bold;
+          font-size: 14px;
+          cursor: pointer;
+          outline: none;
+          transition: all 0.3s ease;
+        " onchange="window.i18n.setLanguage(this.value)">
+          <option value="es">🇪🇸 Español</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
+      </div>
     </section>
   </div>
 
@@ -61,5 +84,7 @@
     </a>
   </nav>
 
+  <script src="{{ url_for('static', path='js/i18n.js') }}"></script>
 </body>
+
 </html>
