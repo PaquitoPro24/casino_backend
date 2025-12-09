@@ -1040,3 +1040,35 @@ only screen and (max-height: 550px) {
 		margin: 0;
 	}
 }
+/* --- MOBILE PORTRAIT ADAPTATION (Rotar a landscape) --- */
+@media only screen and (orientation: portrait) and (max-width: 900px) {
+	html {
+		transform: rotate(90deg);
+		transform-origin: left top;
+		width: 100vh;
+		height: 100vw;
+		overflow-x: hidden;
+		position: absolute;
+		top: 100%;
+		left: 0;
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vw;
+		width: 100vh;
+		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+	}
+
+	#container {
+		transform-origin: center center;
+		transform: scaleX(calc(90vw / 1320)) scaleY(calc(90vh / 770));
+		height: auto;
+		margin: 0;
+	}
+}
