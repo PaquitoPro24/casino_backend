@@ -358,3 +358,21 @@ async def api_reopen_ticket(id_ticket: int = Form()):
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
+# ==========================================================
+#  CHATS EN ESPERA (STUB / PLACEHOLDER)
+# ==========================================================
+@router.get("/chats-esperando")
+async def api_get_waiting_chats():
+    """
+    Retorna lista vacía para prevenir errores en frontend ya que no hay tabla de Chats.
+    """
+    print("🔹 API Agente: Solicitud de chats en espera (Funcionalidad desactivada)")
+    return JSONResponse({"chats": []})
+
+@router.post("/tomar-chat")
+async def api_take_chat(id_chat: int = Form(), id_agente: int = Form()):
+    """
+    Stub para tomar chat.
+    """
+    return JSONResponse({"success": False, "error": "Chat en vivo no disponible temporalmente"})
