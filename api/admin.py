@@ -329,26 +329,64 @@ async def api_admin_reset_password(id_usuario: int, new_password: str = Form()):
 @router.delete("/user-profile/{id_usuario}")
 async def api_delete_user(id_usuario: int):
     """
-    Elimina un usuario (y sus datos relacionados por CASCADE).
+    Elimina un usuario y TODOS sus datos relacionados (Manual CASCADE).
     Llamada por: admin-usuario-perfil.html
     """
-    print(f"🔹 API Admin: Eliminando usuario {id_usuario}")
+    print(f"🔹 API Admin: Eliminando usuario {id_usuario} y datos relacionados...")
     conn = None
     try:
         conn = db_connect.get_connection()
         if conn is None: return JSONResponse({"error": "Error de conexión"}, status_code=500)
         
         cursor = conn.cursor()
+        
+        # 1. Eliminar dependencias con RESTRICT en el esquema
+        
+        # Auditoria (fk: id_usuario)
+        cursor.execute("DELETE FROM Auditoria WHERE id_usuario = %s", (id_usuario,))
+        
+        # RespuestaTicket (fk: id_usuario - quien responde)
+        cursor.execute("DELETE FROM RespuestaTicket WHERE id_usuario = %s", (id_usuario,))
+        
+        # Soporte (fk: id_jugador y id_agente)
+        # Primero eliminamos las respuestas de los tickets donde el usuario es el jugador
+        cursor.execute("DELETE FROM RespuestaTicket WHERE id_ticket IN (SELECT id_ticket FROM Soporte WHERE id_jugador = %s)", (id_usuario,))
+        cursor.execute("DELETE FROM Soporte WHERE id_jugador = %s OR id_agente = %s", (id_usuario, id_usuario))
+        
+        # Transaccion (fk: id_usuario)
+        cursor.execute("DELETE FROM Transaccion WHERE id_usuario = %s", (id_usuario,))
+        
+        # Apuesta (via Sesion_Juego -> CASCADE en esquema? No, Apuesta reference Sesion ON DELETE CASCADE)
+        # Sesion_Juego (fk: id_usuario -> RESTRICT)
+        # Al borrar Sesion_Juego, las Apuestas se borran por CASCADE del esquema
+        cursor.execute("DELETE FROM Sesion_Juego WHERE id_usuario = %s", (id_usuario,))
+        
+        # Usuario_Metodo_Pago (fk: id_usuario -> CASCADE en esquema, pero safe to delete)
+        cursor.execute("DELETE FROM Usuario_Metodo_Pago WHERE id_usuario = %s", (id_usuario,))
+        
+        # Saldo (fk: id_usuario -> CASCADE en esquema)
+        cursor.execute("DELETE FROM Saldo WHERE id_usuario = %s", (id_usuario,))
+        
+        # Usuario_Bono (fk: id_usuario -> CASCADE en esquema)
+        cursor.execute("DELETE FROM Usuario_Bono WHERE id_usuario = %s", (id_usuario,))
+
+        # Chat & Mensaje_Chat (fk: id_jugador, id_agente, id_usuario)
+        cursor.execute("DELETE FROM Mensaje_Chat WHERE id_usuario = %s", (id_usuario,))
+        cursor.execute("DELETE FROM Chat WHERE id_jugador = %s OR id_agente = %s", (id_usuario, id_usuario))
+        
+        # 2. Finalmente eliminar Usuario
         cursor.execute("DELETE FROM Usuario WHERE id_usuario = %s", (id_usuario,))
+        
         conn.commit()
         cursor.close()
         
-        return JSONResponse({"success": True, "message": "Usuario eliminado."})
+        print(f"✅ API Admin: Usuario {id_usuario} eliminado totalmente.")
+        return JSONResponse({"success": True, "message": "Usuario y todos sus datos eliminados."})
 
     except Exception as e:
         if conn: conn.rollback()
         print(f"🚨 API ERROR (Admin Delete User): {e}")
-        return JSONResponse({"error": f"Error interno: {e}"}, status_code=500)
+        return JSONResponse({"error": f"Error interno al eliminar: {e}"}, status_code=500)
     finally:
         if conn: conn.close()
 

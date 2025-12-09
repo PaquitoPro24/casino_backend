@@ -222,7 +222,7 @@ def generar_pdf_auditoria(
     
     # Header
     c.setFillColor(dorado)
-    c.setFont("Helvetica-Bold", 20)
+    c.setFont("Helvetica-Bold", 18) # Main Title slightly larger
     c.drawCentredString(width/2, height - 50, "Auditoría ISO 14001")
     
     c.setFillColor(gris)
@@ -239,11 +239,11 @@ def generar_pdf_auditoria(
     
     # Respuestas
     c.setFillColor(negro)
-    c.setFont("Helvetica-Bold", 12)
+    c.setFont("Helvetica-Bold", 14) # Title 14
     c.drawString(50, y, "Resultados de la Auditoría:")
-    y -= 25
+    y -= 30
     
-    c.setFont("Helvetica", 9)
+    c.setFont("Helvetica", 12) # Body 12
     for i, (pregunta, respuesta) in enumerate(respuestas.items(), 1):
         if y < 100:
             c.showPage()
@@ -251,18 +251,18 @@ def generar_pdf_auditoria(
         
         # Pregunta
         c.setFillColor(dorado)
-        c.setFont("Helvetica-Bold", 9)
+        c.setFont("Helvetica-Bold", 12) # Number 12
         c.drawString(50, y, f"{i}.")
         
         # Wrap text
         c.setFillColor(negro)
-        c.setFont("Helvetica", 8)
+        c.setFont("Helvetica", 12) # Body 12
         pregunta_lines = []
         words = pregunta.split()
         line = ""
         for word in words:
             test_line = line + word + " "
-            if c.stringWidth(test_line, "Helvetica", 8) < width - 120:
+            if c.stringWidth(test_line, "Helvetica", 12) < width - 120:
                 line = test_line
             else:
                 pregunta_lines.append(line)
@@ -271,7 +271,7 @@ def generar_pdf_auditoria(
         
         for line in pregunta_lines:
             c.drawString(70, y, line)
-            y -= 10
+            y -= 14 # Increased line spacing
         
         # Respuesta
         if respuesta == "Cumple":
@@ -283,20 +283,20 @@ def generar_pdf_auditoria(
         else:
             c.setFillColor(gris)
         
-        c.setFont("Helvetica-Bold", 9)
+        c.setFont("Helvetica-Bold", 12) # Body Bold 12
         c.drawString(70, y, f"→ {respuesta}")
-        y -= 20
+        y -= 25 # Increased spacing between items
     
     # Resumen en nueva página
     c.showPage()
     y = height - 50
     
     c.setFillColor(dorado)
-    c.setFont("Helvetica-Bold", 18)
+    c.setFont("Helvetica-Bold", 14) # Title 14
     c.drawCentredString(width/2, y, "Resumen de Resultados")
     y -= 40
     
-    c.setFont("Helvetica", 14)
+    c.setFont("Helvetica", 12) # Body 12
     c.setFillColor(HexColor("#00aa00"))
     c.drawString(100, y, f"✓ Cumple: {cumple}")
     y -= 25
@@ -314,14 +314,14 @@ def generar_pdf_auditoria(
     y -= 40
     
     c.setFillColor(dorado)
-    c.setFont("Helvetica-Bold", 16)
+    c.setFont("Helvetica-Bold", 14) # Highlight 14
     c.drawString(100, y, f"Cumplimiento Total: {porcentaje}%")
     y -= 60
     
     # Comentarios (si existen)
     if comentarios:
         c.setFillColor(dorado)
-        c.setFont("Helvetica-Bold", 16)
+        c.setFont("Helvetica-Bold", 14) # Title 14
         c.drawString(100, y, "Comentarios y Observaciones")
         y -= 30
         
@@ -332,20 +332,20 @@ def generar_pdf_auditoria(
             
             # Título de la sección
             c.setFillColor(azul)
-            c.setFont("Helvetica-Bold", 11)
+            c.setFont("Helvetica-Bold", 12) # Subtitle 12
             seccion_nombre = seccion.replace('_', ' ').title()
             c.drawString(100, y, f"• {seccion_nombre}")
             y -= 20
             
             # Comentario con word wrap
             c.setFillColor(negro)
-            c.setFont("Helvetica", 9)
+            c.setFont("Helvetica", 12) # Body 12
             comentario_lines = []
             words = comentario.split()
             line = ""
             for word in words:
                 test_line = line + word + " "
-                if c.stringWidth(test_line, "Helvetica", 9) < width - 220:
+                if c.stringWidth(test_line, "Helvetica", 12) < width - 220:
                     line = test_line
                 else:
                     comentario_lines.append(line)
@@ -357,9 +357,9 @@ def generar_pdf_auditoria(
                     c.showPage()
                     y = height - 50
                 c.drawString(120, y, line)
-                y -= 12
+                y -= 14
             
-            y -= 10  # Espacio entre comentarios
+            y -= 15  # Espacio entre comentarios
     
     c.save()
 
