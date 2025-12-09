@@ -544,7 +544,7 @@ async function spin() {
 		let spinBet = currentBet;
 
 		// Llamar al backend para calcular el spin
-		const response = await fetch('/api/spin', {
+		const response = await fetch(`${backendUrl}/api/spin`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
