@@ -223,32 +223,35 @@
     }
   </script>
 
-  // === IDIOMA ===
-  const langSwitcher = document.getElementById('langSwitcher');
+<script>
+    // === IDIOMA ===
+    const langSwitcher = document.getElementById('langSwitcher');
 
-  // Set initial value based on cookie
-  const getCookie = (name) => {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-  langSwitcher.value = getCookie('app_lang') || 'es';
+    // Set initial value based on cookie
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    if (langSwitcher) {
+      langSwitcher.value = getCookie('app_lang') || 'es';
 
-  langSwitcher.addEventListener('change', async (e) => {
-  const newLang = e.target.value;
-  try {
-  const res = await fetch('/set-language', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({lang: newLang})
-  });
-  if (res.ok) {
-  window.location.reload();
-  }
-  } catch (err) {
-  console.error(err);
-  }
-  });
+      langSwitcher.addEventListener('change', async (e) => {
+        const newLang = e.target.value;
+        try {
+          const res = await fetch('/set-language', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lang: newLang })
+          });
+          if (res.ok) {
+            window.location.reload();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
   </script>
   <script src="{{ url_for('static', path='js/security.js') }}"></script>
 
